@@ -60,6 +60,19 @@ Ab jetzt läuft alles offline. Du kannst im Flugmodus spielen.
 
 ---
 
+## Android: Spielstand langfristig sichern
+
+Android hat ein direktes Pendant zu iOS' „Zum Home-Bildschirm":
+
+1. Die URL in **Chrome** öffnen.
+2. Menü (⋮) → **„App installieren"** bzw. **„Zum Startbildschirm zufügen"**.
+
+Chrome zeigt oft von selbst einen Installations-Banner an. Danach liegt die App wie eine normale App im App-Drawer und läuft im Vollbild.
+
+**Der entscheidende Unterschied zu iOS:** Android/Chrome kennt die `navigator.storage.persist()`-API. Die App fordert damit beim Start automatisch **dauerhaften Speicher** an. Ist die App installiert, gewährt Chrome das in der Regel ohne Nachfrage — der Spielstand wird dann auch bei Speicherdruck **nicht** mehr automatisch geräumt. Das ist sogar verlässlicher als unter iOS.
+
+Gelöscht wird der Stand dann nur noch, wenn du ihn selbst entfernst (App deinstallieren oder Browserdaten löschen).
+
 ## Updates einspielen
 
 Neue Version? Einfach die geänderten Dateien im Repository ersetzen. Die App holt sich beim nächsten Start mit Internet automatisch die neue Fassung (der Service Worker lädt `index.html` bevorzugt aus dem Netz).

@@ -296,13 +296,17 @@
 
         /* Bottom-Dock mit allen Feature-Buttons */
         .hud-dock {
-            position: fixed; bottom: calc(14px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+            /* Zentriert ueber left/right:0 + margin:auto statt left:50% + translateX(-50%).
+               Bei left:50% steht einem Element mit automatischer Breite nur die HAELFTE des
+               Bildschirms zur Verfuegung - auf dem Handy waren das ~195px und damit 4 Zeilen. */
+            position: fixed; bottom: calc(14px + env(safe-area-inset-bottom));
+            left: 0; right: 0; margin: 0 auto; width: fit-content;
             z-index: 60; display: flex; align-items: center; gap: 7px;
             padding: 9px 13px; border-radius: 22px;
             background: rgba(20,28,44,0.72); -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
             border: 1px solid rgba(255,255,255,0.12);
             box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-            max-width: calc(100vw - 20px); flex-wrap: wrap; justify-content: center;
+            max-width: calc(100vw - 12px); flex-wrap: wrap; justify-content: center;
         }
         .dock-sep { width: 1px; height: 26px; background: rgba(255,255,255,0.16); margin: 0 3px; flex-shrink: 0; }
 
@@ -464,14 +468,16 @@
         }
 
         .achievement-banner {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: -160px;
+            left: 0; right: 0; margin: 0 auto; width: fit-content;
+            max-width: calc(100vw - 24px); box-sizing: border-box;
             background: linear-gradient(135deg, #f1c40f, #f39c12); color: white;
             padding: 10px 40px 10px 20px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             display: flex; align-items: center; gap: 15px; z-index: 1000;
             font-family: Arial, sans-serif; transition: top 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
             border: 2px solid white;
         }
-        .achievement-banner.show { top: 20px; }
+        .achievement-banner.show { top: calc(20px + env(safe-area-inset-top)); }
         .ach-icon { font-size: 30px; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .ach-text h4 { margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
         .ach-text p { margin: 0; font-size: 12px; font-weight: bold; opacity: 0.9; }
@@ -543,11 +549,23 @@
         @media (max-width: 560px) {
             .hud-title { display: none; }
         }
+        /* Schmale Screens: Dock nutzt die volle Breite, damit es nicht 4-zeilig wird */
+        @media (max-width: 480px) {
+            .hud-dock {
+                max-width: calc(100vw - 6px);
+                gap: 4px; padding: 6px 6px; border-radius: 18px;
+            }
+            .dock-sep { margin: 0 1px; }
+        }
         @media (max-width: 400px) {
             .hud-btn { width: 38px; height: 38px; font-size: 19px; border-radius: 11px; }
             .hud-btn i { font-size: 18px; }
-            .hud-dock { gap: 5px; padding: 7px 9px; }
             .stat-pill { font-size: 12px; padding: 5px 10px; }
+        }
+        @media (max-width: 360px) {
+            .hud-btn { width: 34px; height: 34px; font-size: 17px; border-radius: 10px; }
+            .hud-btn i { font-size: 16px; }
+            .hud-dock { gap: 3px; padding: 5px 5px; }
         }
         /* Sehr niedrige Screens: Bühne etwas verkleinern, damit Dock nicht überlappt */
         @media (max-height: 560px) {
@@ -651,7 +669,7 @@
             transition: top 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
             opacity: 0;
         }
-        .ergo-reminder.show { top: 12px; opacity: 1; }
+        .ergo-reminder.show { top: calc(12px + env(safe-area-inset-top)); opacity: 1; }
         .ergo-reminder:hover { filter: brightness(1.05); }
 
         /* ============================================================
@@ -698,7 +716,13 @@
     <svg id="petFilters" width="0" height="0" style="position:absolute; pointer-events:none;" aria-hidden="true">
         <defs>
             <filter id="petDistort" x="-40%" y="-40%" width="180%" height="180%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
-                <feImage id="pdMap" result="pdmap" preserveAspectRatio="none" x="0" y="0" width="1" height="1"></feImage>
+                <!-- Neutrales Grau (R=G=128 => keine Verschiebung) fuellt die GANZE Filterflaeche.
+                     Ohne das ist alles ausserhalb der Bounding-Box transparent (R=G=0) und wird
+                     maximal negativ verschoben - dabei werden Emoji-Pixel nach aussen gezogen.
+                     Genau das erzeugte die Artefakte rund ums Emoji. -->
+                <feFlood flood-color="rgb(128,128,0)" flood-opacity="1" result="pdneutral"></feFlood>
+                <feImage id="pdMap" result="pdimg" preserveAspectRatio="none" x="0" y="0" width="1" height="1"></feImage>
+                <feComposite in="pdimg" in2="pdneutral" operator="over" result="pdmap"></feComposite>
                 <feTurbulence id="pdTurb" type="turbulence" baseFrequency="0.9 2.2" numOctaves="2" seed="1" result="pdturb"></feTurbulence>
                 <feDisplacementMap id="pdDisp" in="SourceGraphic" in2="pdmap" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
             </filter>
@@ -2044,11 +2068,27 @@
             playSound('select');
             let saved = safeGetItem('tama_save_v6');
             if(!saved) { alert("Kein aktiver Spielstand zum Sichern vorhanden!"); return; }
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(saved);
+            let name = `tamagotchi_backup_${(typeof pet !== 'undefined' && pet && pet.name) ? pet.name : 'spielstand'}.json`;
+            let blob = new Blob([saved], { type: 'application/json' });
+
+            // iOS/Safari ignoriert das download-Attribut (erst recht als Home-Screen-App).
+            // Dort fuehrt der Teilen-Dialog zum Ziel: "In Dateien sichern".
+            try {
+                let file = new File([blob], name, { type: 'application/json' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    // Kein await davor: Safari verlangt den Aufruf direkt aus der Nutzer-Geste.
+                    navigator.share({ files: [file], title: 'Pausentamagotchi Backup' })
+                        .catch(() => {}); // Abbruch durch den Nutzer ist kein Fehler
+                    return;
+                }
+            } catch (e) { /* kein File/Share -> normaler Download */ }
+
+            // Desktop & Android: Blob-URL statt data:-URI (zuverlaessiger, kein Groessenlimit)
+            let url = URL.createObjectURL(blob);
             let dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", `tamagotchi_backup_${pet.name}.json`);
+            dl.href = url; dl.download = name;
             document.body.appendChild(dl); dl.click(); dl.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
         }
 
         function triggerBackupImport() {
@@ -2780,7 +2820,7 @@
             if (!el) {
                 el = document.createElement('div');
                 el.id = 'lockHintToast';
-                el.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(30,30,30,0.92); color:white; padding:8px 18px; border-radius:20px; font-size:12px; z-index:1000; white-space:nowrap; pointer-events:none; transition:opacity 0.3s;';
+                el.style.cssText = 'position:fixed; bottom:calc(80px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); background:rgba(30,30,30,0.92); color:white; padding:8px 18px; border-radius:20px; font-size:12px; z-index:1000; white-space:nowrap; pointer-events:none; transition:opacity 0.3s;';
                 document.body.appendChild(el);
             }
             el.innerText = `🔒 ${name} – ab Pfleger-Level ${minLvl}`;
@@ -5672,6 +5712,19 @@
             }
         }
         init();
+
+        // --- Dauerhafter Speicher (Android/Chrome & Desktop) ---
+        // Ohne dies darf der Browser den localStorage bei Speicherdruck raeumen.
+        // Ist die App installiert, gewaehrt Chrome die Anfrage meist automatisch.
+        // Safari/iOS kennt die API nicht -> wird still uebersprungen.
+        async function requestPersistentStorage() {
+            try {
+                if (!navigator.storage || !navigator.storage.persist) return;
+                if (await navigator.storage.persisted()) return;
+                await navigator.storage.persist();
+            } catch (e) { /* nicht unterstuetzt - kein Problem */ }
+        }
+        requestPersistentStorage();
 
         // --- PWA: Service Worker fuer den Offline-Betrieb registrieren ---
         // Nur ueber http(s) moeglich; beim Oeffnen als lokale Datei still ignorieren.
