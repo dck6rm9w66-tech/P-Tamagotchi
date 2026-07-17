@@ -345,6 +345,27 @@
             cursor: default !important;
         }
         .feat-locked:hover { filter: grayscale(1) brightness(0.5) !important; transform: none !important; background: rgba(255,255,255,0.08) !important; }
+        /* Handbuch: Installations-Anleitung */
+        .install-state {
+            font-size: 11px; font-weight: bold; border-radius: 7px;
+            padding: 6px 8px; margin: 8px 0 10px; line-height: 1.35;
+        }
+        .install-state.ok   { background: #d7f5e3; color: #1e7a4d; border: 1px solid #a8e6c4; }
+        .install-state.warn { background: #ffeaa7; color: #8a5a00; border: 1px solid #f5cd79; }
+        .install-box {
+            background: #f4f7fb; border: 1px solid #dfe4ea; border-left: 3px solid #70a1ff;
+            border-radius: 8px; padding: 8px 10px; margin-bottom: 8px;
+        }
+        .install-head { font-size: 12.5px; font-weight: bold; color: #2c3e50; margin-bottom: 4px; }
+        .install-steps { font-size: 11.5px; margin: 0; padding-left: 18px; line-height: 1.55; color: #2f3542; }
+        .install-steps li { margin-bottom: 2px; }
+        .ib-icon { font-size: 10px; }
+        .install-note { font-size: 10px; color: #576574; margin-top: 5px; line-height: 1.35; }
+        .credit-line {
+            margin-top: 18px; padding-top: 10px; border-top: 1px solid #dfe4ea;
+            text-align: center; font-size: 11px; color: #a4b0be; letter-spacing: 0.5px;
+        }
+
         /* Spielstand-Modal: Sichern & Laden */
         .save-actions { display: flex; flex-direction: column; gap: 9px; }
         .save-action {
@@ -789,7 +810,7 @@
     <div class="hud-top">
         <div class="hud-cluster">
             <div class="hud-btn" onclick="toggleSound()" title="Ton an/aus"><i id="soundIcon" class="fa-solid fa-volume-high"></i></div>
-            <div class="hud-btn" onclick="openModal('infoModal')" title="Handbuch & Steuerung"><i class="fa-solid fa-circle-info"></i></div>
+            <div class="hud-btn" onclick="openInfoModal()" title="Handbuch & Steuerung"><i class="fa-solid fa-circle-info"></i></div>
             <div class="hud-btn" id="btn-save" onclick="openSaveModal()" title="Spielstand sichern & laden"><i class="fa-solid fa-floppy-disk"></i></div>
             <div class="hud-title">Pausen-Tamagotchi</div>
         </div>
@@ -906,6 +927,33 @@
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🕹️ Steuerung</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Steuerung über die Buttons A, B und C oder die <b>Tastatur</b>: ⬅️ (Links) für A, ⬇️ (Unten) für B und ➡️ (Rechts) für C.</p>
 
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">📲 Als App installieren (wichtig!)</h3>
+                <div id="installState" class="install-state"></div>
+                <p style="font-size: 12px; margin-bottom: 8px;">Dein Fortschritt liegt <b>ausschliesslich in diesem Browser</b> – es gibt keinen Server und kein Konto. Das ist gut für deine Daten, hat aber einen Haken: Browser räumen Website-Daten irgendwann auf. <b>Safari löscht sie sogar automatisch nach 7 Tagen ohne Besuch.</b></p>
+                <p style="font-size: 12px; margin-bottom: 10px;">Legst du die App auf den Home-Bildschirm, gilt das nicht mehr – dann bleibt dein Tamagotchi erhalten. Ausserdem startet sie im Vollbild und läuft komplett offline.</p>
+
+                <div class="install-box">
+                    <div class="install-head">🍎 iPhone &amp; iPad</div>
+                    <ol class="install-steps">
+                        <li>Diese Seite in <b>Safari</b> öffnen (Chrome kann es nicht).</li>
+                        <li>Unten auf <b>Teilen</b> tippen <span class="ib-icon">⬆️</span></li>
+                        <li><b>„Zum Home-Bildschirm"</b> wählen → <b>Hinzufügen</b></li>
+                    </ol>
+                    <div class="install-note">Home-Bildschirm-Apps sind von Safaris 7-Tage-Löschung <b>ausgenommen</b>.</div>
+                </div>
+
+                <div class="install-box">
+                    <div class="install-head">🤖 Android</div>
+                    <ol class="install-steps">
+                        <li>Diese Seite in <b>Chrome</b> öffnen.</li>
+                        <li>Menü <b>⋮</b> oben rechts antippen.</li>
+                        <li><b>„App installieren"</b> bzw. <b>„Zum Startbildschirm zufügen"</b> wählen.</li>
+                    </ol>
+                    <div class="install-note">Oft schlägt Chrome die Installation auch von selbst vor. Danach sichert Android den Spielstand <b>dauerhaft</b> gegen automatisches Aufräumen.</div>
+                </div>
+
+                <p style="font-size: 11px; color: #747d8c; margin-bottom: 10px;">Hinweis: Installieren geht nur, wenn du die App über eine Web-Adresse (https) geöffnet hast – nicht als lokale Datei. Und egal auf welchem Gerät: Sichere deinen Spielstand ab und zu über den <b><i class="fa-solid fa-floppy-disk"></i>-Knopf oben links</b>. Das ist die einzige Sicherung, die kein Browser löschen kann.</p>
+
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">💬 Antippen & zuhoeren</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Tippe dein Tamagotchi einfach mal an – es hat <b>über 120 Sprüche</b> auf Lager: mal albern, mal nachdenklich, mal weiss es verdächtig genau, dass es in einem Browser lebt. Es wiederholt sich erst, wenn du wirklich alle gehört hast. Beim Schlafen, nach der Abfahrt oder wenn es dich gerade ignoriert, schweigt es allerdings.</p>
 
@@ -959,6 +1007,8 @@
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #d63031; margin-top: 5px;">⚠️ Account zurücksetzen</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Löscht deinen Account, alle Medaillen, T-Coins, Inventar, Friedhof und Fortschritt permanent!</p>
                 <button onclick="fullAccountReset()" class="onboard-btn btn-red">Account komplett löschen</button>
+
+                <div class="credit-line">© Basti</div>
             </div>
         </div>
     </div>
@@ -2176,6 +2226,24 @@
             el.innerText = (old7 ? '⚠️ ' : '✓ ') + 'Zuletzt gesichert: ' + fmtSince(age);
         }
 
+        // Nur iOS/iPadOS braucht den Teilen-Umweg: dort ignoriert Safari das
+        // download-Attribut. iPadOS 13+ meldet sich als "Macintosh" und ist nur
+        // ueber die Touch-Punkte von einem echten Mac zu unterscheiden.
+        function isIOSLike() {
+            let ua = navigator.userAgent || '';
+            if (/iPad|iPhone|iPod/.test(ua)) return true;
+            return /Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1;
+        }
+
+        function downloadBlobFile(blob, name) {
+            let url = URL.createObjectURL(blob);
+            let dl = document.createElement('a');
+            dl.href = url; dl.download = name;
+            document.body.appendChild(dl); dl.click(); dl.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            markBackupDone();
+        }
+
         function exportBackup() {
             playSound('select');
             let saved = safeGetItem('tama_save_v6');
@@ -2183,26 +2251,27 @@
             let name = `tamagotchi_backup_${(typeof pet !== 'undefined' && pet && pet.name) ? pet.name : 'spielstand'}.json`;
             let blob = new Blob([saved], { type: 'application/json' });
 
-            // iOS/Safari ignoriert das download-Attribut (erst recht als Home-Screen-App).
-            // Dort fuehrt der Teilen-Dialog zum Ziel: "In Dateien sichern".
+            // Windows/Edge, macOS, Linux und Android koennen alle regulaer herunterladen.
+            // Wichtig: NICHT auf navigator.canShare pruefen - Edge unter Windows meldet
+            // dafuer true und wuerde den Teilen-Dialog statt des Downloads bekommen.
+            if (!isIOSLike()) { downloadBlobFile(blob, name); return; }
+
             try {
                 let file = new File([blob], name, { type: 'application/json' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     // Kein await davor: Safari verlangt den Aufruf direkt aus der Nutzer-Geste.
                     navigator.share({ files: [file], title: 'Pausentamagotchi Backup' })
-                        .then(() => markBackupDone())  // nur bei echtem Erfolg vermerken
-                        .catch(() => {});              // Abbruch durch den Nutzer ist kein Fehler
+                        .then(() => markBackupDone())   // nur bei echtem Erfolg vermerken
+                        .catch(err => {
+                            // Abbruch durch den Nutzer ist kein Fehler - alles andere
+                            // darf nicht still verschluckt werden, sondern faellt zurueck.
+                            if (!err || err.name !== 'AbortError') downloadBlobFile(blob, name);
+                        });
                     return;
                 }
-            } catch (e) { /* kein File/Share -> normaler Download */ }
+            } catch (e) { /* kein File/Share vorhanden -> Download */ }
 
-            // Desktop & Android: Blob-URL statt data:-URI (zuverlaessiger, kein Groessenlimit)
-            let url = URL.createObjectURL(blob);
-            let dl = document.createElement('a');
-            dl.href = url; dl.download = name;
-            document.body.appendChild(dl); dl.click(); dl.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 2000);
-            markBackupDone();
+            downloadBlobFile(blob, name);
         }
 
         function triggerBackupImport() {
@@ -3463,6 +3532,33 @@
 
 
         function openModal(id) { playSound('select'); document.getElementById(id).style.display = 'flex'; }
+
+        // Handbuch mit frischem Installations-Status oeffnen
+        function openInfoModal() { updateInstallHint(); openModal('infoModal'); }
+
+        // Zeigt an, ob die App schon als Home-Bildschirm-App laeuft. Sonst wuerde
+        // die Anleitung Leuten etwas raten, das sie laengst erledigt haben.
+        function isInstalledApp() {
+            try {
+                if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+            } catch (e) {}
+            return navigator.standalone === true; // iOS-Sonderweg
+        }
+
+        function updateInstallHint() {
+            let el = document.getElementById('installState');
+            if (!el) return;
+            if (isInstalledApp()) {
+                el.className = 'install-state ok';
+                el.innerText = '✓ Läuft bereits als installierte App – dein Fortschritt ist geschützt.';
+            } else if (!location.protocol.startsWith('http')) {
+                el.className = 'install-state warn';
+                el.innerText = '⚠️ Als lokale Datei geöffnet – installieren geht nur über eine https-Adresse.';
+            } else {
+                el.className = 'install-state warn';
+                el.innerText = '⚠️ Läuft im Browser-Tab – noch nicht installiert.';
+            }
+        }
         function closeModal(id) { playSound('cancel'); document.getElementById(id).style.display = 'none'; if (id === 'shopModal') stopCountdownUpdater(); }
         
         function openGraveyardModal() {
