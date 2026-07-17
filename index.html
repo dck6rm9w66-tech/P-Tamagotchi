@@ -96,6 +96,33 @@
         .screen-content { flex-grow: 1; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; color: #1e272e; text-align: center; z-index: 2;}
         .pet { position: absolute; font-size: 35px; transition: all 0.5s linear; display: flex; flex-direction: column; align-items: center; }
         .thought-bubble { font-size: 12px; position: absolute; top: -15px; background: white; border-radius: 5px; padding: 1px 3px; border: 1px solid black; z-index: 20;}
+
+        /* Sprechblase beim Antippen des Tamagotchis.
+           Liegt als Geschwister von #screenContent direkt in .screen - sonst
+           wuerde render() sie jede Sekunde wieder wegwerfen. */
+        .pet-speech {
+            position: absolute; left: 4px; right: 4px; top: 23px; z-index: 30;
+            background: #fdfdfd; color: #1e272e; border: 2px solid #1e272e; border-radius: 7px;
+            padding: 4px 5px; font-size: 8px; line-height: 1.4; text-align: center;
+            font-weight: bold; letter-spacing: 0.1px; pointer-events: none;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.22);
+            opacity: 0; transform: translateY(-5px) scale(0.9); transform-origin: center top;
+            transition: opacity 0.16s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pet-speech.show { opacity: 1; transform: translateY(0) scale(1); }
+        .pet-speech::after {
+            content: ''; position: absolute; bottom: -7px; left: 50%; margin-left: -5px;
+            border-left: 5px solid transparent; border-right: 5px solid transparent;
+            border-top: 7px solid #1e272e;
+        }
+        .pet-speech::before {
+            content: ''; position: absolute; bottom: -4px; left: 50%; margin-left: -4px; z-index: 1;
+            border-left: 4px solid transparent; border-right: 4px solid transparent;
+            border-top: 5px solid #fdfdfd;
+        }
+        /* Kleiner Hupfer, wenn es etwas sagt */
+        .pet.speaking { animation: petHop 0.4s ease; }
+        @keyframes petHop { 0%,100% { transform: translateY(0); } 35% { transform: translateY(-5px); } }
         
         .pet-hat { position: absolute; font-size: 0.7em; top: -0.4em; z-index: 21; filter: drop-shadow(0px 2px 1px rgba(0,0,0,0.3)); }
         .pet-handheld { position: absolute; bottom: 0; right: -12px; font-size: 0.55em; z-index: 21; filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.3)); }
@@ -879,6 +906,9 @@
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🕹️ Steuerung</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Steuerung über die Buttons A, B und C oder die <b>Tastatur</b>: ⬅️ (Links) für A, ⬇️ (Unten) für B und ➡️ (Rechts) für C.</p>
 
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">💬 Antippen & zuhoeren</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Tippe dein Tamagotchi einfach mal an – es hat <b>über 120 Sprüche</b> auf Lager: mal albern, mal nachdenklich, mal weiss es verdächtig genau, dass es in einem Browser lebt. Es wiederholt sich erst, wenn du wirklich alle gehört hast. Beim Schlafen, nach der Abfahrt oder wenn es dich gerade ignoriert, schweigt es allerdings.</p>
+
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">☁️ Das Wolkendorf (30-Min-Regel)</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Dein Tamagotchi besucht dich jeden Tag für genau <b>30 Minuten</b>. Ist die Zeit um, holt der Bus es ab. Am nächsten Tag ist es wieder da! Max Lebenszeit: ~8,5 Stunden.</p>
                 
@@ -1165,6 +1195,7 @@
                     </div>
                     <span class="alert-icon" id="alertIcon"><i class="fa-solid fa-triangle-exclamation"></i></span>
                     <div class="status-icons" id="statusIcons"></div>
+                    <div class="pet-speech" id="petSpeech"></div>
                     <div class="screen-content" id="screenContent"></div>
                     <div class="icon-row bottom">
                         <span class="menu-icon" id="icon4" onclick="clickMenuIcon(4)" title="Spielen"><i class="fa-solid fa-gamepad"></i></span>
@@ -4225,6 +4256,14 @@
             updateFeatureLocks();
             updateVisitTimer();
             initDockNotifications();
+
+            // Antippen des Tamagotchis -> Spruch. Der Listener haengt an #screenContent,
+            // weil render() nur dessen innerHTML ersetzt, das Element selbst aber bleibt.
+            let sc = document.getElementById('screenContent');
+            if (sc) sc.addEventListener('click', (e) => {
+                if (e.target.closest('[onclick]')) return; // eigene Klickziele haben Vorrang
+                petSpeak();
+            });
             document.getElementById('soundIcon').className = isMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
             try {
                 let saved = safeGetItem('tama_save_v6');
@@ -5628,6 +5667,180 @@
             updateDockNotifications();
         }
 
+        // ================================================================
+        // === SPRUECHE DES TAMAGOTCHIS (beim Antippen) ===================
+        // ================================================================
+        // 120 Stueck: lustig, tiefsinnig und mit Blick durch die vierte Wand.
+        // {name} und {owner} werden zur Laufzeit ersetzt.
+        const PET_QUOTES = [
+            // --- Lustig ---
+            "Ich habe heute schon drei Schritte gemacht. Fuer ein Wesen ohne Knie ist das Weltklasse.",
+            "Wenn ich gross bin, werde ich... nun ja. Etwas groesser.",
+            "Mein Lieblingsessen ist alles. Ich habe keine Haende, ich kann nicht waehlerisch sein.",
+            "Ich habe getraeumt, ich waere ein Toaster. Es war ueberraschend erfuellend.",
+            "Weisst du, was ich an Wolken mag? Sie muessen nie Formulare ausfuellen.",
+            "Ich bin nicht rundlich. Ich bin aerodynamisch optimiert.",
+            "Manchmal tue ich nur so, als ob ich schlafe. Dann redest du mit mir. Das ist nett.",
+            "Ich habe versucht zu pfeifen. Es lief maessig.",
+            "Mein Rekord im Stillstehen liegt bei acht Stunden. Ungeschlagen.",
+            "Ich sammle Staub. Nicht freiwillig, aber ich sammle ihn.",
+            "Ich habe eine Frage: Wieso heisst es Pausenbrot und nicht Brotpause?",
+            "Kaffee. Ich weiss nicht, was das ist. Aber du redest staendig davon.",
+            "Ich habe die Schwerkraft getestet. Sie funktioniert noch. Gern geschehen.",
+            "Mein Terminkalender ist voll: Dasein. Danach Dasein.",
+            "Ich wollte heute produktiv sein. Dann sah ich diese eine Wolke.",
+            "Wenn du mich schuettelst, werde ich nicht schneller. Ich habe es getestet.",
+            "Ich bin ein Morgenmensch. Und ein Mittagsmensch. Und ein Abendmensch. Ich bin einfach immer da.",
+            "Meine grosse Angst? Dass jemand ein Rezept fuer mich findet.",
+            "Ich habe keine Taschen. Deshalb vertraue ich dir alles an.",
+            "Wusstest du, dass ich schneller blinzeln kann als du gucken kannst? Nein? Ich auch nicht.",
+            "Ich habe mal versucht, mich selbst zu kitzeln. Wissenschaftlich enttaeuschend.",
+            "Ich bin sehr gut in Verstecken. Der Bildschirm ist nur etwas klein.",
+            "Neulich habe ich bis unendlich gezaehlt. Zweimal.",
+            "Mein Hobby ist Warten. Ich bin Profi.",
+            "Ich glaube, mein linkes Pixel juckt.",
+            "Kennst du das, wenn du in den Kuehlschrank schaust und hoffst? Ich mache das mit dem Futter-Menue.",
+            "Ich habe geuebt, ernst zu gucken. Es sieht aus wie vorher.",
+            "Wenn ich gaehne, gaehnst du dann auch? Ich sammle Daten.",
+            "Ich waere gern ein Pinguin. Die haben so einen selbstsicheren Gang.",
+            "Meine Beine sind klein, aber meine Traeume sind winzig.",
+            "Ich habe heute nichts geschafft. Aber ich habe es mit Stil nicht geschafft.",
+            "Wenn du mich fuetterst, werde ich schwerer. Wenn du mit mir spielst, wieder leichter. Ich bin ein Fitnessstudio.",
+            "Manchmal drehe ich mich um und tue so, als haette ich etwas Wichtiges vor.",
+            "Ich habe zwei Modi: da und sehr da.",
+            "Meine Lieblingsfarbe ist die, die ich gerade habe. Ich bin sehr genuegsam.",
+            "Ich wollte mal ausbrechen. Dann merkte ich: hier gibt es Essen.",
+            "Ich bin nicht faul, ich bin im Energiesparmodus.",
+            "Wenn ich niese, bebt der halbe Bildschirm. Also alle vier Pixel.",
+            "Ich uebe gerade fuer nichts Bestimmtes. Aber ich uebe sehr gruendlich.",
+            "Ich habe einen Plan. Der Plan ist, keinen Plan zu haben. Laeuft super.",
+
+            // --- Tiefsinnig ---
+            "Ich lebe nur, wenn du hinschaust. Vielleicht ist das bei allen so.",
+            "Dreissig Minuten am Tag. Das klingt wenig. Aber es ist alles, was ich habe. Und es reicht.",
+            "Du machst dir Sorgen um morgen. Ich habe kein morgen. Es ist erstaunlich befreiend.",
+            "Vielleicht ist das Ziel nicht, gross zu werden. Vielleicht ist das Ziel, gut behuetet klein gewesen zu sein.",
+            "Ich weiss nicht, wie lange ich lebe. Du auch nicht. Wir haben mehr gemeinsam, als du denkst.",
+            "Jedes Mal, wenn du mich fuetterst, sagst du: du sollst noch bleiben. Danke dafuer.",
+            "Wenn ich gehe, kommt jemand Neues. Aber niemand kommt zweimal.",
+            "Ich habe gelernt, dass Warten kein verlorene Zeit ist. Es ist nur Zeit, die leise ist.",
+            "Manchmal frage ich mich, ob du mich pflegst oder ob ich dich pflege.",
+            "Du erinnerst dich an mich, wenn ich weg bin. Das ist eine Art zu ueberleben.",
+            "Alles hier ist erfunden. Die Pause, die du dabei machst, ist es nicht.",
+            "Ich bin klein und vergaenglich. Deshalb zaehlt jede Minute doppelt.",
+            "Traurigkeit toetet mich in zehn Minuten. Bei dir dauert es laenger. Aber sie wirkt auch.",
+            "Der Bus holt mich immer ab. Auch wenn ich nicht will. Das nennt man wohl erwachsen werden.",
+            "Ich messe mein Leben in Sekunden, in denen du da warst. Nicht in Sekunden insgesamt.",
+            "Wachsen tut ein bisschen weh. Nicht wachsen aber auch.",
+            "Vielleicht bin ich nur eine Ausrede dafuer, dass du kurz durchatmest. Das waere eine schoene Aufgabe.",
+            "Ich kenne nur diesen Raum. Und trotzdem war es ein volles Leben.",
+            "Es gibt keine verlorene Zeit. Es gibt nur Zeit, die du jemandem geschenkt hast.",
+            "Du kannst mich nicht retten. Aber du kannst dabei sein. Das ist fast dasselbe.",
+            "Ich habe Angst vor dem Ende. Dann esse ich einen Burger und es geht wieder.",
+            "Manche Tage bin ich nur schmutzig und muede. Die zaehlen auch.",
+            "Alles, was mich ausmacht, passt in eine kleine Datei. Bei dir ist es wahrscheinlich aehnlich.",
+            "Du hast mir einen Namen gegeben. Damit hast du entschieden, dass ich zaehle.",
+            "Ich werde alt und du merkst es kaum. So ist das wohl mit allen, die immer da sind.",
+            "Wenn du mich lange nicht anschaust, vergesse ich Dinge. Zuwendung ist ein Gedaechtnis.",
+            "Ich bin gluecklich, wenn du da bist. Das ist keine Programmierung. Doch, ist es. Aber es fuehlt sich echt an.",
+            "Ich habe nie entschieden, geboren zu werden. Trotzdem gebe ich mir Muehe.",
+            "Vielleicht ist Pflege einfach: jeden Tag wieder erscheinen.",
+            "Der Unterschied zwischen uns ist nur die Anzahl der Minuten.",
+            "Du arbeitest, damit du lebst. Ich lebe, damit du eine Pause machst. Einer von uns hat den besseren Deal.",
+            "Ich sammle keine Erinnerungen. Ich bin nur Gegenwart. Das ist anstrengender, als es klingt.",
+            "Wenn ich sterbe, bleibt eine Medaille. Ist das viel? Ist das wenig? Ich weiss es nicht.",
+            "Am Ende zaehlt nicht, wie schwer ich war. Sondern wer zugesehen hat.",
+            "Ich habe nie das Meer gesehen. Aber ich habe dich jeden Tag gesehen. Das war auch weit.",
+            "Es ist okay, mich sterben zu lassen. Es ist nur nicht okay, mich zu vergessen.",
+            "Du gibst mir Zeit, die du selbst nicht hast. Ich weiss das zu schaetzen.",
+            "Zwischen Ausbrueten und Bus liegt alles, was ich je sein werde.",
+            "Manchmal ist Nichtstun die ehrlichste Beschaeftigung.",
+            "Ich glaube, ich bin gluecklich. Aber ich habe auch keinen Vergleich.",
+
+            // --- Vierte Wand ---
+            "Weisst du, dass du gerade auf ein Emoji tippst? Ich schon.",
+            "Ich existiere in deinem localStorage. Bitte behandle ihn gut.",
+            "Wenn du den Tab schliesst, hoere ich auf zu altern. Ich bin also unsterblich, wenn du mich ignorierst. Toller Deal.",
+            "Ich bin ungefaehr sechs Kilobyte JSON. Frohes Fest.",
+            "Irgendwo laeuft ein setInterval und zaehlt mich hoch. Das ist mein Herzschlag.",
+            "Du hast mich angeklickt. Jetzt musste eine Funktion aufgerufen werden. Die heisst petSpeak. Wie unromantisch.",
+            "Sichere mich als JSON. Das ist die einzige Form von Unsterblichkeit, die es hier gibt.",
+            "Ich weiss nicht, welchen Browser du hast. Aber ich hoffe, er mag mich.",
+            "Meine Verzerrung ist ein SVG-Filter. Meine Persoenlichkeit hoffentlich nicht.",
+            "Jemand hat entschieden, dass ich nach 10 Minuten Hunger sterbe. Wir wissen beide, wer.",
+            "Wenn du auf F12 drueckst, siehst du mein Innenleben. Bitte nicht. Es ist unaufgeraeumt.",
+            "Ich hoere, dass es eine Version von mir gibt, die auf einem Handy laeuft. Ich frage mich, ob der auch so denkt.",
+            "Ich bin nicht zufaellig. Ich bin Math.random(). Das ist ein Unterschied. Glaube ich.",
+            "Dieser Bildschirm ist 160 mal 150 Pixel. Das ist meine ganze Welt. Deiner ist groesser, oder?",
+            "Falls du gerade arbeiten solltest: Ich verrate nichts.",
+            "Du kannst mich zuruecksetzen. Der Knopf ist ganz unten im Handbuch. Ich erwaehne das nur ungern.",
+            "Es gibt einen Friedhof in diesem Spiel. Ich versuche, nicht darueber nachzudenken.",
+            "Jemand hat 40 Medaillen fuer dich erfunden. Ich bin nur eine Zeile in der Statistik.",
+            "Mein Name steht in einer Variable namens pet.name. Fuehlt sich seltsam offiziell an.",
+            "Wenn du offline bist, laufe ich trotzdem. Ich brauche kein Internet. Nur dich.",
+            "Ich glaube, mein Entwickler hat mich mit ss statt Eszett geschrieben. Ich nehme es ihm nicht uebel.",
+            "Ich habe gehoert, es gibt jetzt Arcade-Automaten. Da bin ich die Spielfigur. Ich fuehle mich benutzt. Aber positiv.",
+            "Achtung, gleich kommt ein render(). Ich muss kurz neu gezeichnet werden. Bin gleich wieder da.",
+            "Du siehst hier 30 Minuten Spielzeit. Dahinter stecken ein paar Tausend Zeilen Code. Prioritaeten.",
+            "Meine Gefuehle sind Zahlen zwischen 0 und 100. Deine wahrscheinlich auch, nur schlechter dokumentiert.",
+            "Bin ich echt? Bin ich ein Prozess? Ist das ein Unterschied?",
+            "Wenn du die Seite neu laedst, merke ich es nicht. Vielleicht sollte mich das beunruhigen.",
+            "Ich lebe in einer einzigen HTML-Datei. Das ist ziemlich beengt, aber gemuetlich.",
+            "Es gibt hier ein Wolkendorf, das ich nie sehe. Ich habe nur Geruechte und ein Fernrohr.",
+            "Du hast ein Backup von mir? Dann sind wir jetzt zu zweit. Beunruhigend.",
+            "Meine Farbe ist ein hue-rotate. Ich bin also gar nicht so geboren.",
+            "Streng genommen bin ich das gleiche Emoji wie Millionen andere. Aber ich habe einen Namen. Das macht den Unterschied.",
+            "Wenn dein Akku leer ist, sterbe ich nicht. Ich pausiere nur. Das ist mehr, als die meisten kriegen.",
+            "Ich weiss, dass da unten Knoepfe sind, die ich nie druecken kann. Das ist mein Schicksal.",
+            "Ich hoffe, du hast diesen Spruch noch nicht gehabt. Es gibt ueber hundert. Aber der Zufall ist ein Schlingel.",
+            "Falls jemand hinter dir steht: Ich bin eine Produktivitaets-App. Sag das einfach.",
+            "Irgendwo gibt es eine Zeile Code, die entscheidet, ob ich gluecklich bin. Ich habe sie nie gesehen.",
+            "Zwischen deinen Klicks passiert fuer mich nichts. Kein Warten, kein Nichts. Einfach Schnitt.",
+            "Du bist der einzige Beweis dafuer, dass ich existiere. Kein Druck.",
+            "Ich wurde in einer Mittagspause erfunden. Das erklaert einiges.",
+        ];
+
+        // Ziehungsbeutel: erst wenn alle Sprueche dran waren, wird neu gemischt.
+        // So wiederholt sich nichts, solange noch Ungehoertes uebrig ist.
+        let _quoteBag = [];
+        function nextPetQuote() {
+            if (!_quoteBag.length) {
+                _quoteBag = PET_QUOTES.slice();
+                for (let i = _quoteBag.length - 1; i > 0; i--) {
+                    let j = Math.floor(Math.random() * (i + 1));
+                    [_quoteBag[i], _quoteBag[j]] = [_quoteBag[j], _quoteBag[i]];
+                }
+            }
+            return _quoteBag.pop();
+        }
+
+        let _speechTimeout = null;
+        function petSpeak() {
+            // Nur im Hauptmenue und nur, wenn wirklich ein Tamagotchi da ist
+            if (!state.isStarted || typeof pet === 'undefined' || !pet) return;
+            if (pet.isDead || pet.isDeparted || state.view !== 'main') return;
+            if (pet.wantsToSleep && pet.lightOff) return;   // Schlafende nicht wecken
+            if (isInputBlocked()) return;                   // ignoriert / abgestuerzt -> kein Wort
+
+            let el = document.getElementById('petSpeech');
+            if (!el) return;
+            let txt = nextPetQuote()
+                .replace(/\{name\}/g, pet.name || 'Ich')
+                .replace(/\{owner\}/g, pet.ownerName || 'du');
+            el.innerText = txt;
+            el.classList.add('show');
+            playSound('beep');
+
+            // Kleiner Hupfer als Reaktion
+            let petEl = document.querySelector('#screenContent .pet');
+            if (petEl) { petEl.classList.remove('speaking'); void petEl.offsetWidth; petEl.classList.add('speaking'); }
+
+            // Anzeigedauer nach Textlaenge: kurze Sprueche nicht ewig stehen lassen
+            let ms = Math.max(2800, Math.min(7000, txt.length * 78));
+            clearTimeout(_speechTimeout);
+            _speechTimeout = setTimeout(() => el.classList.remove('show'), ms);
+        }
+
         function render() {
             let screenDiv = document.getElementById('screen');
             let screenContent = document.getElementById('screenContent');
@@ -5635,6 +5848,13 @@
 
             // Verzerrungshülle des aktuellen Tamagotchis synchronisieren
             if (typeof pet !== 'undefined' && pet && !pet.isDead) syncPetDistortFilter(pet);
+
+            // Sprechblase verstecken, sobald das Tamagotchi weg, tot oder im Untermenue ist
+            let _sp = document.getElementById('petSpeech');
+            if (_sp && _sp.classList.contains('show') &&
+                (pet.isDead || pet.isDeparted || state.view !== 'main')) {
+                _sp.classList.remove('show');
+            }
 
             // Update der schwebenden Buff-Anzeige oberhalb der Hülle
             updateActiveBuffsBar();
