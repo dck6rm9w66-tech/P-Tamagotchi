@@ -851,7 +851,7 @@
 
     <input type="file" id="arenaOpponentInput" accept=".json" style="display:none" onchange="handlePvPImport(event)">
     <input type="file" id="officeScoreInput" multiple accept=".json" style="display:none" onchange="handleOfficeScoresImport(event)">
-    <input type="file" id="backupFileInput" accept=".json" style="display:none" onchange="handleBackupImport(event)">
+    <input type="file" id="backupFileInput" accept=".json,application/json,text/plain" style="display:none" onchange="handleBackupImport(event)">
 
     <!-- Aktive Ergonomie-Erinnerung -->
     <div class="ergo-reminder" id="ergoReminder" onclick="openQuestsFromReminder()"></div>
@@ -1002,7 +1002,7 @@
                 <p style="font-size: 12px; margin-bottom: 10px;">Ab Pfleger-Level 17 schaltest du im Shop die Kategorie <b>Multiplikatoren</b> frei. Jede Effektart gibt es in <b>5 Stärkestufen</b> (Einstieg bis extrem): <b>💰 Coins</b> (×2 bis ×15), <b>🎫 Tickets</b> (×2 bis ×12), <b>🎓 XP</b> (×2 bis ×12), <b>🍀 Glück</b> (33% bis 100% Rettungs-Chance in Minispielen) und <b>💪 Kraft</b> (×1,5 bis ×6 in Bosskämpfen & PvP). Stärkere Booster wirken kürzer, aber heftiger. Elite-Pfleger (Level 30) erhalten zusätzlich den <b>🌈 Mega-/🌌 Omni-Booster</b>, der Coins, Tickets und XP gleichzeitig vervielfacht! Weil sie so wertvoll sind, kosten alle Multiplikatoren zusätzlich zu den T-Coins auch ein paar 🎫 Tickets. Aktive Booster erscheinen als Symbole über deinem Tamagotchi.</p>
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">💾 Spielstand sichern & laden</h3>
-                <p style="font-size: 12px; margin-bottom: 15px;">Dein Fortschritt liegt ausschliesslich auf diesem Gerät. Über den <b><i class="fa-solid fa-floppy-disk"></i>-Knopf oben links</b> sicherst du ihn jederzeit als Datei und stellst ihn wieder her.</p>
+                <p style="font-size: 12px; margin-bottom: 15px;">Über den <b><i class="fa-solid fa-floppy-disk"></i>-Knopf oben links</b> sicherst du deinen <b>kompletten</b> Fortschritt als Datei: Tamagotchi, Coins, Tickets, Pfleger-Level, Medaillen, Inventar, Wolkendorf, Arena, Arcade-Highscores und Friedhof. Genau damit ziehst du auch auf ein neues Gerät um – Datei sichern, dort laden, fertig. Der Import <b>ersetzt</b> den dortigen Spielstand komplett.</p>
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #d63031; margin-top: 5px;">⚠️ Account zurücksetzen</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Löscht deinen Account, alle Medaillen, T-Coins, Inventar, Friedhof und Fortschritt permanent!</p>
@@ -1019,21 +1019,22 @@
             <span class="modal-close" onclick="closeModal('saveModal')">&times;</span>
             <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-floppy-disk"></i> Spielstand</h2>
             <p style="font-size: 11px; color: #747d8c; margin: 0 0 14px;">
-                Dein Fortschritt liegt nur auf diesem Gerät. Sichere ihn ab und zu als Datei.
+                Sichert <b>alles</b>: Tamagotchi, Coins, Tickets, Level, Medaillen, Inventar,
+                Wolkendorf und Highscores. Damit ziehst du auch auf ein anderes Gerät um.
             </p>
             <div class="save-actions">
                 <button class="save-action" onclick="exportBackup()">
                     <i class="fa-solid fa-file-arrow-down"></i>
                     <span class="sa-text">
                         <span class="sa-title">Sichern</span>
-                        <span class="sa-sub">Als JSON-Datei speichern</span>
+                        <span class="sa-sub">Kompletten Fortschritt als Datei speichern</span>
                     </span>
                 </button>
                 <button class="save-action" onclick="triggerBackupImport()">
                     <i class="fa-solid fa-file-arrow-up"></i>
                     <span class="sa-text">
                         <span class="sa-title">Laden</span>
-                        <span class="sa-sub">Aus Datei wiederherstellen</span>
+                        <span class="sa-sub">Aus Datei wiederherstellen (ersetzt alles)</span>
                     </span>
                 </button>
             </div>
@@ -1276,6 +1277,7 @@
         let memoryStorage = {};
         function safeGetItem(key) { try { return localStorage.getItem(key); } catch(e) { return memoryStorage[key] || null; } }
         function safeSetItem(key, val) { try { localStorage.setItem(key, val); } catch(e) { memoryStorage[key] = val; } }
+        function safeRemoveItem(key) { try { localStorage.removeItem(key); } catch(e) {} delete memoryStorage[key]; }
 
         // --- ANTI-CHEAT HASH FUNKTION ---
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
@@ -2226,6 +2228,61 @@
             el.innerText = (old7 ? '⚠️ ' : '✓ ') + 'Zuletzt gesichert: ' + fmtSince(age);
         }
 
+        // ================================================================
+        // === BACKUP: SICHERN & LADEN ====================================
+        // ================================================================
+        // Gesichert wird der KOMPLETTE Fortschritt, nicht nur das Tamagotchi.
+        // Frueher enthielt die Datei ausschliesslich tama_save_v6 - auf einem
+        // anderen Geraet kam damit zwar die Kreatur an, aber Coins, Level,
+        // Medaillen, Wolkendorf und alles Uebrige blieben zurueck.
+        const BACKUP_KEYS = [
+            'tama_save_v6',                          // das Tamagotchi selbst
+            'tama_tcoins', 'tama_tickets',           // Waehrungen
+            'tama_acc_level', 'tama_acc_xp',         // Pfleger-Level
+            'tama_medals', 'tama_lifetime',          // Medaillen + Lebenswerk-Statistik
+            'tama_inventory', 'tama_buff_expiries',  // Inventar & Buffs
+            'tama_village', 'tama_arena', 'tama_legacy',
+            'tama_quests', 'tama_pokedex',
+            'tama_graveyard_v6', 'tama_leaderboard_v6',
+            'tama_arcade_hi', 'tama_pomodoro',
+            'tama_story_seen', 'tama_notif_seen',
+            'tama_muted', 'tama_last_backup'
+        ];
+        const BACKUP_FORMAT = 'pausentamagotchi-backup';
+
+        function buildBackup() {
+            let data = {};
+            BACKUP_KEYS.forEach(k => {
+                let v = safeGetItem(k);
+                if (v !== null && v !== undefined) data[k] = v;
+            });
+            return JSON.stringify({
+                format: BACKUP_FORMAT,
+                version: 2,
+                created: new Date().toISOString(),
+                petName: (typeof pet !== 'undefined' && pet && pet.name) ? pet.name : null,
+                data: data
+            }, null, 1);
+        }
+
+        // Liefert eine Erfolgsmeldung zurueck - oder null, wenn die Datei nichts taugt.
+        function applyBackup(parsed) {
+            // Neues Format: vollstaendiger Fortschritt -> sauber ersetzen
+            if (parsed && parsed.format === BACKUP_FORMAT && parsed.data) {
+                BACKUP_KEYS.forEach(k => {
+                    if (Object.prototype.hasOwnProperty.call(parsed.data, k)) safeSetItem(k, parsed.data[k]);
+                    else safeRemoveItem(k);   // nicht im Backup = gab es dort nicht
+                });
+                return `Kompletter Spielstand wiederhergestellt (${Object.keys(parsed.data).length} Bereiche).`;
+            }
+            // Altes Format (vor V2.16): die Datei war nur das Tamagotchi-Objekt
+            if (parsed && parsed.id && parsed.name) {
+                safeSetItem('tama_save_v6', JSON.stringify(parsed));
+                return 'Aelteres Backup erkannt - es enthaelt nur das Tamagotchi, nicht den restlichen Fortschritt.';
+            }
+            return null;
+        }
+
         // Nur iOS/iPadOS braucht den Teilen-Umweg: dort ignoriert Safari das
         // download-Attribut. iPadOS 13+ meldet sich als "Macintosh" und ist nur
         // ueber die Touch-Punkte von einem echten Mac zu unterscheiden.
@@ -2246,14 +2303,15 @@
 
         function exportBackup() {
             playSound('select');
-            let saved = safeGetItem('tama_save_v6');
-            if(!saved) { alert("Kein aktiver Spielstand zum Sichern vorhanden!"); return; }
-            let name = `tamagotchi_backup_${(typeof pet !== 'undefined' && pet && pet.name) ? pet.name : 'spielstand'}.json`;
-            let blob = new Blob([saved], { type: 'application/json' });
+            if (!safeGetItem('tama_save_v6')) { alert("Kein aktiver Spielstand zum Sichern vorhanden!"); return; }
+            let stamp = new Date().toISOString().slice(0, 10);
+            let who = (typeof pet !== 'undefined' && pet && pet.name) ? pet.name : 'spielstand';
+            let name = `pausentamagotchi_${who}_${stamp}.json`;
+            let blob = new Blob([buildBackup()], { type: 'application/json' });
 
             // Windows/Edge, macOS, Linux und Android koennen alle regulaer herunterladen.
             // Wichtig: NICHT auf navigator.canShare pruefen - Edge unter Windows meldet
-            // dafuer true und wuerde den Teilen-Dialog statt des Downloads bekommen.
+            // dafuer true und bekaeme den Teilen-Dialog statt des Downloads.
             if (!isIOSLike()) { downloadBlobFile(blob, name); return; }
 
             try {
@@ -2261,10 +2319,8 @@
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     // Kein await davor: Safari verlangt den Aufruf direkt aus der Nutzer-Geste.
                     navigator.share({ files: [file], title: 'Pausentamagotchi Backup' })
-                        .then(() => markBackupDone())   // nur bei echtem Erfolg vermerken
+                        .then(() => markBackupDone())
                         .catch(err => {
-                            // Abbruch durch den Nutzer ist kein Fehler - alles andere
-                            // darf nicht still verschluckt werden, sondern faellt zurueck.
                             if (!err || err.name !== 'AbortError') downloadBlobFile(blob, name);
                         });
                     return;
@@ -2280,25 +2336,31 @@
         }
 
         function handleBackupImport(event) {
-            const file = event.target.files[0];
+            const input = event.target;
+            const file = input.files[0];
             if(!file) return;
             let reader = new FileReader();
             reader.onload = function(e) {
+                let msg = null;
                 try {
-                    let parsed = JSON.parse(e.target.result);
-                    if(parsed.id && parsed.name) {
-                        safeSetItem('tama_save_v6', JSON.stringify(parsed));
-                        playSound('win');
-                        alert("Backup erfolgreich importiert! Spiel wird neu geladen...");
-                        location.reload();
-                    } else {
-                        alert("Ungültige Backup-Datei!");
-                        playSound('lose');
-                    }
+                    msg = applyBackup(JSON.parse(e.target.result));
                 } catch(err) {
-                    alert("Fehler beim Lesen der Datei!");
-                    playSound('lose');
+                    alert("Die Datei konnte nicht gelesen werden. Ist es wirklich ein Backup?");
+                    playSound('lose'); input.value = ''; return;
                 }
+                if (!msg) {
+                    alert("Ungültige Backup-Datei!");
+                    playSound('lose'); input.value = ''; return;
+                }
+                playSound('win');
+                // Zuruecksetzen, sonst laesst sich dieselbe Datei kein zweites Mal waehlen
+                input.value = '';
+                alert(msg + "\n\nDas Spiel wird jetzt neu geladen.");
+                location.reload();
+            };
+            reader.onerror = function() {
+                alert("Die Datei konnte nicht gelesen werden.");
+                playSound('lose'); input.value = '';
             };
             reader.readAsText(file);
         }

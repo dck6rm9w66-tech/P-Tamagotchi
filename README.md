@@ -56,7 +56,7 @@ Ab jetzt läuft alles offline. Du kannst im Flugmodus spielen.
 - in *Einstellungen → Safari* **„Verlauf und Websitedaten löschen"** wählst,
 - oder das iPhone extrem wenig freien Speicher hat (iOS räumt dann auf).
 
-**Deshalb: Nutze die eingebaute Sicherung.** Im Spiel unter *Handbuch → Backup exportieren* bekommst du eine JSON-Datei mit allem (Tamagotchi, Coins, Tickets, Medaillen, Wolkendorf, Level). Die kannst du jederzeit wieder importieren. Nach grösseren Fortschritten lohnt sich das.
+**Deshalb: Nutze die eingebaute Sicherung.** Über den 💾-Knopf oben links bekommst du eine JSON-Datei mit dem kompletten Fortschritt (Tamagotchi, Coins, Tickets, Level, Medaillen, Inventar, Wolkendorf, Arena, Arcade-Highscores, Friedhof). Die kannst du jederzeit wieder laden — auch auf einem anderen Gerät. Nach grösseren Fortschritten lohnt sich das.
 
 ---
 
