@@ -95,6 +95,24 @@
 
         .screen-content { flex-grow: 1; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; color: #1e272e; text-align: center; z-index: 2;}
         .pet { position: absolute; font-size: 35px; transition: all 0.5s linear; display: flex; flex-direction: column; align-items: center; }
+        /* Mystic 8-Ball */
+        .eightball { font-size: 42px; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+        .eight-shake { animation: eightShake 0.16s linear infinite; }
+        @keyframes eightShake {
+            0% { transform: translate(0,0) rotate(0deg); }
+            25% { transform: translate(-4px,2px) rotate(-9deg); }
+            50% { transform: translate(3px,-2px) rotate(7deg); }
+            75% { transform: translate(-2px,-3px) rotate(-5deg); }
+            100% { transform: translate(3px,2px) rotate(8deg); }
+        }
+        .eight-answer {
+            margin: 4px auto 0; max-width: 140px; background: #1e3799; color: #dfe9ff;
+            border: 2px solid #0c2461; border-radius: 8px; padding: 4px 6px;
+            font-size: 8.5px; line-height: 1.35; font-weight: bold;
+            animation: eightFade 0.5s ease;
+        }
+        @keyframes eightFade { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+
         .thought-bubble { font-size: 12px; position: absolute; top: -15px; background: white; border-radius: 5px; padding: 1px 3px; border: 1px solid black; z-index: 20;}
 
         /* Sprechblase beim Antippen des Tamagotchis.
@@ -366,6 +384,13 @@
             text-align: center; font-size: 11px; color: #a4b0be; letter-spacing: 0.5px;
         }
 
+        /* Medaillen-Rang-Badge (Backups & Arena) */
+        .rank-badge {
+            display: inline-block; padding: 3px 9px; border-radius: 999px;
+            border: 2px solid; font-size: 11px; font-weight: bold; letter-spacing: 0.2px;
+        }
+        .rank-badge.rank-none { border-color: #b2bec3; color: #747d8c; background: #f1f2f6; }
+
         /* Spielstand-Modal: Sichern & Laden */
         .save-actions { display: flex; flex-direction: column; gap: 9px; }
         .save-action {
@@ -499,7 +524,25 @@
         .shop-tab { flex: 1; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; color: #a4b0be; transition: 0.2s; }
         .shop-tab.active { color: #2c3e50; border-bottom: 3px solid #f1c40f; }
         .shop-grid { display: grid; grid-template-columns: 1fr; gap: 8px; text-align: left;}
-        .shop-cat-header { font-size: 12px; font-weight: bold; color: #2c3e50; margin-top: 10px; border-bottom: 2px solid #f1f2f6; padding-bottom: 3px; }
+        .shop-cat-header { font-size: 12px; font-weight: bold; color: #2c3e50; margin-top: 10px; border-bottom: 2px solid #f1f2f6; padding-bottom: 3px; scroll-margin-top: 46px; }
+
+        /* Kategorie-Schnellnavigation im Laden-Tab: klebt beim Scrollen oben */
+        .shop-cat-nav {
+            position: sticky; top: -5px; z-index: 6;
+            display: flex; gap: 4px; overflow-x: auto;
+            background: rgba(255,255,255,0.96); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+            padding: 6px 4px; margin: -5px -2px 4px; border-bottom: 1px solid #dfe4ea;
+            scrollbar-width: thin;
+        }
+        .shop-cat-chip {
+            flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px;
+            border: 1px solid #dfe4ea; background: #f8f9fb; font-size: 17px;
+            cursor: pointer; padding: 0; line-height: 1;
+            transition: transform 0.08s, background 0.15s;
+        }
+        .shop-cat-chip:hover { background: #eef3fb; }
+        .shop-cat-chip:active { transform: scale(0.9); }
+        .shop-cat-chip.locked { opacity: 0.55; font-size: 13px; }
         .shop-item { background: white; border: 1px solid #dfe4ea; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: space-between; }
         .shop-item-info { flex-grow: 1; padding-right: 10px; }
         .shop-item-title { font-weight: bold; font-size: 13px; color: #2c3e50; display: flex; align-items: center; gap: 5px;}
@@ -1018,6 +1061,7 @@
         <div class="modal-content" style="max-width: 330px;">
             <span class="modal-close" onclick="closeModal('saveModal')">&times;</span>
             <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-floppy-disk"></i> Spielstand</h2>
+            <div id="saveRank" style="margin-bottom: 8px;"></div>
             <p style="font-size: 11px; color: #747d8c; margin: 0 0 14px;">
                 Sichert <b>alles</b>: Tamagotchi, Coins, Tickets, Level, Medaillen, Inventar,
                 Wolkendorf und Highscores. Damit ziehst du auch auf ein anderes Gerät um.
@@ -1829,6 +1873,7 @@
             { id: 'hat_rainbow', cat: '🎩 Hüte & Accessoires', name: 'Hut der 1000 Farben', desc: 'Ein Luxuszylinder, der stetig seine Farbe wechselt.', price: 1200, ticketPrice: 6, type: 'hat', val: '🎩', fx: 'rainbow-fx' },
 
             // === 🎨 Lacke & Skins ===
+            { id: 'eightball', cat: '🎩 Hüte & Accessoires', name: 'Mystic 8-Ball 🎱', desc: 'Beantwortet dir jede Ja/Nein-Frage. Aus dem Inventar starten, Frage stellen, B drücken, schütteln lassen.', price: 400, ticketPrice: 3, type: 'toy' },
             { id: 'col_gold', cat: '🎨 Lacke & Skins', name: 'Lack: Pures Gold', desc: 'Macht das Gehäuse komplett Golden (Edler Verlauf).', price: 150, ticketPrice: 4, type: 'paint', valC: 'linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%)', valP: 0 },
             { id: 'col_dark', cat: '🎨 Lacke & Skins', name: 'Lack: Dark Mode', desc: 'Mattschwarzes, edles Gehäuse.', price: 150, type: 'paint', valC: '#2f3542', valP: 0 },
             { id: 'col_matrix', cat: '🎨 Lacke & Skins', name: 'Muster: Hacker', desc: 'Schwarz mit grünen Matrix-Linien.', price: 200, ticketPrice: 3, type: 'paint', valC: '#000000', valPC: 'rgba(0,255,0,0.5)', valP: 3 },
@@ -2040,16 +2085,32 @@
                 return;
             }
 
-            container.innerHTML = '<div class="shop-grid"></div>';
+            // Kategorie-Schnellnavigation (nur im Laden-Tab): ein Tipp springt zur
+            // Kategorie, statt auf dem Handy durch alles zu scrollen.
+            let navHtml = '';
+            if (tab === 'shop') {
+                let cats = [];
+                SHOP_ITEMS.forEach(it => {
+                    if (it.cat !== '🏆 Boss-Trophäen' && !cats.includes(it.cat)) cats.push(it.cat);
+                });
+                navHtml = '<div class="shop-cat-nav">' + cats.map((c, i) => {
+                    let locked = accountLevel < (SHOP_CATEGORY_MIN_LEVEL[c] || 1);
+                    let emoji = [...c][0];   // erstes Zeichen = Kategorie-Emoji
+                    return `<button class="shop-cat-chip ${locked ? 'locked' : ''}" title="${c}${locked ? ' (gesperrt)' : ''}" onclick="scrollToShopCat(${i})">${locked ? '🔒' : emoji}</button>`;
+                }).join('') + '</div>';
+            }
+            container.innerHTML = navHtml + '<div class="shop-grid"></div>';
             let grid = container.querySelector('.shop-grid');
 
             if (tab === 'shop') {
                 let lastCat = '';
                 let catLocked = false;
+                let catIndex = -1;
                 SHOP_ITEMS.forEach(item => {
                     if (item.cat === '🏆 Boss-Trophäen') return; // Nur als Arena-Loot erhältlich, nicht käuflich
                     if(item.cat !== lastCat) {
-                        grid.innerHTML += `<div class="shop-cat-header">${item.cat}</div>`;
+                        catIndex++;
+                        grid.innerHTML += `<div class="shop-cat-header" id="shopcat-${catIndex}">${item.cat}</div>`;
                         lastCat = item.cat;
                         let minLvl = SHOP_CATEGORY_MIN_LEVEL[item.cat] || 1;
                         catLocked = accountLevel < minLvl;
@@ -2068,7 +2129,7 @@
                     if (catLocked) return;
 
                     let isUnlocked = false;
-                    if (item.type === 'hat' || item.type === 'arcade' || item.type.startsWith('unlock')) {
+                    if (item.type === 'hat' || item.type === 'arcade' || item.type === 'toy' || item.type.startsWith('unlock')) {
                         isUnlocked = (inventory.items[item.id] > 0);
                     }
                     
@@ -2168,6 +2229,12 @@
             }
         }
 
+        function scrollToShopCat(i) {
+            playSound('beep');
+            let el = document.getElementById('shopcat-' + i);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         function buyItem(id) {
             let item = SHOP_ITEMS.find(i => i.id === id);
             let price = item.price;
@@ -2195,6 +2262,9 @@
         function openSaveModal() {
             playSound('select');
             updateSaveStatus();
+            // Eigener Medaillen-Rang - derselbe Badge, den andere beim Import/PvP sehen
+            let r = document.getElementById('saveRank');
+            if (r) r.innerHTML = medalRankBadgeHtml(dominantMedalTier(medalTiers), getUnlockedMedalCount());
             document.getElementById('saveModal').style.display = 'flex';
         }
 
@@ -2250,6 +2320,41 @@
         ];
         const BACKUP_FORMAT = 'pausentamagotchi-backup';
 
+        // --- Medaillen-Rang: welcher Stufe gehoert die Mehrheit der Medaillen an? ---
+        function medalTierCountsFrom(tiersObj) {
+            let counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            Object.values(tiersObj || {}).forEach(t => { if (counts[t] !== undefined) counts[t]++; });
+            return counts;
+        }
+        // Liefert 0 (keine Medaillen) oder 1-4. Bei Gleichstand zaehlt die hoehere Stufe.
+        function dominantMedalTier(tiersObj) {
+            let c = medalTierCountsFrom(tiersObj);
+            let best = 0, bestN = 0;
+            [1, 2, 3, 4].forEach(t => { if (c[t] >= bestN && c[t] > 0) { best = t; bestN = c[t]; } });
+            return best;
+        }
+        function medalRankBadgeHtml(tier, medalCount, small) {
+            if (!tier) return `<span class="rank-badge rank-none" style="${small?'font-size:9px;':''}">ohne Medaillen-Rang</span>`;
+            let t = MEDAL_TIERS[tier - 1];
+            return `<span class="rank-badge" style="background:${t.color}22; border-color:${t.color}; color:${t.text}; ${small?'font-size:9px;':''}" title="Überwiegend ${t.name}-Medaillen">${t.badge} ${t.name}-Rang${medalCount !== undefined ? ` · ${medalCount} 🏅` : ''}</span>`;
+        }
+
+        // Pruefsumme ueber den kompletten Inhalt (sortierte Schluessel + Salt).
+        // Ehrlicherweise: Das ist ein Manipulations-DETEKTOR, kein Schutz - der
+        // Code ist im Browser einsehbar, wer will, kann die Summe nachrechnen.
+        // Gegen versehentliche Beschaedigung und schnelles Editieren reicht es.
+        function backupChecksum(data) {
+            const salt = 'Pausentama_Backup_Sig_v3';
+            let str = salt;
+            Object.keys(data).sort().forEach(k => { str += '\u001f' + k + '=' + data[k]; });
+            let a = 0x811c9dc5;
+            for (let i = 0; i < str.length; i++) {
+                a ^= str.charCodeAt(i);
+                a = (a * 0x01000193) >>> 0;   // FNV-1a, 32 Bit
+            }
+            return a.toString(16).padStart(8, '0');
+        }
+
         function buildBackup() {
             let data = {};
             BACKUP_KEYS.forEach(k => {
@@ -2258,27 +2363,45 @@
             });
             return JSON.stringify({
                 format: BACKUP_FORMAT,
-                version: 2,
+                version: 3,
                 created: new Date().toISOString(),
                 petName: (typeof pet !== 'undefined' && pet && pet.name) ? pet.name : null,
+                medalRank: dominantMedalTier(medalTiers),
+                sig: backupChecksum(data),
                 data: data
             }, null, 1);
         }
 
-        // Liefert eine Erfolgsmeldung zurueck - oder null, wenn die Datei nichts taugt.
+        // Rueckgabe: { msg } bei Erfolg, { cancelled: true } bei Nutzer-Abbruch, null bei Muell.
         function applyBackup(parsed) {
             // Neues Format: vollstaendiger Fortschritt -> sauber ersetzen
             if (parsed && parsed.format === BACKUP_FORMAT && parsed.data) {
+                let note = '';
+                if (parsed.version >= 3) {
+                    if (parsed.sig !== backupChecksum(parsed.data)) {
+                        playSound('alarm');
+                        let ok = confirm('⚠️ WARNUNG: Die Prüfsumme stimmt nicht!\n\n' +
+                            'Dieses Backup wurde nach dem Sichern verändert oder ist beschädigt. ' +
+                            'Es könnte manipulierte Werte (Coins, Level, Medaillen ...) enthalten.\n\n' +
+                            'Trotzdem laden?');
+                        if (!ok) return { cancelled: true };
+                        note = '\n⚠️ Achtung: Prüfsumme ungültig - Inhalt möglicherweise manipuliert.';
+                    }
+                } else {
+                    note = '\nHinweis: Backup einer älteren Version (ohne Prüfsumme).';
+                }
                 BACKUP_KEYS.forEach(k => {
                     if (Object.prototype.hasOwnProperty.call(parsed.data, k)) safeSetItem(k, parsed.data[k]);
                     else safeRemoveItem(k);   // nicht im Backup = gab es dort nicht
                 });
-                return `Kompletter Spielstand wiederhergestellt (${Object.keys(parsed.data).length} Bereiche).`;
+                let rank = dominantMedalTier(JSON.parse(parsed.data.tama_medals || '{}'));
+                let rankTxt = rank ? ` Medaillen-Rang: ${MEDAL_TIERS[rank-1].badge} ${MEDAL_TIERS[rank-1].name}.` : '';
+                return { msg: `Kompletter Spielstand wiederhergestellt (${Object.keys(parsed.data).length} Bereiche).${rankTxt}${note}` };
             }
             // Altes Format (vor V2.16): die Datei war nur das Tamagotchi-Objekt
             if (parsed && parsed.id && parsed.name) {
                 safeSetItem('tama_save_v6', JSON.stringify(parsed));
-                return 'Aelteres Backup erkannt - es enthaelt nur das Tamagotchi, nicht den restlichen Fortschritt.';
+                return { msg: 'Aelteres Backup erkannt - es enthaelt nur das Tamagotchi, nicht den restlichen Fortschritt.' };
             }
             return null;
         }
@@ -2341,21 +2464,21 @@
             if(!file) return;
             let reader = new FileReader();
             reader.onload = function(e) {
-                let msg = null;
+                let res = null;
                 try {
-                    msg = applyBackup(JSON.parse(e.target.result));
+                    res = applyBackup(JSON.parse(e.target.result));
                 } catch(err) {
                     alert("Die Datei konnte nicht gelesen werden. Ist es wirklich ein Backup?");
                     playSound('lose'); input.value = ''; return;
                 }
-                if (!msg) {
+                input.value = '';   // sonst laesst sich dieselbe Datei kein zweites Mal waehlen
+                if (!res) {
                     alert("Ungültige Backup-Datei!");
-                    playSound('lose'); input.value = ''; return;
+                    playSound('lose'); return;
                 }
+                if (res.cancelled) { playSound('cancel'); return; }
                 playSound('win');
-                // Zuruecksetzen, sonst laesst sich dieselbe Datei kein zweites Mal waehlen
-                input.value = '';
-                alert(msg + "\n\nDas Spiel wird jetzt neu geladen.");
+                alert(res.msg + "\n\nDas Spiel wird jetzt neu geladen.");
                 location.reload();
             };
             reader.onerror = function() {
@@ -2367,7 +2490,11 @@
 
         function useItem(id) {
             let item = SHOP_ITEMS.find(i => i.id === id);
-            
+
+            if (item.type === 'toy' && id === 'eightball') {
+                startEightBall();
+                return;
+            }
             if (item.type === 'hat') {
                 inventory.equippedHat = (inventory.equippedHat === item.id) ? null : item.id;
                 playSound('select');
@@ -2682,7 +2809,7 @@
             { id: 2, icon: '🧸', title: 'Kindergarten', desc: 'Bringe Tamagotchis in die Kindheitsphase.', unit: 'Kinder', metric: p => liveHatched(p,2,'kid'), tiers: [1,3,10,25] },
             { id: 3, icon: '🛹', title: 'Pubertät', desc: 'Bringe Tamagotchis ins Teenager-Alter.', unit: 'Teenager', metric: p => liveHatched(p,3,'teen'), tiers: [1,3,10,25] },
             { id: 4, icon: '🎓', title: 'Erwachsen', desc: 'Bringe Tamagotchis ins Erwachsenenalter.', unit: 'Erwachsene', metric: p => liveHatched(p,4,'adult'), tiers: [1,3,8,20] },
-            { id: 5, icon: '🕰️', title: 'Überlebenskünstler', desc: 'Überlebte aktive Zeit eines Tamagotchis.', unit: 'Std.', fmt: 'hours', metric: p => bestStat(p,'bestActive','activeSeconds'), tiers: [10800,12600,14400,16200] },
+            { id: 5, icon: '🕰️', title: 'Überlebenskünstler', desc: 'Überlebte aktive Zeit eines Tamagotchis. Platin liegt jenseits der natürlichen Lebensspanne – ohne lebensverlängernde Shop-Items unerreichbar.', unit: 'Std.', fmt: 'hours', metric: p => bestStat(p,'bestActive','activeSeconds'), tiers: [10800,16200,23400,32400] },
             { id: 6, icon: '⏳', title: 'Marathon-Pfleger', desc: 'Überlebte aktive Zeit eines Tamagotchis.', unit: 'Std.', fmt: 'hours', metric: p => bestStat(p,'bestActive','activeSeconds'), tiers: [21600,25200,28800,32400] },
             { id: 7, icon: '🏆', title: 'Unsterblich', desc: 'Überlebte aktive Zeit eines Tamagotchis.', unit: 'Std.', fmt: 'hours', metric: p => bestStat(p,'bestActive','activeSeconds'), tiers: [43200,48600,54000,59400] },
             { id: 8, icon: '👻', title: 'Engelsgleich', desc: 'Begleite Tamagotchis bis an ihr natürliches Lebensende.', unit: 'Abschiede', metric: p => LT('oldAge') + ((p && p.isDead && p.causeOfDeath === 'Altersschwäche') ? 1 : 0), tiers: [1,2,4,8] },
@@ -3302,6 +3429,7 @@
                 <div style="background:linear-gradient(135deg,#2d3436,#636e72); border-radius:10px; padding:12px; margin-bottom:12px; text-align:center; color:white;">
                     <div style="font-size:28px; margin-bottom:4px;">⚔️</div>
                     <div style="font-size:13px; font-weight:bold;">Wolkendorf-Arena</div>
+                    <div style="margin-top:5px;">${medalRankBadgeHtml(dominantMedalTier(medalTiers), getUnlockedMedalCount(), true)}</div>
                     <div style="font-size:10px; opacity:0.7; margin-top:3px;">Kämpfe können je 1× pro Woche gestartet werden</div>
                 </div>
                 <div style="font-size:13px; font-weight:bold; color:#2d3436; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🤝 PvP — Tamagotchi-Duell</div>
@@ -3344,8 +3472,22 @@
             let reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    let enemy = JSON.parse(e.target.result);
+                    let parsed = JSON.parse(e.target.result);
+                    let enemy = null, enemyRank = 0;
+                    // Neues Backup-Format: Tamagotchi + Medaillen stecken in data
+                    if (parsed && parsed.format === BACKUP_FORMAT && parsed.data && parsed.data.tama_save_v6) {
+                        enemy = JSON.parse(parsed.data.tama_save_v6);
+                        try { enemyRank = dominantMedalTier(JSON.parse(parsed.data.tama_medals || '{}')); } catch(err2) {}
+                        // Manipulierte Gegner-Dateien direkt kenntlich machen
+                        if (parsed.version >= 3 && parsed.sig !== backupChecksum(parsed.data)) {
+                            alert('⚠️ Diese Gegner-Datei wurde nach dem Sichern verändert (Prüfsumme ungültig)!\nDer Kampf findet trotzdem statt - aber sag deinem Gegner, dass Schummeln auffällt.');
+                        }
+                    }
+                    // Altes Format: die Datei ist direkt das Tamagotchi
+                    else if (parsed && parsed.name) { enemy = parsed; }
+
                     if (!enemy || !enemy.name) { alert('Ungültige Gegner-Datei!'); return; }
+                    enemy._rankTier = enemyRank;
                     startPvPFight(enemy);
                 } catch(err) { alert('Datei konnte nicht gelesen werden.'); }
             };
@@ -3372,7 +3514,7 @@
             let myAnimal = speciesList[pet.speciesIndex] || '🐾';
             let enemyAnimal = speciesList[enemy.speciesIndex] || '🐾';
             arenaState.usedPvP = true; saveArenaState();
-            await showArenaAnimation('pvp', myAnimal, pet.name || 'Mein Tama', myPow, enemyAnimal, enemy.name || 'Gegner', enemyPow, myWin);
+            await showArenaAnimation('pvp', myAnimal, pet.name || 'Mein Tama', myPow, enemyAnimal, enemy.name || 'Gegner', enemyPow, myWin, dominantMedalTier(medalTiers), enemy._rankTier || 0);
             if (myWin) {
                 addCoins(400);
                 let gotT = addTickets(6);
@@ -3417,7 +3559,7 @@
             }
         }
 
-        function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName, enemyPow, myWin) {
+        function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName, enemyPow, myWin, myRank, enemyRank) {
             return new Promise(resolve => {
                 let overlay = document.getElementById('arenaOverlay');
                 let box = document.getElementById('arenaAnimBox');
@@ -3440,6 +3582,7 @@
                             <div style="text-align:center;">
                                 <div style="font-size:46px;filter:drop-shadow(0 0 8px rgba(255,200,0,0.5));">${myEmoji}</div>
                                 <div style="font-size:11px;font-weight:bold;color:#2d3436;margin-top:3px;">${myName}</div>
+                                ${mode==='pvp' ? `<div style="margin-top:2px;">${medalRankBadgeHtml(myRank||0, undefined, true)}</div>` : ''}
                                 <div style="width:76px;background:#dfe6e9;border-radius:4px;margin:3px auto 0;overflow:hidden;">${myBar}</div>
                                 <div style="font-size:10px;color:#e17055;">${myHp} HP</div>
                             </div>
@@ -3447,6 +3590,7 @@
                             <div style="text-align:center;">
                                 <div style="font-size:46px;filter:drop-shadow(0 0 8px rgba(150,0,255,0.4));">${enemyEmoji}</div>
                                 <div style="font-size:11px;font-weight:bold;color:#2d3436;margin-top:3px;">${enemyName}</div>
+                                ${mode==='pvp' ? `<div style="margin-top:2px;">${medalRankBadgeHtml(enemyRank||0, undefined, true)}</div>` : ''}
                                 <div style="width:76px;background:#dfe6e9;border-radius:4px;margin:3px auto 0;overflow:hidden;">${enBar}</div>
                                 <div style="font-size:10px;color:#6c5ce7;">${enemyHp} HP</div>
                             </div>
@@ -4766,6 +4910,7 @@
 
         function btnB() {
             if(!state.isStarted || pet.isDead || state.view === 'animating') return;
+            if(state.view === 'eightball') { shakeEightBall(); return; }
             playSound('select');
             
             // Durchblättern der Info-Screens
@@ -5826,6 +5971,47 @@
         }
 
         // ================================================================
+        // === MYSTIC 8-BALL ==============================================
+        // ================================================================
+        const EIGHTBALL_ANSWERS = [
+            // Ja (7)
+            'Ja. Ohne jeden Zweifel.', 'Die Zeichen stehen auf Ja.', 'Definitiv!',
+            'Verlass dich drauf.', 'Ja - und zwar bald.', 'Alles spricht dafür.',
+            'Meine Quellen sagen: Ja.',
+            // Nein (7)
+            'Nein. Tut mir leid.', 'Eher nicht.', 'Meine Antwort ist Nein.',
+            'Die Aussichten sind schlecht.', 'Daraus wird nichts.', 'Verlass dich nicht drauf.',
+            'Nein - aber frag in einer Woche nochmal.',
+            // Vage (6)
+            'Frag später noch einmal.', 'Kann ich jetzt nicht sagen.', 'Konzentriere dich und frag erneut.',
+            'Antwort unklar - schüttle nochmal.', 'Vielleicht. Vielleicht auch nicht.', 'Das weiss nur die Wolke.'
+        ];
+
+        function startEightBall() {
+            if (!state.isStarted || pet.isDead || pet.isDeparted || isInputBlocked()) { playSound('cancel'); return; }
+            playSound('select');
+            closeModal('shopModal');
+            state.view = 'eightball';
+            state.eightPhase = 'ask';       // ask -> shaking -> answer
+            state.eightAnswer = '';
+            render();
+        }
+
+        function shakeEightBall() {
+            if (state.eightPhase === 'shaking') return;
+            state.eightPhase = 'shaking';
+            playSound('gacha');
+            render();
+            setTimeout(() => {
+                if (state.view !== 'eightball') return;  // zwischenzeitlich verlassen
+                state.eightPhase = 'answer';
+                state.eightAnswer = EIGHTBALL_ANSWERS[Math.floor(Math.random() * EIGHTBALL_ANSWERS.length)];
+                playSound('sparkle');
+                render();
+            }, 1300);
+        }
+
+        // ================================================================
         // === SPRUECHE DES TAMAGOTCHIS (beim Antippen) ===================
         // ================================================================
         // 120 Stueck: lustig, tiefsinnig und mit Blick durch die vierte Wand.
@@ -6108,6 +6294,19 @@
 
             if(state.view === 'animating') {
                 screenContent.innerHTML = `<div style="font-size:20px; line-height: 1.5; ${pet.lightOff ? 'color:white; text-shadow:1px 1px 2px black;' : ''}">${state.animFrame}</div>`;
+            }
+            else if(state.view === 'eightball') {
+                if (state.eightPhase === 'shaking') {
+                    screenContent.innerHTML = `<div class="eightball eight-shake">🎱</div><div style="font-size:9px; margin-top:4px; opacity:0.8;">...</div>`;
+                } else if (state.eightPhase === 'answer') {
+                    screenContent.innerHTML = `<div class="eightball" style="font-size:26px;">🎱</div>
+                        <div class="eight-answer">${state.eightAnswer}</div>
+                        <div style="font-size:7px; margin-top:3px; opacity:0.65;">B = nochmal · C = zurück</div>`;
+                } else {
+                    screenContent.innerHTML = `<div class="eightball">🎱</div>
+                        <div style="font-size:10px; font-weight:bold; margin-top:4px;">Stelle deine Frage</div>
+                        <div style="font-size:7px; margin-top:3px; opacity:0.65;">...und drücke B zum Schütteln<br>C = zurück</div>`;
+                }
             }
             else if(state.view === 'main') {
                 if (pet.isDeparted) {
