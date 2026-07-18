@@ -4648,13 +4648,27 @@
             else { playSound('cancel'); }
         }
 
+        // Aktion: Das allererste Tamagotchi eines Spielers wird garantiert ein Einhorn -
+        // aber nur, wenn es im Aktionszeitraum (17. Juli bis Ende Juli 2026) schluepft.
+        // Danach - und fuer alle weiteren Tiere - bleibt es zufaellig.
+        const UNICORN_INDEX = 12; // 🦄 in speciesList
+        function pickFirstSpeciesIndex() {
+            let now = new Date();
+            let start = new Date(2026, 6, 17, 0, 0, 0);        // 17.07.2026 00:00 (Monat 6 = Juli)
+            let end   = new Date(2026, 6, 31, 23, 59, 59, 999); // 31.07.2026 23:59
+            let inWindow = now >= start && now <= end;
+            let isFirstEver = (LT('hatched') || 0) === 0;       // noch nie ein Ei geschluepft
+            if (inWindow && isFirstEver) return UNICORN_INDEX;
+            return Math.floor(Math.random() * speciesList.length);
+        }
+
         function resetPetState() {
             let minTime = 32400, maxTime = 54000; // Erhöht für längeres Erwachsenendasein
             let scale = Math.round((Math.random() < 0.5 ? (0.33 + Math.random() * 0.67) : (1.0 + Math.random() * 2.0)) * 100) / 100; 
 
             pet = {
                 id: generateId(),
-                name: "Tama", ownerName: "Spieler", stage: 0, speciesIndex: Math.floor(Math.random() * speciesList.length),
+                name: "Tama", ownerName: "Spieler", stage: 0, speciesIndex: pickFirstSpeciesIndex(),
                 activeSeconds: 0, maxLifetime: Math.round((Math.floor(Math.random() * (maxTime - minTime + 1)) + minTime) * (1 + getLegacyBonus('lifespan'))), 
                 dailyPlaytimeSeconds: 0, isDeparted: false, lastPlayedDate: new Date().toDateString(), bornDate: "-", deathDate: null,
                 causeOfDeath: "", starvingSeconds: 0, depressedSeconds: 0,
