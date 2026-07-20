@@ -32,6 +32,11 @@
             display: flex; align-items: center; justify-content: center;
             height: 100vh; background-color: #2c3e50; font-family: 'Courier New', Courier, monospace;
             margin: 0; user-select: none; overflow: hidden;
+            /* Doppeltipp-Zoom von Safari unterbinden (sonst ruckt das UI nach oben) */
+            touch-action: manipulation;
+            -webkit-user-select: none; -webkit-touch-callout: none;
+            position: fixed; width: 100%; height: 100%; top: 0; left: 0;
+            overscroll-behavior: none;
         }
 
         /* Zentrierte, skalierbare Bühne */
@@ -84,6 +89,7 @@
             display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;
             position: relative; margin-top: 15px; transform: translateZ(0); will-change: contents;
             transition: background-color 0.5s; overflow: hidden;
+                    touch-action: manipulation;
         }
 
         .icon-row { display: flex; justify-content: space-around; width: 100%; padding: 4px 0; z-index: 5; }
@@ -297,7 +303,7 @@
             background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.88);
             border: 1px solid rgba(255,255,255,0.14);
             transition: transform 0.15s ease, background 0.2s, color 0.2s;
-            -webkit-tap-highlight-color: transparent; user-select: none;
+            -webkit-tap-highlight-color: transparent; user-select: none; touch-action: manipulation;
         }
         .hud-btn i { font-size: 20px; }
         .hud-btn:hover { background: rgba(255,255,255,0.2); color: #fff; transform: translateY(-2px); }
@@ -3108,7 +3114,7 @@
             '🎨 Lacke & Skins':       4,   // Tiefergehende Individualisierung
             '🧪 Buffs & Substanzen': 19,   // Starke Buffs & riskante Substanzen - spaetes Spiel
             '🎟️ Events & Dating':   14,
-            '🕹️ Arcade-Automaten':    9,
+            '🕹️ Arcade-Automaten':    5,
             '✖️ Multiplikatoren':    17,
             '👿 Debuffs & Trolle':   21,
             '💳 Abos & Mikros':      25,
@@ -3119,8 +3125,9 @@
             { level: 2,  name: '💊 Shop-Kategorie: Apotheke & Heilung' },
             { level: 4,  name: '🎩 Shop-Kategorie: Hüte & Accessoires' },
             { level: 4,  name: '🎨 Shop-Kategorie: Lacke & Skins' },
+            { level: 5,  name: '🕹️ Shop-Kategorie: Arcade-Automaten' },
             { level: 5,  name: '🥚 Seltene Ei-Farbe: Sonnenuntergang' },
-            { level: 9,  name: '🕹️ Shop-Kategorie: Arcade-Automaten' },
+            { level: 9,  name: '🏆 Büro-Highscores' },
             { level: 10, name: '🥚 Seltene Ei-Farbe: Galaxie' },
             { level: 11, name: '🧪 Shop-Kategorie: Buffs & Substanzen' },
             { level: 12, name: '🔭 Endgame: Wolkendorf-Fernrohr & Vermächtnis' },
@@ -3159,7 +3166,7 @@
             { btnId: 'btn-graveyard',   minLevel: 3, icon: '💀', name: 'Ahnengalerie',
               desc: 'Alle deine vergangenen Tamagotchis ruhen hier. Ihre Leistungen, ihr Alter und ihre Geschichten bleiben für immer festgehalten.',
               onclick: "openGraveyardModal()", title: "Ahnengalerie / Friedhof" },
-            { btnId: 'btn-leaderboard', minLevel: 5, icon: '🏆', name: 'Büro-Highscores',
+            { btnId: 'btn-leaderboard', minLevel: 9, icon: '🏆', name: 'Büro-Highscores',
               desc: 'Vergleiche deine besten Tamagotchis mit denen deiner Kolleginnen und Kollegen im gemeinsamen Leaderboard – Spielstand-JSONs untereinander austauschen!',
               onclick: "openLeaderboardModal()", title: "Highscores" },
             { btnId: 'btn-village',     minLevel: 6, icon: '🏘️', name: 'Wolkendorf-Ausbau',
@@ -3171,7 +3178,7 @@
             { btnId: 'btn-endgame',     minLevel: 12, icon: '🔭', name: 'Wolkendorf-Fernrohr',
               desc: 'Das Endgame! Beobachte dein Tamagotchi im Wolkendorf und schicke ihm täglich bis zu 3 Geschenke. Jedes Geschenk hebt einen zufälligen Stat DAUERHAFT um 0,5% – für alle zukünftigen Tamagotchis.',
               onclick: "openEndgameModal()", title: "Wolkendorf-Fernrohr" },
-            { btnId: 'btn-arcade',      minLevel: 9, icon: '🕹️', name: 'Arcade-Automaten',
+            { btnId: 'btn-arcade',      minLevel: 5, icon: '🕹️', name: 'Arcade-Automaten',
               desc: 'Kaufe im Shop drei herausgezoomte 80er-Retro-Spiele (Space Invaders, Pong, Defender) und spiele sie mit deinem ganzen Ei als Spielfigur!',
               onclick: "openArcadeMenu()", title: "Arcade-Automaten" },
         ];
@@ -5500,7 +5507,7 @@
         }
 
         function openArcadeMenu() {
-            if (accountLevel < 9) { playSound('cancel'); return; }
+            if (accountLevel < 5) { playSound('cancel'); return; }
             playSound('select');
             arcade.ctx = getArcadeCtx();
             document.getElementById('arcadeOverlay').style.display = 'flex';
