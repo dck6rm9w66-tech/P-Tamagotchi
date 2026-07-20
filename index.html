@@ -3811,7 +3811,7 @@
             else {
                 gPet = {
                     name: "Bello (Bsp.)", ownerName: "Max", speciesIndex: 0, activeSeconds: 29000,
-                    causeOfDeath: "Altersschwäche", bornDate: "01.01.2024", deathDate: "01.01.2024",
+                    causeOfDeath: "Altersschwäche", bornDate: "14.06, 09:12", deathDate: "14.06, 17:41",
                     countFed: 42, countBathed: 5, countLoved: 12, countPlayed: 20, countDoctor: 1, countDiscipline: 3,
                     colorIndex: 1, patternIndex: 2, patternColorIndex: 0, patternScale: 1.0
                 };
@@ -3827,10 +3827,10 @@
                         ${miniShellHtml} 
                         <div><span style="font-size:15px; font-weight:bold;">${gPet.name}</span><br><span style="font-size:9px; color:#576574;">Pfleger: ${gPet.ownerName || 'Unbekannt'}</span></div>
                     </div>
-                    <b>Alter:</b> ${Math.floor(gPet.activeSeconds/1800)} Tage aktiv<br>
+                    <b>Erreichtes Alter:</b> ${Math.floor(gPet.activeSeconds/1800)} Lebenstage<br>
                     <b>Ursache:</b> ${gPet.causeOfDeath || 'Altersschwäche'}<br>
-                    <b>Geboren:</b> ${gPet.bornDate || '-'}<br>
-                    <b>Gestorben:</b> ${gPet.deathDate || '-'}<br><br>
+                    <b>Geschlüpft:</b> ${gPet.bornDate || '-'}<br>
+                    <b>Von uns gegangen:</b> ${gPet.deathDate || '-'}<br><br>
                     <b>Chronik:</b><br>
                     🍔: ${gPet.countFed||0}x | 🛁: ${gPet.countBathed||0}x | ❤️: ${gPet.countLoved||0}x<br>
                     🎮: ${gPet.countPlayed||0}x | 🩺: ${gPet.countDoctor||0}x | 💢: ${gPet.countDiscipline||0}x
@@ -4313,7 +4313,7 @@
                 let found = pokedex[i];
                 let lore = SPECIES_LORE[i];
                 html += `<div class="pokedex-entry ${found ? 'discovered' : ''}" onclick="showPokedexLore(${i})">
-                    <div style="font-size:26px; ${found ? '' : 'filter:grayscale(1) opacity(0.25);'}">${sp}</div>
+                    <div style="font-size:26px; ${found ? '' : 'color:#c8ccd4;'}">${found ? sp : '?'}</div>
                     <div style="font-size:9px; margin-top:3px; font-weight:bold; color:${found ? '#2f3542' : '#bbb'};">${found ? lore.name : '???'}</div>
                 </div>`;
             });
