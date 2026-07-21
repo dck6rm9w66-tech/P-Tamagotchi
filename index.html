@@ -486,7 +486,19 @@
         .pokedex-entry:hover { background: rgba(0,0,0,0.1); }
 
         /* === VILLAGE UPGRADES === */
+        /* Wolkendorf-Skyline */
+        #villageCity { margin-bottom: 10px; border-radius: 10px; overflow: hidden;
+            background: linear-gradient(#bfe3ff 0%, #e8f6ff 55%, #d7f0d8 55%, #c8ebc9 100%);
+            border: 1px solid #cfe0ea; }
+        #villageCity svg { display: block; width: 100%; height: auto; }
+        .vc-house { cursor: pointer; }
+        .vc-house:hover { opacity: 0.88; }
+        .vc-label { font: 9px Arial, sans-serif; fill: #2f3542; text-anchor: middle; font-weight: bold; }
+        .vc-lvl { font: 7px Arial, sans-serif; fill: #576574; text-anchor: middle; }
+
         .village-upgrade { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: rgba(0,0,0,0.04); border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #dfe6e9; }
+        .village-upgrade.vflash { animation: vflash 0.9s ease; }
+        @keyframes vflash { 0%,100% { box-shadow: 0 0 0 rgba(29,209,161,0); } 40% { box-shadow: 0 0 0 3px rgba(29,209,161,0.6); } }
         .village-upgrade.owned { background: rgba(29,209,161,0.08); border-left-color: #1dd1a1; }
 
         /* Modals */
@@ -1237,7 +1249,8 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('villageModal')">&times;</span>
             <h2>🏘️ Wolkendorf-Ausbau</h2>
-            <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:12px;">Investiere 🎫 Tickets in mehrstufige Gebäude für dauerhafte Vorteile aller zukünftigen Tamagotchis!</p>
+            <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:8px;">Investiere 🎫 Tickets in mehrstufige Gebäude – dein Wolkendorf wächst mit jeder Stufe sichtbar mit!</p>
+            <div id="villageCity"></div>
             <div class="scroll-container" id="villageContent"></div>
         </div>
     </div>
@@ -4340,54 +4353,144 @@
         // Die Effekte gelten dauerhaft für alle aktuellen und zukünftigen Tamagotchis.
         const VILLAGE_BUILDINGS = [
             { id: 'clinic', icon: '🏥', name: 'Klinik', desc: 'Tamagotchis werden seltener krank.', tiers: [
-                { price: 8,  value: 0.06, effectLabel: '-6% Krankheitswahrscheinlichkeit' },
-                { price: 16, value: 0.13, effectLabel: '-13% Krankheitswahrscheinlichkeit' },
-                { price: 28, value: 0.20, effectLabel: '-20% Krankheitswahrscheinlichkeit (Max.)' }
+                { price: 6, value: 0.0167, effectLabel: '-2% Krankheitswahrscheinlichkeit' },
+                { price: 9, value: 0.0333, effectLabel: '-3% Krankheitswahrscheinlichkeit' },
+                { price: 12, value: 0.05, effectLabel: '-5% Krankheitswahrscheinlichkeit' },
+                { price: 15, value: 0.0667, effectLabel: '-7% Krankheitswahrscheinlichkeit' },
+                { price: 18, value: 0.0833, effectLabel: '-8% Krankheitswahrscheinlichkeit' },
+                { price: 21, value: 0.1, effectLabel: '-10% Krankheitswahrscheinlichkeit' },
+                { price: 24, value: 0.1167, effectLabel: '-12% Krankheitswahrscheinlichkeit' },
+                { price: 27, value: 0.1333, effectLabel: '-13% Krankheitswahrscheinlichkeit' },
+                { price: 30, value: 0.15, effectLabel: '-15% Krankheitswahrscheinlichkeit' },
+                { price: 33, value: 0.1667, effectLabel: '-17% Krankheitswahrscheinlichkeit' },
+                { price: 36, value: 0.1833, effectLabel: '-18% Krankheitswahrscheinlichkeit' },
+                { price: 39, value: 0.2, effectLabel: '-20% Krankheitswahrscheinlichkeit (Max.)' }
             ]},
             { id: 'library', icon: '📚', name: 'Bibliothek', desc: 'Jedes neue Ei startet mit mehr Intelligenz.', tiers: [
-                { price: 8,  value: 1, effectLabel: '+1 Start-IQ' },
-                { price: 16, value: 2, effectLabel: '+2 Start-IQ' },
-                { price: 28, value: 3, effectLabel: '+3 Start-IQ (Max.)' }
+                { price: 6, value: 0.25, effectLabel: '+0.25 Start-IQ' },
+                { price: 9, value: 0.5, effectLabel: '+0.5 Start-IQ' },
+                { price: 12, value: 0.75, effectLabel: '+0.75 Start-IQ' },
+                { price: 15, value: 1, effectLabel: '+1 Start-IQ' },
+                { price: 18, value: 1.25, effectLabel: '+1.25 Start-IQ' },
+                { price: 21, value: 1.5, effectLabel: '+1.5 Start-IQ' },
+                { price: 24, value: 1.75, effectLabel: '+1.75 Start-IQ' },
+                { price: 27, value: 2, effectLabel: '+2 Start-IQ' },
+                { price: 30, value: 2.25, effectLabel: '+2.25 Start-IQ' },
+                { price: 33, value: 2.5, effectLabel: '+2.5 Start-IQ' },
+                { price: 36, value: 2.75, effectLabel: '+2.75 Start-IQ' },
+                { price: 39, value: 3, effectLabel: '+3 Start-IQ (Max.)' }
             ]},
             { id: 'cafeteria', icon: '☕', name: 'Kantine', desc: 'Der Hunger sinkt langsamer.', tiers: [
-                { price: 8,  value: 15, effectLabel: '-8% Hunger-Drain' },
-                { price: 16, value: 30, effectLabel: '-17% Hunger-Drain' },
-                { price: 28, value: 45, effectLabel: '-25% Hunger-Drain (Max.)' }
+                { price: 6, value: 3.75, effectLabel: '-2% Hunger-Drain' },
+                { price: 9, value: 7.5, effectLabel: '-4% Hunger-Drain' },
+                { price: 12, value: 11.25, effectLabel: '-6% Hunger-Drain' },
+                { price: 15, value: 15, effectLabel: '-8% Hunger-Drain' },
+                { price: 18, value: 18.75, effectLabel: '-10% Hunger-Drain' },
+                { price: 21, value: 22.5, effectLabel: '-12% Hunger-Drain' },
+                { price: 24, value: 26.25, effectLabel: '-15% Hunger-Drain' },
+                { price: 27, value: 30, effectLabel: '-17% Hunger-Drain' },
+                { price: 30, value: 33.75, effectLabel: '-19% Hunger-Drain' },
+                { price: 33, value: 37.5, effectLabel: '-21% Hunger-Drain' },
+                { price: 36, value: 41.25, effectLabel: '-23% Hunger-Drain' },
+                { price: 39, value: 45, effectLabel: '-25% Hunger-Drain (Max.)' }
             ]},
             { id: 'gym', icon: '💪', name: 'Fitnessstudio', desc: 'Weniger Gewichtszunahme beim Füttern.', tiers: [
-                { price: 8,  value: 0.20, effectLabel: '-20% Gewichtszunahme' },
-                { price: 16, value: 0.35, effectLabel: '-35% Gewichtszunahme' },
-                { price: 28, value: 0.50, effectLabel: '-50% Gewichtszunahme (Max.)' }
+                { price: 6, value: 0.0417, effectLabel: '-4% Gewichtszunahme' },
+                { price: 9, value: 0.0833, effectLabel: '-8% Gewichtszunahme' },
+                { price: 12, value: 0.125, effectLabel: '-12% Gewichtszunahme' },
+                { price: 15, value: 0.1667, effectLabel: '-17% Gewichtszunahme' },
+                { price: 18, value: 0.2083, effectLabel: '-21% Gewichtszunahme' },
+                { price: 21, value: 0.25, effectLabel: '-25% Gewichtszunahme' },
+                { price: 24, value: 0.2917, effectLabel: '-29% Gewichtszunahme' },
+                { price: 27, value: 0.3333, effectLabel: '-33% Gewichtszunahme' },
+                { price: 30, value: 0.375, effectLabel: '-38% Gewichtszunahme' },
+                { price: 33, value: 0.4167, effectLabel: '-42% Gewichtszunahme' },
+                { price: 36, value: 0.4583, effectLabel: '-46% Gewichtszunahme' },
+                { price: 39, value: 0.5, effectLabel: '-50% Gewichtszunahme (Max.)' }
             ]},
             { id: 'playground', icon: '🎡', name: 'Spielplatz', desc: 'Minispiele machen mehr Laune.', tiers: [
-                { price: 10, value: 1, effectLabel: '+1 Bonus-Laune pro Spiel' },
-                { price: 20, value: 2, effectLabel: '+2 Bonus-Laune pro Spiel' },
-                { price: 35, value: 3, effectLabel: '+3 Bonus-Laune pro Spiel (Max.)' }
+                { price: 8, value: 0.25, effectLabel: '+0.25 Bonus-Laune pro Spiel' },
+                { price: 11, value: 0.5, effectLabel: '+0.5 Bonus-Laune pro Spiel' },
+                { price: 14, value: 0.75, effectLabel: '+0.75 Bonus-Laune pro Spiel' },
+                { price: 17, value: 1, effectLabel: '+1 Bonus-Laune pro Spiel' },
+                { price: 20, value: 1.25, effectLabel: '+1.25 Bonus-Laune pro Spiel' },
+                { price: 23, value: 1.5, effectLabel: '+1.5 Bonus-Laune pro Spiel' },
+                { price: 26, value: 1.75, effectLabel: '+1.75 Bonus-Laune pro Spiel' },
+                { price: 29, value: 2, effectLabel: '+2 Bonus-Laune pro Spiel' },
+                { price: 32, value: 2.25, effectLabel: '+2.25 Bonus-Laune pro Spiel' },
+                { price: 35, value: 2.5, effectLabel: '+2.5 Bonus-Laune pro Spiel' },
+                { price: 38, value: 2.75, effectLabel: '+2.75 Bonus-Laune pro Spiel' },
+                { price: 41, value: 3, effectLabel: '+3 Bonus-Laune pro Spiel (Max.)' }
             ]},
             { id: 'bakery', icon: '🥐', name: 'Bäckerei', desc: 'Mahlzeiten sättigen stärker.', tiers: [
-                { price: 10, value: 2, effectLabel: '+2 Bonus-Hunger pro Mahlzeit' },
-                { price: 20, value: 5, effectLabel: '+5 Bonus-Hunger pro Mahlzeit' },
-                { price: 35, value: 8, effectLabel: '+8 Bonus-Hunger pro Mahlzeit (Max.)' }
+                { price: 8, value: 0.6667, effectLabel: '+0.7 Bonus-Hunger pro Mahlzeit' },
+                { price: 11, value: 1.3333, effectLabel: '+1.3 Bonus-Hunger pro Mahlzeit' },
+                { price: 14, value: 2, effectLabel: '+2 Bonus-Hunger pro Mahlzeit' },
+                { price: 17, value: 2.6667, effectLabel: '+2.7 Bonus-Hunger pro Mahlzeit' },
+                { price: 20, value: 3.3333, effectLabel: '+3.3 Bonus-Hunger pro Mahlzeit' },
+                { price: 23, value: 4, effectLabel: '+4 Bonus-Hunger pro Mahlzeit' },
+                { price: 26, value: 4.6667, effectLabel: '+4.7 Bonus-Hunger pro Mahlzeit' },
+                { price: 29, value: 5.3333, effectLabel: '+5.3 Bonus-Hunger pro Mahlzeit' },
+                { price: 32, value: 6, effectLabel: '+6 Bonus-Hunger pro Mahlzeit' },
+                { price: 35, value: 6.6667, effectLabel: '+6.7 Bonus-Hunger pro Mahlzeit' },
+                { price: 38, value: 7.3333, effectLabel: '+7.3 Bonus-Hunger pro Mahlzeit' },
+                { price: 41, value: 8, effectLabel: '+8 Bonus-Hunger pro Mahlzeit (Max.)' }
             ]},
             { id: 'spa', icon: '🛀', name: 'Therme', desc: 'Dein Tamagotchi wird seltener schmutzig.', tiers: [
-                { price: 10, value: 0.045, effectLabel: '-15% Schmutz-Chance' },
-                { price: 20, value: 0.09,  effectLabel: '-30% Schmutz-Chance' },
-                { price: 35, value: 0.15,  effectLabel: '-50% Schmutz-Chance (Max.)' }
+                { price: 8, value: 0.0125, effectLabel: '-4% Schmutz-Chance' },
+                { price: 11, value: 0.025, effectLabel: '-8% Schmutz-Chance' },
+                { price: 14, value: 0.0375, effectLabel: '-12% Schmutz-Chance' },
+                { price: 17, value: 0.05, effectLabel: '-17% Schmutz-Chance' },
+                { price: 20, value: 0.0625, effectLabel: '-21% Schmutz-Chance' },
+                { price: 23, value: 0.075, effectLabel: '-25% Schmutz-Chance' },
+                { price: 26, value: 0.0875, effectLabel: '-29% Schmutz-Chance' },
+                { price: 29, value: 0.1, effectLabel: '-33% Schmutz-Chance' },
+                { price: 32, value: 0.1125, effectLabel: '-38% Schmutz-Chance' },
+                { price: 35, value: 0.125, effectLabel: '-42% Schmutz-Chance' },
+                { price: 38, value: 0.1375, effectLabel: '-46% Schmutz-Chance' },
+                { price: 41, value: 0.15, effectLabel: '-50% Schmutz-Chance (Max.)' }
             ]},
             { id: 'observatory', icon: '🔭', name: 'Sternwarte', desc: 'Du sammelst schneller Pfleger-XP.', tiers: [
-                { price: 12, value: 0.10, effectLabel: '+10% Pfleger-XP' },
-                { price: 24, value: 0.20, effectLabel: '+20% Pfleger-XP' },
-                { price: 40, value: 0.35, effectLabel: '+35% Pfleger-XP (Max.)' }
+                { price: 10, value: 0.0292, effectLabel: '+3% Pfleger-XP' },
+                { price: 14, value: 0.0583, effectLabel: '+6% Pfleger-XP' },
+                { price: 18, value: 0.0875, effectLabel: '+9% Pfleger-XP' },
+                { price: 22, value: 0.1167, effectLabel: '+12% Pfleger-XP' },
+                { price: 26, value: 0.1458, effectLabel: '+15% Pfleger-XP' },
+                { price: 30, value: 0.175, effectLabel: '+18% Pfleger-XP' },
+                { price: 34, value: 0.2042, effectLabel: '+20% Pfleger-XP' },
+                { price: 38, value: 0.2333, effectLabel: '+23% Pfleger-XP' },
+                { price: 42, value: 0.2625, effectLabel: '+26% Pfleger-XP' },
+                { price: 46, value: 0.2917, effectLabel: '+29% Pfleger-XP' },
+                { price: 50, value: 0.3208, effectLabel: '+32% Pfleger-XP' },
+                { price: 54, value: 0.35, effectLabel: '+35% Pfleger-XP (Max.)' }
             ]},
-            { id: 'mint', icon: '🏭', name: 'Münzprägerei', desc: 'Du verdienst mehr T-Coins.', tiers: [
-                { price: 12, value: 0.10, effectLabel: '+10% T-Coins' },
-                { price: 24, value: 0.20, effectLabel: '+20% T-Coins' },
-                { price: 40, value: 0.35, effectLabel: '+35% T-Coins (Max.)' }
+            { id: 'mint', icon: '🪙', name: 'Münzprägerei', desc: 'Du erhältst mehr T-Coins.', tiers: [
+                { price: 10, value: 0.0292, effectLabel: '+3% T-Coins' },
+                { price: 14, value: 0.0583, effectLabel: '+6% T-Coins' },
+                { price: 18, value: 0.0875, effectLabel: '+9% T-Coins' },
+                { price: 22, value: 0.1167, effectLabel: '+12% T-Coins' },
+                { price: 26, value: 0.1458, effectLabel: '+15% T-Coins' },
+                { price: 30, value: 0.175, effectLabel: '+18% T-Coins' },
+                { price: 34, value: 0.2042, effectLabel: '+20% T-Coins' },
+                { price: 38, value: 0.2333, effectLabel: '+23% T-Coins' },
+                { price: 42, value: 0.2625, effectLabel: '+26% T-Coins' },
+                { price: 46, value: 0.2917, effectLabel: '+29% T-Coins' },
+                { price: 50, value: 0.3208, effectLabel: '+32% T-Coins' },
+                { price: 54, value: 0.35, effectLabel: '+35% T-Coins (Max.)' }
             ]},
             { id: 'watchtower', icon: '🗼', name: 'Wachturm', desc: 'Dein Tamagotchi ist seltener unartig.', tiers: [
-                { price: 10, value: 0.0225, effectLabel: '-15% Unartig-Chance' },
-                { price: 20, value: 0.045,  effectLabel: '-30% Unartig-Chance' },
-                { price: 35, value: 0.075,  effectLabel: '-50% Unartig-Chance (Max.)' }
+                { price: 8, value: 0.0062, effectLabel: '-4% Unartig-Chance' },
+                { price: 11, value: 0.0125, effectLabel: '-8% Unartig-Chance' },
+                { price: 14, value: 0.0187, effectLabel: '-12% Unartig-Chance' },
+                { price: 17, value: 0.025, effectLabel: '-17% Unartig-Chance' },
+                { price: 20, value: 0.0312, effectLabel: '-21% Unartig-Chance' },
+                { price: 23, value: 0.0375, effectLabel: '-25% Unartig-Chance' },
+                { price: 26, value: 0.0438, effectLabel: '-29% Unartig-Chance' },
+                { price: 29, value: 0.05, effectLabel: '-33% Unartig-Chance' },
+                { price: 32, value: 0.0562, effectLabel: '-37% Unartig-Chance' },
+                { price: 35, value: 0.0625, effectLabel: '-42% Unartig-Chance' },
+                { price: 38, value: 0.0687, effectLabel: '-46% Unartig-Chance' },
+                { price: 41, value: 0.075, effectLabel: '-50% Unartig-Chance (Max.)' }
             ]}
         ];
 
@@ -4402,6 +4505,92 @@
             let b = VILLAGE_BUILDINGS.find(x => x.id === id);
             if (!b || !b.tiers[lvl - 1]) return 0;
             return b.tiers[lvl - 1].value;
+        }
+
+        // Zeichnet das Wolkendorf als kleine Skyline. Jedes Gebaeude waechst mit
+        // seiner Stufe: hoeher, mehr Stockwerks-Fenster, ab hohen Stufen ein Dach-
+        // aufsatz. Ungebaute Gebaeude erscheinen als blasse Baustelle. Ein Klick
+        // aufs Haus scrollt zur passenden Karte in der Liste.
+        function drawVillageCity() {
+            let box = document.getElementById('villageCity');
+            if (!box) return;
+            const N = VILLAGE_BUILDINGS.length;
+            const cellW = 46, gap = 4, padX = 8, padTop = 10, groundH = 16;
+            const maxTiers = 12;
+            const maxBuildingH = 78;         // Haushoehe bei Stufe 12
+            const minBuildingH = 14;         // Baustellen-Sockel
+            const W = padX*2 + N*cellW + (N-1)*gap;
+            const H = padTop + maxBuildingH + groundH + 16;
+
+            let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wolkendorf">`;
+            // Sonne + zwei Deko-Wolken
+            svg += `<circle cx="${W-20}" cy="18" r="9" fill="#ffe08a"/>`;
+            svg += `<g fill="#ffffff" opacity="0.85"><ellipse cx="30" cy="16" rx="14" ry="7"/><ellipse cx="44" cy="18" rx="10" ry="6"/></g>`;
+
+            const groundY = padTop + maxBuildingH;
+            // Boden
+            svg += `<rect x="0" y="${groundY + 6}" width="${W}" height="${groundH + 10}" fill="#8fd694" opacity="0.55"/>`;
+
+            const palette = ['#ff9f80','#ffd479','#9ad6e0','#c3a6e0','#ffb0c4','#f4c07a','#a9e0c0','#b7c4ff','#ffd18c','#c0cfd8'];
+
+            VILLAGE_BUILDINGS.forEach((b, i) => {
+                let lvl = village[b.id] || 0;
+                let x = padX + i*(cellW+gap);
+                let bw = cellW - 8;
+                let bx = x + 4;
+                let built = lvl > 0;
+                let frac = lvl / maxTiers;
+                let bh = built ? (minBuildingH + (maxBuildingH - minBuildingH) * frac) : minBuildingH;
+                let by = groundY - bh + 6;
+                let color = built ? palette[i % palette.length] : '#e3e9ee';
+                let stroke = built ? 'rgba(0,0,0,0.18)' : '#cfd8de';
+
+                svg += `<g class="vc-house" onclick="scrollToVillage('${b.id}')">`;
+                // Baukoerper
+                svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="2" fill="${color}" stroke="${stroke}" stroke-width="1"/>`;
+
+                if (built) {
+                    // Dach ab Stufe 4, groesser ab 8
+                    if (lvl >= 4) {
+                        let rh = lvl >= 8 ? 10 : 6;
+                        svg += `<path d="M${bx-2},${by} L${bx+bw/2},${by-rh} L${bx+bw+2},${by} Z" fill="rgba(0,0,0,0.22)"/>`;
+                    }
+                    // Turmspitze/Fahne ab Stufe 12
+                    if (lvl >= maxTiers) {
+                        svg += `<line x1="${bx+bw/2}" y1="${by-(lvl>=8?10:6)}" x2="${bx+bw/2}" y2="${by-(lvl>=8?18:14)}" stroke="#e17055" stroke-width="1.5"/>`;
+                        svg += `<path d="M${bx+bw/2},${by-(lvl>=8?18:14)} l7,3 l-7,3 z" fill="#e17055"/>`;
+                    }
+                    // Fenster: pro 2 Stufen eine Reihe
+                    let rows = Math.max(1, Math.round(frac * 5));
+                    let winR = 2;
+                    for (let r = 0; r < rows; r++) {
+                        let wy = by + 5 + r * ((bh - 8) / rows);
+                        if (wy > by + bh - 5) break;
+                        svg += `<circle cx="${bx+bw*0.32}" cy="${wy}" r="${winR}" fill="rgba(255,255,255,0.9)"/>`;
+                        svg += `<circle cx="${bx+bw*0.68}" cy="${wy}" r="${winR}" fill="rgba(255,255,255,0.9)"/>`;
+                    }
+                    // Tuer
+                    svg += `<rect x="${bx+bw/2-2.5}" y="${groundY+6-8}" width="5" height="8" rx="1" fill="rgba(0,0,0,0.3)"/>`;
+                } else {
+                    // Baustelle: gestrichelter Umriss + kleines Icon
+                    svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="2" fill="none" stroke="#b2bec3" stroke-width="1" stroke-dasharray="3 2"/>`;
+                }
+
+                // Emoji-Icon ueber dem Haus
+                svg += `<text x="${bx+bw/2}" y="${by-4}" text-anchor="middle" font-size="11">${b.icon}</text>`;
+                // Stufen-Zahl unter dem Boden
+                svg += `<text class="vc-lvl" x="${bx+bw/2}" y="${groundY+groundH+8}">${lvl}/${maxTiers}</text>`;
+                svg += `</g>`;
+            });
+
+            svg += `</svg>`;
+            box.innerHTML = svg;
+        }
+
+        function scrollToVillage(id) {
+            playSound('beep');
+            let el = document.getElementById('village-card-' + id);
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('vflash'); setTimeout(()=>el.classList.remove('vflash'), 900); }
         }
 
         function openVillageModal() {
@@ -4426,7 +4615,7 @@
                 let nextEffectText = !isMaxed ? `Nächste Stufe: ${nextTier.effectLabel} (${nextTier.price} 🎫)` : 'Maximalstufe erreicht!';
 
                 html += `
-                    <div class="village-upgrade ${curLevel > 0 ? 'owned' : ''}" style="flex-direction:column; align-items:stretch;">
+                    <div class="village-upgrade ${curLevel > 0 ? 'owned' : ''}" id="village-card-${b.id}" style="flex-direction:column; align-items:stretch;">
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
                             <div style="flex:1;">
                                 <div style="font-size:14px; font-weight:bold;">${b.icon} ${b.name} <span style="font-size:10px; color:#576574;">(Stufe ${curLevel}/${b.tiers.length})</span></div>
@@ -4444,6 +4633,7 @@
                 <span style="font-size:10px;">Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Pomodoro-Sessions (🍅).</span>
             </div>`;
             document.getElementById('villageContent').innerHTML = html;
+            drawVillageCity();
             document.getElementById('villageModal').style.display = 'flex';
         }
 
