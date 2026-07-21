@@ -2,7 +2,7 @@
 // Strategie: cache-first. Die App ist komplett statisch, es gibt keinen Server
 // und keine API. Alles wird bei der Installation gecacht und danach offline
 // ausgeliefert. Spielstaende liegen ausschliesslich im localStorage.
-const CACHE = 'pausentama-v2.27.0';
+const CACHE = 'pausentama-v2.28.1';
 const ASSETS = [
   './',
   './index.html',

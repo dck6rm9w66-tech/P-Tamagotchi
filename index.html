@@ -524,6 +524,29 @@
         .btn-red:hover { background-color: #d63031; }
 
         /* Miniatur-Hülle */
+        /* Grabstein-Optik in der Ahnengalerie */
+        .tombstone {
+            background: linear-gradient(#d7d3c8, #b9b3a4);
+            border-radius: 50% 50% 8px 8px / 22% 22% 4% 4%;
+            border: 2px solid #9a9484; border-bottom-width: 5px;
+            padding: 30px 18px 18px; margin: 2px auto 0; max-width: 260px;
+            text-align: center; color: #3a352c;
+            box-shadow: inset 0 3px 8px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.18), 0 4px 10px rgba(0,0,0,0.25);
+            position: relative;
+        }
+        .tombstone-cross { font-size: 20px; color: #7a7365; margin-bottom: 2px; }
+        .tombstone-rip { font-size: 15px; font-weight: bold; letter-spacing: 3px; color: #6a6456; margin-bottom: 12px; }
+        .tombstone-head { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 8px; }
+        .tombstone-name { font-size: 15px; font-weight: bold; color: #2f2a22; }
+        .tombstone-dates { font-size: 11px; color: #5a5148; font-style: italic; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.15); }
+        .tombstone-body { font-size: 12px; line-height: 1.6; text-align: left; display: inline-block; }
+        .tombstone-toggle {
+            margin-top: 14px; width: 100%; padding: 8px; border: none; border-radius: 8px;
+            background: #8a8474; color: #fff; font-size: 11px; font-weight: bold; cursor: pointer;
+            font-family: Arial, sans-serif; transition: background 0.15s;
+        }
+        .tombstone-toggle:hover { background: #756f60; }
+
         .mini-shell {
             display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 34px;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
@@ -2857,6 +2880,28 @@
         function bestStat(p, key, petKey) { return Math.max(LT(key), (p && p[petKey]) || 0); }
 
         // Wird beim Tod (oder Reset) eines Tamagotchis aufgerufen und schreibt seine Werte fest.
+        // Beim Tod eines Tamagotchis verfaellt der gesamte gekaufte Besitz:
+        // Verbrauchsgueter, Huete, Skins, Hintergruende UND die Arcade-Automaten.
+        // Ausdruecklich NICHT betroffen: T-Coins und Pfleger-Level/-XP - die gehoeren
+        // dem Pfleger, nicht dem Tamagotchi. Medaillen/Lebenswerk bleiben ebenfalls.
+        function clearInventoryOnDeath() {
+            // Arcade-Automaten sind einmalige Anschaffungen und ueberdauern den Tod -
+            // sie werden aus dem alten Inventar ins frische uebernommen.
+            let keptItems = {};
+            Object.values(ARCADE_META).forEach(m => {
+                if (inventory.items && inventory.items[m.owned]) keptItems[m.owned] = inventory.items[m.owned];
+            });
+            inventory = { items: keptItems, equippedHat: null, customSkinActive: false, customSkinUrl: "",
+                          rainbowPoop: false, customBgActive: false, customBgUrl: "" };
+            safeSetItem('tama_inventory', JSON.stringify(inventory));
+            // Aktive Buffs samt Echtzeit-Ablauf entfernen
+            buffExpiries = {};
+            safeSetItem('tama_buff_expiries', JSON.stringify(buffExpiries));
+            // Nicht angetastet: T-Coins, Pausen-Tickets, Pfleger-Level/-XP, Medaillen,
+            // Arcade-Bestenliste und die Arcade-Automaten selbst.
+            try { applyColors(); } catch(e) {}   // Skin/Hut-Reset sichtbar machen
+        }
+
         function foldPetIntoLifetime(p) {
             if (!p || p.foldedIntoLifetime) return;
             const sums = {
@@ -3874,21 +3919,40 @@
             let style = getShellStyle(gPet.colorIndex, gPet.patternIndex, gPet.patternColorIndex, gPet.patternScale);
             let miniShellHtml = `<div class="mini-shell" style="${style}">${graveG}</div>`;
 
+            // Grabstein: abgerundete Oberkante, Steinstruktur, eingravierte Chronik.
             content.innerHTML = `
-                <div style="text-align:left; font-size:12px; line-height:1.5;">
-                    <div style="display:flex; align-items:center; margin-bottom:10px;">
-                        ${miniShellHtml} 
-                        <div><span style="font-size:15px; font-weight:bold;">${gPet.name}</span><br><span style="font-size:9px; color:#576574;">Pfleger: ${gPet.ownerName || 'Unbekannt'}</span></div>
+                <div class="tombstone">
+                    <div class="tombstone-cross">†</div>
+                    <div class="tombstone-rip">R.I.P.</div>
+                    <div class="tombstone-head">
+                        ${miniShellHtml}
+                        <div><span class="tombstone-name">${gPet.name}</span><br><span style="font-size:9px; color:#5a5148;">Pfleger: ${gPet.ownerName || 'Unbekannt'}</span></div>
                     </div>
-                    <b>Erreichtes Alter:</b> ${Math.floor(gPet.activeSeconds/1800)} Lebenstage<br>
-                    <b>Ursache:</b> ${gPet.causeOfDeath || 'Altersschwäche'}<br>
-                    <b>Geschlüpft:</b> ${gPet.bornDate || '-'}<br>
-                    <b>Von uns gegangen:</b> ${gPet.deathDate || '-'}<br><br>
-                    <b>Chronik:</b><br>
-                    🍔: ${gPet.countFed||0}x | 🛁: ${gPet.countBathed||0}x | ❤️: ${gPet.countLoved||0}x<br>
-                    🎮: ${gPet.countPlayed||0}x | 🩺: ${gPet.countDoctor||0}x | 💢: ${gPet.countDiscipline||0}x
+                    <div class="tombstone-dates">
+                        ${gPet.bornDate || '-'} &nbsp;–&nbsp; ${gPet.deathDate || '-'}
+                    </div>
+                    <div class="tombstone-body">
+                        <b>Erreichtes Alter:</b> ${Math.floor(gPet.activeSeconds/1800)} Lebenstage<br>
+                        <b>Ursache:</b> ${gPet.causeOfDeath || 'Altersschwäche'}<br><br>
+                        <b>Chronik:</b><br>
+                        🍔 ${gPet.countFed||0}x &nbsp; 🛁 ${gPet.countBathed||0}x &nbsp; ❤️ ${gPet.countLoved||0}x<br>
+                        🎮 ${gPet.countPlayed||0}x &nbsp; 🩺 ${gPet.countDoctor||0}x &nbsp; 💢 ${gPet.countDiscipline||0}x
+                    </div>
+                    <button class="tombstone-toggle" onclick="toggleGraveReport()">📋 Pfleger-Bewertung anzeigen</button>
+                    <div id="graveReport" style="display:none;">${caretakerReportHtml(gPet)}</div>
                 </div>`;
             document.getElementById('graveyardModal').style.display = 'flex';
+        }
+
+        // Pfleger-Bewertung im Friedhof ein-/ausblenden
+        function toggleGraveReport() {
+            let el = document.getElementById('graveReport');
+            let btn = document.querySelector('.tombstone-toggle');
+            if (!el) return;
+            let show = el.style.display === 'none';
+            el.style.display = show ? 'block' : 'none';
+            if (btn) btn.textContent = show ? '📋 Pfleger-Bewertung ausblenden' : '📋 Pfleger-Bewertung anzeigen';
+            playSound('beep');
         }
 
         // --- ACCOUNT RESET ---
@@ -4816,6 +4880,9 @@
                 <radialGradient id="vcMoon" cx="0.4" cy="0.4" r="0.7">
                     <stop offset="0%" stop-color="#fffbe8"/><stop offset="100%" stop-color="#f2e9c0"/>
                 </radialGradient>
+                <filter id="vcCloudBlur" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="4.5"/>
+                </filter>
             </defs>`;
 
             // 1) EIN Nachthimmel ganz oben
@@ -4848,14 +4915,13 @@
                 let t1 = cloudTints[(r*2) % cloudTints.length];
                 let t2 = cloudTints[(r*2+1) % cloudTints.length];
                 // mehrere ueberlappende Ellipsen = flauschige Wolkenbank, auf der die Haeuser stehen
-                svg += `<g opacity="0.85">
+                svg += `<g opacity="0.85" filter="url(#vcCloudBlur)">
                     <ellipse cx="${W*0.16}" cy="${baseY+8}" rx="${W*0.22}" ry="13" fill="${t1}"/>
                     <ellipse cx="${W*0.44}" cy="${baseY+9}" rx="${W*0.24}" ry="14" fill="${t2}"/>
                     <ellipse cx="${W*0.72}" cy="${baseY+8}" rx="${W*0.24}" ry="13" fill="${t1}"/>
                     <ellipse cx="${W*0.93}" cy="${baseY+9}" rx="${W*0.16}" ry="12" fill="${t2}"/>
+                    <ellipse cx="${W*0.5}" cy="${baseY+3}" rx="${W*0.52}" ry="6" fill="#ffffff" opacity="0.5"/>
                 </g>`;
-                // weiche Oberkante
-                svg += `<ellipse cx="${W*0.5}" cy="${baseY+3}" rx="${W*0.52}" ry="6" fill="#ffffff" opacity="0.45"/>`;
             }
 
             // 3) Gebaeude reihenweise, jede Reihe horizontal zentriert
@@ -4876,7 +4942,7 @@
                     // kleines Wolkenpuschel zwischen den Haeusern
                     if (j < count-1) {
                         let sx = cellX + cellW - gap/2;
-                        svg += `<circle cx="${sx}" cy="${groundY+5}" r="3.6" fill="#ffffff" opacity="0.8"/><circle cx="${sx+3.2}" cy="${groundY+6}" r="2.7" fill="#f0eaff" opacity="0.85"/>`;
+                        svg += `<g filter="url(#vcCloudBlur)"><circle cx="${sx}" cy="${groundY+5}" r="4" fill="#ffffff" opacity="0.85"/><circle cx="${sx+3.2}" cy="${groundY+6}" r="3" fill="#f0eaff" opacity="0.9"/></g>`;
                     }
                 });
             });
@@ -4901,7 +4967,7 @@
                 let path = `M ${busX+20},${y1} L ${xR},${y1} L ${xR},${y2} L ${xL},${y2} L ${xL},${y3} L ${xR},${y3} L ${xR},${y2} L ${xL},${y2} L ${xL},${y1} L ${busX+20},${y1} Z`;
                 svg += `<g>
                     <text text-anchor="middle" font-size="15">
-                        <animateMotion dur="26s" repeatCount="indefinite" rotate="0" path="${path}"/>
+                        <animateMotion dur="52s" repeatCount="indefinite" rotate="0" path="${path}"/>
                         <animateTransform attributeName="transform" type="translate" values="0,0; 0,-1.5; 0,0" dur="0.7s" repeatCount="indefinite" additive="sum"/>
                         ${animal}
                     </text>
@@ -5305,6 +5371,7 @@
                         foldPetIntoLifetime(pet); // Werte ins Lebenswerk übernehmen (für Medaillen-Stufen)
                         safeSetItem('tama_graveyard_v6', JSON.stringify(pet)); 
                         exportScoreFile(pet); 
+                        clearInventoryOnDeath();   // Shop-Items (inkl. Arcade) verfallen - T-Coins & XP bleiben
                         saveGame(); render(); openDeathModal();
                     }
                     return; 
