@@ -123,6 +123,7 @@
         }
         @keyframes eightFade { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
 
+        @keyframes firePuff { 0%,100% { transform: scale(0.85) translateY(0); opacity: 0.85; } 50% { transform: scale(1.15) translateY(-2px); opacity: 1; } }
         .thought-bubble { font-size: 12px; position: absolute; top: -15px; background: white; border-radius: 5px; padding: 1px 3px; border: 1px solid black; z-index: 20;}
 
         /* Sprechblase beim Antippen des Tamagotchis.
@@ -1655,6 +1656,9 @@
             'pixel_acne':      'permanent',  // Bis Clearasil angewendet wird
             'sleepwalker':     'permanent',  // Dauerhaftes Schlafwandel-Risiko
             'stomach_upset_2': 'permanent',  // Dauerhafter Ess-Risiko
+            'spicy_ramen':     3600,         // 1 Stunde feuerspuckend
+            'dance_mat':       600,          // 10 min Tanz-Laune
+            'personal_dj':     1800,         // 30 min Ohrwurm-Schleife
         };
 
         function formatCountdown(totalSeconds) {
@@ -1689,7 +1693,10 @@
             maryjane:      ['mjUntil'],
             double_happy:  ['doubleHappyUntil'],
             love_arrow:    ['loveArrowUntil'],
-            boredom_curse: ['boredUntil']
+            boredom_curse: ['boredUntil'],
+            spicy_ramen:   ['fireUntil'],
+            dance_mat:     ['danceUntil'],
+            personal_dj:   ['djUntil']
         };
 
         function cleanupExpiredBuffs() {
@@ -1739,6 +1746,9 @@
                 case 'pixel_acne':       return !!(pet.buffs.pixelAcne);
                 case 'sleepwalker':      return !!(pet.buffs.sleepwalker);
                 case 'stomach_upset_2':  return !!(pet.buffs.stomachUpset2);
+                case 'spicy_ramen':      return !!(pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil);
+                case 'dance_mat':        return !!(pet.buffs.danceUntil && pet.activeSeconds < pet.buffs.danceUntil);
+                case 'personal_dj':      return !!(pet.buffs.djUntil && pet.activeSeconds < pet.buffs.djUntil);
                 default:
                     // Multiplikator-Booster: aktiv, wenn der Kategorie-Slot läuft UND exakt dieser Faktor gesetzt ist
                     if (MULT_META[id]) {
@@ -1945,6 +1955,11 @@
             { id: 'sad_salad', cat: '🍔 Essen & Trinken', name: 'Trauriger Salat 🥗', desc: '+0 alles (aber: Tamagotchi weint jämmerlich beim Essen).', price: 5, type: 'consumable' },
             { id: 'candy_overload', cat: '🍔 Essen & Trinken', name: 'Süssigkeiten-Overload 🍭', desc: '+15 Happy beim Spielen (aber: nach 3x Spielen sofortiger Zucker-Crash).', price: 25, type: 'consumable' },
             { id: 'apple', cat: '🍔 Essen & Trinken', name: 'Goldener Apfel 🍎', desc: 'Füllt den Hunger sofort auf 100%.', price: 15, type: 'consumable' },
+            { id: 'pizza', cat: '🍔 Essen & Trinken', name: 'Wolken-Pizza 🍕', desc: '+40 Hunger & +10 Laune. Ein echter Sattmacher.', price: 30, type: 'consumable' },
+            { id: 'vegan_burger', cat: '🍔 Essen & Trinken', name: 'Grünling-Burger 🥬', desc: '+35 Hunger, +5 Intelligenz und ganz ohne Gewichtszunahme.', price: 35, type: 'consumable' },
+            { id: 'glitch_cookie', cat: '🍔 Essen & Trinken', name: 'Glitch-Kekse 👾', desc: 'Lecker! Löst beim Essen einen zufälligen Farbwechsel aus.', price: 40, type: 'consumable' },
+            { id: 'premium_food', cat: '🍔 Essen & Trinken', name: 'Sternekoch-Menü 🍽️', desc: '+60 Hunger, +15 Laune, +5 Energie. Das Beste vom Besten.', price: 70, ticketPrice: 1, type: 'consumable' },
+            { id: 'spicy_ramen', cat: '🍔 Essen & Trinken', name: 'Höllen-Ramen 🌶️', desc: '+30 Hunger. Macht dein Tamagotchi 1 Stunde lang feuerspuckend! 🔥', price: 55, type: 'consumable' },
 
             // === 💊 Apotheke & Heilung ===
             { id: 'medkit', cat: '💊 Apotheke & Heilung', name: 'Erste-Hilfe ⚕️', desc: 'Heilt Krankheiten augenblicklich.', price: 30, type: 'consumable' },
@@ -1987,6 +2002,16 @@
             { id: 'arcade_pong', cat: '🕹️ Arcade-Automaten', name: 'Pong 🏓', desc: 'Der Urvater aller Videospiele! Dein Ei ist der Schläger im Duell gegen die Wolken-KI. Einmalkauf, beliebig oft spielbar.', price: 750, ticketPrice: 6, type: 'arcade', arcade: 'pong' },
             { id: 'arcade_defender', cat: '🕹️ Arcade-Automaten', name: 'Defender 🚀', desc: 'Rasanter 80er-Shooter! Dein Ei fliegt durchs Weltall und ballert sich durch UFO-Schwärme. Einmalkauf, beliebig oft spielbar.', price: 1100, ticketPrice: 10, type: 'arcade', arcade: 'defender' },
 
+            // === 🏕️ Hobbys & Abenteuer ===
+            { id: 'toy_ball', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Kreisel 🪀', desc: 'Lieblings-Spielzeug: +15 Laune bei jedem Spielen. Mehrfach nutzbar.', price: 40, type: 'consumable' },
+            { id: 'robot_friend', cat: '🏕️ Hobbys & Abenteuer', name: 'Roboter-Kumpel 🤖', desc: 'Ein treuer Blechfreund: +12 Laune, +3 Intelligenz. Nie mehr allein.', price: 90, type: 'consumable' },
+            { id: 'book', cat: '🏕️ Hobbys & Abenteuer', name: 'Bilderbuch 📖', desc: 'Eine gute Geschichte: +5 Intelligenz und +5 Laune.', price: 35, type: 'consumable' },
+            { id: 'instrument', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Ukulele 🎸', desc: 'Musizieren macht glücklich: +18 Laune, +2 Intelligenz und eine kleine Melodie.', price: 65, type: 'consumable' },
+            { id: 'tent', cat: '🏕️ Hobbys & Abenteuer', name: 'Abenteuer-Zelt ⛺', desc: 'Camping unterm Sternenhimmel: +20 Laune und +15 Energie durch Erholung.', price: 75, type: 'consumable' },
+            { id: 'diving_gear', cat: '🏕️ Hobbys & Abenteuer', name: 'Taucher-Set 🤿', desc: 'Abtauchen ins Wolkenmeer: +18 Laune und wäscht das Tamagotchi blitzsauber.', price: 70, type: 'consumable' },
+            { id: 'diary', cat: '🏕️ Hobbys & Abenteuer', name: 'Geheimes Tagebuch 📔', desc: 'Gedanken sortieren: +10 Laune und beruhigt (heilt leichten Stress).', price: 45, type: 'consumable' },
+            { id: 'camera', cat: '🏕️ Hobbys & Abenteuer', name: 'Sofortbild-Kamera 📸', desc: 'Schnappschuss fürs Album: +12 Laune und mit etwas Glück ein Trinkgeld-Fund (Münzen).', price: 55, type: 'consumable' },
+
             // === ✖️ Multiplikatoren ===
             { id: 'mult_coins',    cat: '✖️ Multiplikatoren', name: 'Coin-Booster 💰 ×2',    desc: 'Verdoppelt alle T-Coin-Gewinne für 30 Min.',        price: 80, ticketPrice: 2,  type: 'consumable' },
             { id: 'mult_coins3',   cat: '✖️ Multiplikatoren', name: 'Coin-Verstärker 💰 ×3', desc: 'Verdreifacht alle T-Coin-Gewinne für 30 Min.',      price: 150, ticketPrice: 2, type: 'consumable' },
@@ -2026,6 +2051,11 @@
             { id: 'sleep_steal', cat: '🧪 Buffs & Substanzen', name: 'Schlaf-Diebstahl 💤', desc: 'Klaut 2h Schlaf. Heilt +50 Energie (aber Karma: -15 Happy).', price: 40, ticketPrice: 3, type: 'consumable' },
             { id: 'love_arrow', cat: '🧪 Buffs & Substanzen', name: 'Liebespfeil 💘', desc: '+10 Happy für 1 Tag. (aber: 30% Chance auf fiesen Stalker-Modus).', price: 100, type: 'consumable' },
             { id: 'time_warp', cat: '🧪 Buffs & Substanzen', name: 'Time Warp ⏳', desc: 'Verjüngt dein Tamagotchi sofort um 3 Tage (1,5 Std. jünger).', price: 150, ticketPrice: 4, type: 'consumable' },
+            { id: 'musicbox', cat: '🧪 Buffs & Substanzen', name: 'Melodie-Box 🎵', desc: 'Spielt eine sanfte Melodie: +20 Laune und +10 Energie.', price: 45, type: 'consumable' },
+            { id: 'toilet', cat: '🧪 Buffs & Substanzen', name: 'Wolken-WC 🚽', desc: 'Beseitigt sofort den Haufen am Gehäuse – ganz ohne Wischen.', price: 30, type: 'consumable' },
+            { id: 'clone_machine', cat: '🧪 Buffs & Substanzen', name: 'Klon-Maschine 🧬', desc: 'Erzeugt kurz ein zweites Tamagotchi – das sofort Streit anfängt! (-10 Laune, viel Chaos.)', price: 200, ticketPrice: 2, type: 'consumable' },
+            { id: 'dance_mat', cat: '🧪 Buffs & Substanzen', name: 'Tanzmatte 💃', desc: 'Dein Tamagotchi lernt die neuesten Moves. Cringe garantiert! (+25 Laune, tanzt eine Weile.)', price: 60, type: 'consumable' },
+            { id: 'personal_dj', cat: '🧪 Buffs & Substanzen', name: 'Privat-DJ 🎧', desc: 'Legt einen Ohrwurm auf Endlosschleife auf: +15 Laune, aber -3 Intelligenz vom Dauer-Beat.', price: 80, type: 'consumable' },
 
             // === 👿 Debuffs & Trolle ===
             { id: 'bad_influence', cat: '👿 Debuffs & Trolle', name: 'Schlechter Einfluss 🚬', desc: '+2 Glück permanent, aber verliert täglich Intelligenz (-1 Int/Tag).', price: 30, type: 'consumable' },
@@ -2792,6 +2822,63 @@
                 else if (id === 'energy') { pet.buffs.energyUntil = pet.activeSeconds + 3600; setBuffExpiry('energy'); playAnimation(petG+' ⚡', 2000); }
                 else if (id === 'social') { pet.buffs.socialUntil = pet.activeSeconds + 3600; setBuffExpiry('social'); playAnimation(petG+' 📱', 2000); }
                 else if (id === 'genie') { pet.intelligence += 5; pet.isSick = true; pet.sickCount = 3; playAnimation('🧠 +5<br>🤕 Aua!', 2500); }
+
+                // === Neue Items: Essen & Trinken ===
+                else if (id === 'pizza') { pet.hunger = Math.min(100, pet.hunger + 40); pet.happiness = Math.min(100, pet.happiness + 10); markCareInteraction(); playSound('win'); playAnimation(petG+' 🍕 Mampf!', 2000); }
+                else if (id === 'vegan_burger') { pet.hunger = Math.min(100, pet.hunger + 35); pet.intelligence += 5; markCareInteraction(); playSound('win'); playAnimation(petG+' 🥬 Guten Appetit!', 2000); }
+                else if (id === 'glitch_cookie') {
+                    pet.hunger = Math.min(100, pet.hunger + 20);
+                    pet.colorIndex = Math.floor(Math.random() * shellColors.length);
+                    pet.hueShift = Math.round(Math.random() * 360);
+                    applyColors(); playSound('gacha'); spawnConfetti && spawnConfetti();
+                    playAnimation('👾 GLITCH!<br>Neue Farbe!', 2500);
+                }
+                else if (id === 'premium_food') { pet.hunger = Math.min(100, pet.hunger + 60); pet.happiness = Math.min(100, pet.happiness + 15); pet.energy = Math.min(100, pet.energy + 5); markCareInteraction(); playSound('achievement'); playAnimation(petG+' 🍽️ Gourmet!', 2000); }
+                else if (id === 'spicy_ramen') {
+                    pet.hunger = Math.min(100, pet.hunger + 30);
+                    pet.buffs.fireUntil = pet.activeSeconds + 3600; setBuffExpiry('spicy_ramen');
+                    playSound('alarm'); playAnimation('🌶️🔥 FEUER!<br>1 Std. feuerspuckend!', 3000);
+                }
+
+                // === Neue Items: Buffs & Substanzen ===
+                else if (id === 'musicbox') { pet.happiness = Math.min(100, pet.happiness + 20); pet.energy = Math.min(100, pet.energy + 10); markCareInteraction(); playSound('sparkle'); playAnimation(petG+' 🎵 La la la~', 2500); }
+                else if (id === 'toilet') {
+                    if (pet.isDirty) { pet.isDirty = false; markCareInteraction(); playSound('win'); playAnimation('🚽 Erleichterung!<br>Sauber!', 2000); }
+                    else { alert("Es liegt kein Haufen am Gehäuse!"); inventory.items[id] = (inventory.items[id]||0)+1; }
+                }
+                else if (id === 'clone_machine') {
+                    pet.happiness = Math.max(0, pet.happiness - 10);
+                    pet.misbehaving = true;
+                    playSound('gacha');
+                    playAnimation(petG+'⚡'+petG+'<br>Streit mit dem Klon! 😡', 3500);
+                }
+                else if (id === 'dance_mat') {
+                    pet.happiness = Math.min(100, pet.happiness + 25);
+                    pet.buffs.danceUntil = pet.activeSeconds + 600; setBuffExpiry('dance_mat');
+                    markCareInteraction(); playSound('win'); playAnimation(petG+' 💃 Cringe-Moves!', 2500);
+                }
+                else if (id === 'personal_dj') {
+                    pet.happiness = Math.min(100, pet.happiness + 15);
+                    pet.intelligence = Math.max(0, pet.intelligence - 3);
+                    pet.buffs.djUntil = pet.activeSeconds + 1800; setBuffExpiry('personal_dj');
+                    playSound('sparkle'); playAnimation(petG+' 🎧 Endlos-Beat!', 2500);
+                }
+
+                // === Neue Items: Hobbys & Abenteuer ===
+                else if (id === 'toy_ball') { pet.happiness = Math.min(100, pet.happiness + 15); markCareInteraction(); playSound('select'); playAnimation(petG+' 🪀 Juhu!', 2000); }
+                else if (id === 'robot_friend') { pet.happiness = Math.min(100, pet.happiness + 12); pet.intelligence += 3; markCareInteraction(); playSound('select'); playAnimation(petG+' 🤖 Beep boop!', 2000); }
+                else if (id === 'book') { pet.intelligence += 5; pet.happiness = Math.min(100, pet.happiness + 5); markCareInteraction(); playSound('select'); playAnimation(petG+' 📖 Spannend!', 2000); }
+                else if (id === 'instrument') { pet.happiness = Math.min(100, pet.happiness + 18); pet.intelligence += 2; markCareInteraction(); playSound('sparkle'); playAnimation(petG+' 🎸 Strum~', 2000); }
+                else if (id === 'tent') { pet.happiness = Math.min(100, pet.happiness + 20); pet.energy = Math.min(100, pet.energy + 15); markCareInteraction(); playSound('win'); playAnimation(petG+' ⛺ Erholung!', 2000); }
+                else if (id === 'diving_gear') { pet.happiness = Math.min(100, pet.happiness + 18); pet.isDirty = false; markCareInteraction(); playSound('win'); playAnimation(petG+' 🤿 Platsch!', 2000); }
+                else if (id === 'diary') { pet.happiness = Math.min(100, pet.happiness + 10); if (pet.buffs) pet.buffs.chronicCold = pet.buffs.chronicCold; markCareInteraction(); playSound('select'); playAnimation(petG+' 📔 Liebes Tagebuch...', 2000); }
+                else if (id === 'camera') {
+                    pet.happiness = Math.min(100, pet.happiness + 12);
+                    let tip = Math.random() < 0.4;
+                    if (tip) { let g = addCoins(25); playSound('coin'); playAnimation(petG+' 📸 *klick*<br>+'+g+' 🪙 gefunden!', 2500); }
+                    else { markCareInteraction(); playSound('select'); playAnimation(petG+' 📸 *klick*', 2000); }
+                }
+
                 else if (id === 'immortal') { pet.hasImmortalPotion = true; playAnimation(petG+' 🛡️', 2000); }
                 else if (id === 'cheat_code') { pet.buffs.cheatUntil = pet.activeSeconds + 300; playAnimation('💻 CODE OK', 2000); }
                 else if (id === 'mystery_egg') {
@@ -2891,15 +2978,24 @@
             Object.values(ARCADE_META).forEach(m => {
                 if (inventory.items && inventory.items[m.owned]) keptItems[m.owned] = inventory.items[m.owned];
             });
-            inventory = { items: keptItems, equippedHat: null, customSkinActive: false, customSkinUrl: "",
-                          rainbowPoop: false, customBgActive: false, customBgUrl: "" };
+            // Eigenes Bild/Skin und Hintergrundbild bleiben ebenfalls erhalten (Uploads
+            // des Pflegers, keine Anschaffung des Tamagotchis). Nur der Hut wird abgelegt.
+            inventory = {
+                items: keptItems,
+                equippedHat: null,
+                customSkinActive: inventory.customSkinActive || false,
+                customSkinUrl: inventory.customSkinUrl || "",
+                rainbowPoop: false,
+                customBgActive: inventory.customBgActive || false,
+                customBgUrl: inventory.customBgUrl || ""
+            };
             safeSetItem('tama_inventory', JSON.stringify(inventory));
             // Aktive Buffs samt Echtzeit-Ablauf entfernen
             buffExpiries = {};
             safeSetItem('tama_buff_expiries', JSON.stringify(buffExpiries));
             // Nicht angetastet: T-Coins, Pausen-Tickets, Pfleger-Level/-XP, Medaillen,
-            // Arcade-Bestenliste und die Arcade-Automaten selbst.
-            try { applyColors(); } catch(e) {}   // Skin/Hut-Reset sichtbar machen
+            // Arcade-Bestenliste, Arcade-Automaten, eigener Skin & Hintergrund.
+            try { applyColors(); } catch(e) {}
         }
 
         function foldPetIntoLifetime(p) {
@@ -3217,6 +3313,7 @@
             '🧪 Buffs & Substanzen': 19,   // Starke Buffs & riskante Substanzen - spaetes Spiel
             '🎟️ Events & Dating':   14,
             '🕹️ Arcade-Automaten':    5,
+            '🏕️ Hobbys & Abenteuer':  8,
             '✖️ Multiplikatoren':    17,
             '👿 Debuffs & Trolle':   21,
             '💳 Abos & Mikros':      25,
@@ -3229,6 +3326,7 @@
             { level: 4,  name: '🎨 Shop-Kategorie: Lacke & Skins' },
             { level: 5,  name: '🕹️ Shop-Kategorie: Arcade-Automaten' },
             { level: 5,  name: '🥚 Seltene Ei-Farbe: Sonnenuntergang' },
+            { level: 8,  name: '🏕️ Shop-Kategorie: Hobbys & Abenteuer' },
             { level: 9,  name: '🏆 Büro-Highscores' },
             { level: 10, name: '🥚 Seltene Ei-Farbe: Galaxie' },
             { level: 11, name: '🧪 Shop-Kategorie: Buffs & Substanzen' },
@@ -3908,8 +4006,8 @@
             if (graveData) { gPet = JSON.parse(graveData); } 
             else {
                 gPet = {
-                    name: "Bello (Bsp.)", ownerName: "Max", speciesIndex: 0, activeSeconds: 29000,
-                    causeOfDeath: "Altersschwäche", bornDate: "14.06, 09:12", deathDate: "14.06, 17:41",
+                    name: "Bello (Bsp.)", ownerName: "Max", speciesIndex: 0, activeSeconds: 28800,
+                    causeOfDeath: "Altersschwäche", bornDate: "14.06.2026, 09:12", deathDate: "30.06.2026, 17:41",
                     countFed: 42, countBathed: 5, countLoved: 12, countPlayed: 20, countDoctor: 1, countDiscipline: 3,
                     colorIndex: 1, patternIndex: 2, patternColorIndex: 0, patternScale: 1.0
                 };
@@ -7083,6 +7181,8 @@
             
             let bubbleHtml = (bubble && !pet.isDeparted && !isActuallySleeping && !isCrash) ? `<div class="thought-bubble">${bubble}</div>` : "";
             let doomscrollHtml = (isDoomscrolling && !isActuallySleeping) ? `<div style="position:absolute; bottom:0px; right:-10px; font-size:0.5em; z-index:25;">📱</div>` : "";
+            let isFireBreathing = (pet.buffs && pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil);
+            let fireHtml = (isFireBreathing && !isActuallySleeping && !pet.isDeparted) ? `<div style="position:absolute; top:35%; right:-14px; font-size:0.6em; z-index:25; animation: firePuff 0.5s ease-in-out infinite;">🔥</div>` : "";
 
             if(state.view === 'animating') {
                 screenContent.innerHTML = `<div style="font-size:20px; line-height: 1.5; ${pet.lightOff ? 'color:white; text-shadow:1px 1px 2px black;' : ''}">${state.animFrame}</div>`;
@@ -7117,9 +7217,9 @@
                     screenContent.innerHTML = `<div class="pet" style="${sizeStyle} position:static; ${pet.stage === 4 ? 'filter: saturate(50%);' : ''}"><span style="font-size:12px; position:absolute; top:30px; right:35px; animation: blink 1.5s infinite; font-weight:bold; color:#f1f2f6; text-shadow: 1px 1px 2px #000, -1px -1px 0 #000;">Zzz</span>${getPetGraphicWithHat()}</div>`;
                 }
                 else if(pet.stage === 0 || pet.isSick || pet.misbehaving || isDoomscrolling) {
-                    screenContent.innerHTML = `<div class="pet" style="${sizeStyle} position:static; ${pet.stage === 4 ? 'filter: saturate(50%);' : ''}">${bubbleHtml}${getPetGraphicWithHat()}${doomscrollHtml}</div>`;
+                    screenContent.innerHTML = `<div class="pet" style="${sizeStyle} position:static; ${pet.stage === 4 ? 'filter: saturate(50%);' : ''}">${bubbleHtml}${getPetGraphicWithHat()}${doomscrollHtml}${fireHtml}</div>`;
                 } else {
-                    screenContent.innerHTML = `<div class="pet" style="${sizeStyle} left:${pet.x}px; top:${pet.y}px; ${walkAnim}; ${pet.stage === 4 ? 'filter: saturate(50%);' : ''}">${bubbleHtml}${getPetGraphicWithHat()}${doomscrollHtml}</div>`;
+                    screenContent.innerHTML = `<div class="pet" style="${sizeStyle} left:${pet.x}px; top:${pet.y}px; ${walkAnim}; ${pet.stage === 4 ? 'filter: saturate(50%);' : ''}">${bubbleHtml}${getPetGraphicWithHat()}${doomscrollHtml}${fireHtml}</div>`;
                 }
             } 
             else if(state.view === 'info') {
