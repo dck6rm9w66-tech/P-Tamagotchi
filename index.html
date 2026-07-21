@@ -5575,6 +5575,7 @@
         }
 
         function arcadeEnd(win) {
+            if (arcade.phase === 'win' || arcade.phase === 'over') return; // nicht doppelt abrechnen
             arcade.phase = win ? 'win' : 'over';
             stopArcadeLoop();
             let g = arcade.game;
@@ -5584,7 +5585,26 @@
             if (key && (!arcadeHi[key] || score > arcadeHi[key])) { arcadeHi[key] = score; saveArcadeHi(); isRecord = true; }
             updateArcadeHud(g);
             playSound(win ? 'achievement' : 'lose');
-            let sub = `SCORE <b style="color:#fff;">${score}</b>` + (isRecord ? '<br>🏆 NEUER HIGHSCORE!' : `<br>HI ${arcadeHi[key]||0}`);
+
+            // --- Belohnung: XP abhaengig vom Score, deutlich mehr als die 5 XP
+            // normaler Minispiele. Gedeckelt, damit ein Highscore-Lauf keinen
+            // Level-Sprung verschenkt. Sieg gibt einen Bonus obendrauf. ---
+            let xpGain = Math.min(80, 15 + Math.floor(score / 10)) + (win ? 25 : 0);
+            let coinGain = Math.min(120, Math.floor(score / 8)) + (win ? 20 : 0);
+            let recordBonus = isRecord ? 20 : 0;
+            xpGain += recordBonus;
+
+            // Spielen macht gluecklich (Rekord/Sieg etwas mehr)
+            if (typeof pet !== 'undefined' && pet && !pet.isDead && !pet.isDeparted) {
+                let happyGain = 8 + (win ? 6 : 0) + (isRecord ? 4 : 0);
+                pet.happiness = Math.min(100, pet.happiness + happyGain);
+                markCareInteraction && markCareInteraction();
+            }
+            let gotCoins = addCoins(coinGain);
+            addAccountXP(xpGain);
+
+            let rewardLine = `<br><span style="color:#9be89b;">+${xpGain} XP · +${gotCoins} 🪙</span>`;
+            let sub = `SCORE <b style="color:#fff;">${score}</b>` + (isRecord ? '<br>🏆 NEUER HIGHSCORE!' : `<br>HI ${arcadeHi[key]||0}`) + rewardLine;
             showArcadeMessage(win ? '🎉 GEWONNEN!' : 'GAME OVER', sub, '↻ NOCHMAL');
         }
 
