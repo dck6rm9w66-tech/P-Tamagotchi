@@ -1252,7 +1252,6 @@
             <span class="modal-close" onclick="closeModal('villageModal')">&times;</span>
             <h2>🏘️ Wolkendorf-Ausbau</h2>
             <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:8px;">Investiere 🎫 Tickets in mehrstufige Gebäude – dein Wolkendorf wächst mit jeder Stufe sichtbar mit!</p>
-            <div id="villageCity"></div>
             <div class="scroll-container" id="villageContent"></div>
         </div>
     </div>
@@ -4656,8 +4655,9 @@
 
             const skyH = 46;              // gemeinsamer Himmel oben
             const rowH = 104;             // Hoehe je Reihe (Haus max 80 + Boden + Beschriftung)
-            const buildingBottom = 80;    // Boden-Offset innerhalb der Reihe (unter dem Haus)
-            const H = skyH + rows.length*rowH;
+            const buildingBottom = 70;    // Boden-Offset (10px hoeher als zuvor)
+            const labelPad = 16;          // Fussraum, damit die unterste Stufen-Zahl reinpasst
+            const H = skyH + rows.length*rowH + labelPad;
 
             let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="width:100%;height:auto;aspect-ratio:${W}/${H};" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wolkendorf">`;
             svg += `<defs>
@@ -4761,7 +4761,7 @@
                 🌤️ Wolkendorf-Ausbau: <b>${totalLevels} / ${maxLevels}</b> Stufen<br>
                 <span style="font-size:10px;">Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Pomodoro-Sessions (🍅).</span>
             </div>`;
-            document.getElementById('villageContent').innerHTML = html;
+            document.getElementById('villageContent').innerHTML = '<div id="villageCity"></div>' + html;
             drawVillageCity();
             document.getElementById('villageModal').style.display = 'flex';
         }
