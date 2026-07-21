@@ -4031,6 +4031,150 @@
             document.getElementById('leaderboardModal').style.display = 'flex';
         }
 
+        // ================================================================
+        // === PFLEGER-BEWERTUNG (nach dem Tod) ===========================
+        // ================================================================
+        // Bewertet, wie gut sich der Pfleger gekuemmert hat und welche
+        // Prioritaeten er gesetzt hat - inklusive Wolkendorf-Ausbau
+        // (wirtschaftlich vs. gesundheitsbewusst). Gibt am Ende einen
+        // konkreten Verbesserungsvorschlag.
+        function buildCaretakerReport(p) {
+            // --- 1) Pflege-Dimensionen aus den Zaehlern des Tamagotchis ---
+            let fed      = p.countFed || 0;
+            let bathed   = p.countBathed || 0;
+            let loved    = p.countLoved || 0;
+            let played   = p.countPlayed || 0;
+            let doctor   = p.countDoctor || 0;
+            let discipline = p.countDiscipline || 0;
+            let ageDays  = Math.floor((p.activeSeconds || 0) / 1800);
+            let sickTimes = p.sickCount || 0;
+
+            // Erwartungswerte skalieren grob mit dem erreichten Alter,
+            // damit ein kurzes Leben nicht unfair schlecht bewertet wird.
+            let span = Math.max(1, ageDays);
+            // Score je Dimension: 0..100 relativ zu einem lockeren Soll pro Lebenstag
+            function dim(value, perDay) {
+                return Math.max(0, Math.min(100, Math.round((value / (perDay * span)) * 100)));
+            }
+            let sFeed  = dim(fed, 3);
+            let sClean = dim(bathed, 0.8);
+            let sLove  = dim(loved, 1.2);
+            let sPlay  = dim(played, 1.2);
+            let sHealth= doctor > 0 || sickTimes === 0 ? Math.max(0, 100 - sickTimes * 15) : 40;
+
+            let overall = Math.round((sFeed*0.28 + sClean*0.16 + sLove*0.24 + sPlay*0.16 + sHealth*0.16));
+
+            // Todesursache faerbt die Gesamtnote
+            let cod = p.causeOfDeath || '';
+            if (cod === 'Altersschwäche') overall = Math.min(100, overall + 12);
+            else if (cod === 'Verhungern') { overall = Math.max(0, overall - 25); sFeed = Math.max(0, sFeed - 40); }
+            else if (cod === 'Übergewicht') { overall = Math.max(0, overall - 15); }
+            else if (cod === 'Traurigkeit') { overall = Math.max(0, overall - 25); sLove = Math.max(0, sLove - 40); }
+
+            // Note in Worte fassen
+            let grade, gradeIcon, gradeColor;
+            if (overall >= 85)      { grade = 'Vorbildlicher Pfleger'; gradeIcon = '🌟'; gradeColor = '#f5b301'; }
+            else if (overall >= 68) { grade = 'Guter Pfleger';         gradeIcon = '💚'; gradeColor = '#1dd1a1'; }
+            else if (overall >= 50) { grade = 'Solider Pfleger';       gradeIcon = '👍'; gradeColor = '#54a0ff'; }
+            else if (overall >= 32) { grade = 'Ausbaufähig';           gradeIcon = '🤔'; gradeColor = '#ff9f43'; }
+            else                    { grade = 'Überfordert';           gradeIcon = '💔'; gradeColor = '#ee5253'; }
+
+            // --- 2) Wolkendorf-Prioritaeten: wirtschaftlich vs. Gesundheit ---
+            const ECON_IDS   = ['mint', 'observatory'];                       // Coins / XP
+            const HEALTH_IDS = ['clinic', 'spa', 'gym', 'cafeteria', 'bakery']; // Wohlbefinden
+            const FUN_IDS    = ['playground', 'library', 'watchtower'];        // Laune / IQ / Verhalten
+            let sum = ids => ids.reduce((a, id) => a + (village[id] || 0), 0);
+            let econ = sum(ECON_IDS), health = sum(HEALTH_IDS), fun = sum(FUN_IDS);
+            let totalVillage = econ + health + fun;
+
+            let priorityText, priorityIcon;
+            if (totalVillage === 0) {
+                priorityIcon = '🏗️';
+                priorityText = 'Das Wolkendorf blieb unbebaut – die Prioritäten lagen ganz beim Tamagotchi selbst.';
+            } else {
+                // Anteile bestimmen
+                let econShare = econ / totalVillage, healthShare = health / totalVillage, funShare = fun / totalVillage;
+                if (econShare >= 0.5) {
+                    priorityIcon = '💰';
+                    priorityText = 'Beim Dorfausbau dachtest du vor allem <b>wirtschaftlich</b> (Münzprägerei & Sternwarte) – Effizienz vor Fürsorge.';
+                } else if (healthShare >= 0.5) {
+                    priorityIcon = '🏥';
+                    priorityText = 'Dein Dorf war klar auf <b>Gesundheit & Wohlbefinden</b> ausgerichtet (Klinik, Therme, Fitness, Ernährung).';
+                } else if (funShare >= 0.5) {
+                    priorityIcon = '🎡';
+                    priorityText = 'Du hast auf <b>Laune, Bildung & gutes Benehmen</b> gesetzt (Spielplatz, Bibliothek, Wachturm).';
+                } else {
+                    priorityIcon = '⚖️';
+                    priorityText = 'Du hast das Dorf <b>ausgewogen</b> entwickelt – Wirtschaft, Gesundheit und Wohlfühlen im Gleichgewicht.';
+                }
+            }
+
+            // --- 3) Konkreter Verbesserungsvorschlag (schwaechste Dimension) ---
+            let tips = [];
+            if (cod === 'Verhungern') tips.push('Füttere regelmäßiger – der Hunger war die Todesursache. Ein Blick aufs 🍖-Symbol hilft.');
+            if (cod === 'Traurigkeit') tips.push('Schenke mehr Aufmerksamkeit: Streicheln (❤️) und Spielen halten die Laune oben.');
+            if (cod === 'Übergewicht') tips.push('Weniger Snacks, mehr Minispiele – so bleibt das Gewicht im Rahmen.');
+            if (tips.length === 0) {
+                let dims = [
+                    { s: sFeed,  t: 'Etwas regelmäßigeres Füttern gibt dem nächsten Tamagotchi einen ruhigeren Alltag.' },
+                    { s: sClean, t: 'Häufigeres Baden (🛁) hält dein Tamagotchi sauber und gesund.' },
+                    { s: sLove,  t: 'Mehr Streicheleinheiten (❤️) stärken die Bindung und die Laune.' },
+                    { s: sPlay,  t: 'Öfter spielen (🎮) hebt Laune und Intelligenz zugleich.' },
+                    { s: sHealth,t: 'Reagiere schneller auf Krankheit (🩺), um Folgeschäden zu vermeiden.' }
+                ];
+                dims.sort((a, b) => a.s - b.s);
+                tips.push(dims[0].t);
+            }
+            // Dorf-Tipp ergaenzen
+            if (totalVillage === 0) {
+                tips.push('Tipp: Investiere 🎫 Tickets ins Wolkendorf – schon die Klinik senkt das Krankheitsrisiko für alle künftigen Tamagotchis.');
+            } else if (health === 0) {
+                tips.push('Tipp: Ein Gesundheits-Gebäude (Klinik oder Therme) würde deinem nächsten Schützling spürbar helfen.');
+            } else if (econ === 0 && overall >= 68) {
+                tips.push('Tipp: Du pflegst stark – eine Münzprägerei oder Sternwarte würde dein Wachstum zusätzlich beschleunigen.');
+            }
+
+            return {
+                overall, grade, gradeIcon, gradeColor,
+                dims: { sFeed, sClean, sLove, sPlay, sHealth },
+                priorityText, priorityIcon,
+                tip: tips.join(' ')
+            };
+        }
+
+        function caretakerReportHtml(p) {
+            let r = buildCaretakerReport(p);
+            function bar(label, val) {
+                let col = val >= 70 ? '#1dd1a1' : (val >= 45 ? '#feca57' : '#ee5253');
+                return `<div style="display:flex; align-items:center; gap:6px; margin:3px 0; font-size:11px;">
+                    <span style="width:66px; text-align:left; color:#576574;">${label}</span>
+                    <span style="flex:1; height:7px; background:#e8ecf0; border-radius:4px; overflow:hidden;">
+                        <span style="display:block; height:100%; width:${val}%; background:${col};"></span>
+                    </span>
+                    <span style="width:26px; text-align:right; color:#2f3542;">${val}</span>
+                </div>`;
+            }
+            return `
+                <div style="background:#f8f9fb; border-radius:10px; padding:10px 12px; margin-top:12px; text-align:left;">
+                    <div style="text-align:center; margin-bottom:6px;">
+                        <div style="font-size:26px;">${r.gradeIcon}</div>
+                        <div style="font-size:14px; font-weight:bold; color:${r.gradeColor};">${r.grade}</div>
+                        <div style="font-size:10px; color:#576574;">Pflege-Bewertung: ${r.overall}/100</div>
+                    </div>
+                    ${bar('Füttern', r.dims.sFeed)}
+                    ${bar('Sauberkeit', r.dims.sClean)}
+                    ${bar('Zuwendung', r.dims.sLove)}
+                    ${bar('Beschäftigung', r.dims.sPlay)}
+                    ${bar('Gesundheit', r.dims.sHealth)}
+                    <div style="font-size:11px; color:#2f3542; margin-top:8px; line-height:1.5;">
+                        <b>${r.priorityIcon} Deine Prioritäten:</b><br>${r.priorityText}
+                    </div>
+                    <div style="font-size:11px; color:#0b6b7d; margin-top:8px; line-height:1.5; background:#e7f7fb; border-radius:7px; padding:7px 9px;">
+                        <b>💡 Fürs nächste Mal:</b><br>${r.tip}
+                    </div>
+                </div>`;
+        }
+
         function openDeathModal() {
             playSound('select');
             let text = "";
@@ -4041,8 +4185,10 @@
             else if(pet.causeOfDeath === "Schicksalsrad") text = `Du hast hoch gepokert und alles verloren. Das Schicksalsrad hat das sofortige Ende von <b>${pet.name}</b> besiegelt.`;
             else if(pet.causeOfDeath === "Lootbox") text = `Du hast beim Öffnen einer Lootbox die gefürchtete Todeskralle gezogen! Game Over für <b>${pet.name}</b>.`;
             
-            text += `<br><br><i>Seine Geschichte liegt nun in der Ahnengalerie (💀).</i><br><br><b style="color:#d63031;">Wichtig:</b> Dein fälschungssicherer Highscore wurde als Datei heruntergeladen. Verschiebe die Datei in euren Büro-Ordner, um im Leaderboard zu erscheinen!`;
-            
+            text += `<br><br><i>Seine Geschichte liegt nun in der Ahnengalerie (💀).</i>`;
+            text += caretakerReportHtml(pet);
+            text += `<br><b style="color:#d63031;">Highscore gesichert:</b> Deine fälschungssichere Datei wurde heruntergeladen – verschiebe sie in euren Büro-Ordner fürs Leaderboard!`;
+
             document.getElementById('deathModalText').innerHTML = text;
             document.getElementById('deathModal').style.display = 'flex';
             checkAchievements(); 
@@ -4711,6 +4857,36 @@
                     }
                 });
             });
+
+            // Wenn der Wolken-Bus das Tamagotchi abgeholt hat: Bus parkt im Dorf und
+            // das blanke Tier (ohne Haus/Huelle) tapst in Miniatur ueber die Wiese.
+            if (typeof pet !== 'undefined' && pet && pet.isDeparted && !pet.isDead) {
+                let laneY = skyH + (rows.length - 1) * rowH + buildingBottom + 6; // vor der letzten Reihe
+                let animal = speciesList[pet.speciesIndex] || '🐾';
+                // Geparkter Bus links
+                let busX = 14, busY = laneY - 15;
+                svg += `<g>
+                    <rect x="${busX}" y="${busY}" width="34" height="15" rx="3" fill="#ffd34d" stroke="#d9a400" stroke-width="1"/>
+                    <rect x="${busX+3}" y="${busY+3}" width="6" height="5" rx="1" fill="#bfe8ff"/>
+                    <rect x="${busX+11}" y="${busY+3}" width="6" height="5" rx="1" fill="#bfe8ff"/>
+                    <rect x="${busX+19}" y="${busY+3}" width="6" height="5" rx="1" fill="#bfe8ff"/>
+                    <rect x="${busX+27}" y="${busY+2}" width="5" height="7" rx="1" fill="#eef7ff"/>
+                    <circle cx="${busX+9}" cy="${busY+15}" r="3" fill="#3a3a3a"/>
+                    <circle cx="${busX+25}" cy="${busY+15}" r="3" fill="#3a3a3a"/>
+                    <text x="${busX+17}" y="${busY-2}" text-anchor="middle" font-size="8">☁️</text>
+                </g>`;
+                // Mini-Tier, das hin und her laeuft (SVG-Animation, laeuft auch ohne JS-Tick)
+                let walkFrom = busX + 40, walkTo = W - 22;
+                svg += `<g>
+                    <text text-anchor="middle" font-size="15" y="${laneY}">
+                        <animate attributeName="x" values="${walkFrom};${walkTo};${walkFrom}" dur="7s" repeatCount="indefinite"/>
+                        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0; 0,-2; 0,0" dur="0.6s" repeatCount="indefinite" additive="sum"/>
+                        ${animal}
+                    </text>
+                </g>`;
+                // kleine Staubwoelkchen-Deko
+                svg += `<text x="${busX+44}" y="${laneY+4}" font-size="7" opacity="0.6">💨</text>`;
+            }
 
             svg += `</svg>`;
             box.innerHTML = svg;
