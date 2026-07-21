@@ -4808,31 +4808,54 @@
             let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="width:100%;height:auto;aspect-ratio:${W}/${H};" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wolkendorf">`;
             svg += `<defs>
                 <linearGradient id="vcSky" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#aedcff"/><stop offset="100%" stop-color="#eaf7ff"/>
+                    <stop offset="0%" stop-color="#1a1a3d"/><stop offset="60%" stop-color="#2d2b55"/><stop offset="100%" stop-color="#4a3f6b"/>
                 </linearGradient>
                 <linearGradient id="vcGround" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#9fdda4"/><stop offset="100%" stop-color="#7ec983"/>
+                    <stop offset="0%" stop-color="#ffe0ec"/><stop offset="35%" stop-color="#e7e0ff"/><stop offset="70%" stop-color="#d9f0ff"/><stop offset="100%" stop-color="#e0fff0"/>
                 </linearGradient>
+                <radialGradient id="vcMoon" cx="0.4" cy="0.4" r="0.7">
+                    <stop offset="0%" stop-color="#fffbe8"/><stop offset="100%" stop-color="#f2e9c0"/>
+                </radialGradient>
             </defs>`;
 
-            // 1) EIN Himmel ganz oben
+            // 1) EIN Nachthimmel ganz oben
             svg += `<rect x="0" y="0" width="${W}" height="${skyH}" fill="url(#vcSky)"/>`;
-            svg += `<circle cx="${W-26}" cy="18" r="13" fill="#ffe08a" opacity="0.35"/>`;
-            svg += `<circle cx="${W-26}" cy="18" r="8" fill="#ffd868"/>`;
-            svg += `<g fill="#ffffff" opacity="0.9"><ellipse cx="${W*0.34}" cy="16" rx="14" ry="6.5"/><ellipse cx="${W*0.34+13}" cy="18" rx="9.5" ry="5"/></g>`;
-            svg += `<g fill="#ffffff" opacity="0.75"><ellipse cx="${W*0.66}" cy="12" rx="11" ry="5"/><ellipse cx="${W*0.66+10}" cy="14" rx="7.5" ry="4"/></g>`;
-            svg += `<g stroke="#7a93a8" stroke-width="1" fill="none" opacity="0.7">
-                <path d="M${W*0.14},22 q3,-3 6,0 q3,-3 6,0"/>
-                <path d="M${W*0.5},28 q2.5,-2.5 5,0 q2.5,-2.5 5,0"/>
-            </g>`;
+            // Mond mit Halo und Kratern
+            svg += `<circle cx="${W-28}" cy="18" r="15" fill="#fff8dc" opacity="0.18"/>`;
+            svg += `<circle cx="${W-28}" cy="18" r="9" fill="url(#vcMoon)"/>`;
+            svg += `<circle cx="${W-31}" cy="15" r="1.6" fill="#e6dcae" opacity="0.7"/><circle cx="${W-25}" cy="20" r="2.1" fill="#e6dcae" opacity="0.6"/><circle cx="${W-27}" cy="22" r="1.1" fill="#e6dcae" opacity="0.6"/>`;
+            // Sterne: fest gesetzte Positionen + sanftes Funkeln
+            const stars = [[18,10],[42,20],[70,8],[95,24],[120,13],[150,9],[176,22],[205,12],[232,26],[60,30],[110,32],[190,32],[255,16],[30,26],[135,25]];
+            stars.forEach((s, k) => {
+                let r = (k % 3 === 0) ? 1.4 : (k % 3 === 1 ? 1.0 : 0.7);
+                let dur = 2 + (k % 4) * 0.6;
+                svg += `<circle cx="${s[0]}" cy="${s[1]}" r="${r}" fill="#fffbe0">
+                    <animate attributeName="opacity" values="0.25;1;0.25" dur="${dur}s" repeatCount="indefinite" begin="${(k%5)*0.4}s"/>
+                </circle>`;
+            });
+            // eine Sternschnuppe
+            svg += `<line x1="${W*0.2}" y1="8" x2="${W*0.2+10}" y2="12" stroke="#fffbe0" stroke-width="1" opacity="0" stroke-linecap="round">
+                <animate attributeName="opacity" values="0;0;0.9;0" dur="6s" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" type="translate" values="0,0; 26,10" dur="6s" repeatCount="indefinite"/>
+            </line>`;
 
-            // 2) Durchgehende Wiese unter dem Himmel (hinter allen Reihen)
+            // 2) Durchgehender Wolkenboden in Regenbogen-Pastell (hinter allen Reihen)
             svg += `<rect x="0" y="${skyH}" width="${W}" height="${H-skyH}" fill="url(#vcGround)"/>`;
-            // sanfte Grashuegel als Trennung zwischen den Reihen
+            // Weiche Wolkenpolster als "Boden" jeder Reihe - abwechselnde Pastelltoene
+            const cloudTints = ['#ffd6e8','#e6d6ff','#d6ecff','#d9fff0','#fff4d6'];
             for (let r = 0; r < rows.length; r++) {
                 let baseY = skyH + r*rowH + buildingBottom;
-                svg += `<ellipse cx="${W*0.25}" cy="${baseY+9}" rx="${W*0.3}" ry="12" fill="#8ed294" opacity="0.55"/>`;
-                svg += `<ellipse cx="${W*0.78}" cy="${baseY+10}" rx="${W*0.32}" ry="13" fill="#83cd89" opacity="0.5"/>`;
+                let t1 = cloudTints[(r*2) % cloudTints.length];
+                let t2 = cloudTints[(r*2+1) % cloudTints.length];
+                // mehrere ueberlappende Ellipsen = flauschige Wolkenbank, auf der die Haeuser stehen
+                svg += `<g opacity="0.85">
+                    <ellipse cx="${W*0.16}" cy="${baseY+8}" rx="${W*0.22}" ry="13" fill="${t1}"/>
+                    <ellipse cx="${W*0.44}" cy="${baseY+9}" rx="${W*0.24}" ry="14" fill="${t2}"/>
+                    <ellipse cx="${W*0.72}" cy="${baseY+8}" rx="${W*0.24}" ry="13" fill="${t1}"/>
+                    <ellipse cx="${W*0.93}" cy="${baseY+9}" rx="${W*0.16}" ry="12" fill="${t2}"/>
+                </g>`;
+                // weiche Oberkante
+                svg += `<ellipse cx="${W*0.5}" cy="${baseY+3}" rx="${W*0.52}" ry="6" fill="#ffffff" opacity="0.45"/>`;
             }
 
             // 3) Gebaeude reihenweise, jede Reihe horizontal zentriert
@@ -4850,10 +4873,10 @@
                     let bx = cellX + (cellW - bw)/2;
                     svg += villageHouseSvg(b, globalIdx, bx, bw, groundY);
 
-                    // kleiner Busch zwischen den Haeusern
+                    // kleines Wolkenpuschel zwischen den Haeusern
                     if (j < count-1) {
                         let sx = cellX + cellW - gap/2;
-                        svg += `<circle cx="${sx}" cy="${groundY+5}" r="3.6" fill="#6fbf74"/><circle cx="${sx+3.2}" cy="${groundY+6}" r="2.7" fill="#84cf89"/>`;
+                        svg += `<circle cx="${sx}" cy="${groundY+5}" r="3.6" fill="#ffffff" opacity="0.8"/><circle cx="${sx+3.2}" cy="${groundY+6}" r="2.7" fill="#f0eaff" opacity="0.85"/>`;
                     }
                 });
             });
@@ -4861,31 +4884,28 @@
             // Wenn der Wolken-Bus das Tamagotchi abgeholt hat: Bus parkt im Dorf und
             // das blanke Tier (ohne Haus/Huelle) tapst in Miniatur ueber die Wiese.
             if (typeof pet !== 'undefined' && pet && pet.isDeparted && !pet.isDead) {
-                let laneY = skyH + (rows.length - 1) * rowH + buildingBottom + 6; // vor der letzten Reihe
                 let animal = speciesList[pet.speciesIndex] || '🐾';
-                // Geparkter Bus links
-                let busX = 14, busY = laneY - 15;
+                // Bus parkt oben in der ERSTEN Reihe - selbes Emoji wie im Ei-Display (🚌)
+                let topLaneY = skyH + 0 * rowH + buildingBottom + 4;
+                let busX = 16;
+                svg += `<text x="${busX}" y="${topLaneY}" text-anchor="middle" font-size="20">🚌</text>`;
+                svg += `<text x="${busX+15}" y="${topLaneY-9}" font-size="8" opacity="0.7">💨</text>`;
+
+                // Das blanke Tier (ohne Huelle) laeuft langsam durch ALLE drei Reihen.
+                // animateMotion entlang eines Zickzack-Pfades: Reihe 1 -> 2 -> 3 -> zurueck.
+                let y1 = skyH + 0*rowH + buildingBottom + 3;
+                let y2 = skyH + 1*rowH + buildingBottom + 3;
+                let y3 = skyH + 2*rowH + buildingBottom + 3;
+                let xL = 30, xR = W - 24;
+                // Weg: startet neben dem Bus, schlaengelt sich Reihe fuer Reihe nach unten und wieder hoch
+                let path = `M ${busX+20},${y1} L ${xR},${y1} L ${xR},${y2} L ${xL},${y2} L ${xL},${y3} L ${xR},${y3} L ${xR},${y2} L ${xL},${y2} L ${xL},${y1} L ${busX+20},${y1} Z`;
                 svg += `<g>
-                    <rect x="${busX}" y="${busY}" width="34" height="15" rx="3" fill="#ffd34d" stroke="#d9a400" stroke-width="1"/>
-                    <rect x="${busX+3}" y="${busY+3}" width="6" height="5" rx="1" fill="#bfe8ff"/>
-                    <rect x="${busX+11}" y="${busY+3}" width="6" height="5" rx="1" fill="#bfe8ff"/>
-                    <rect x="${busX+19}" y="${busY+3}" width="6" height="5" rx="1" fill="#bfe8ff"/>
-                    <rect x="${busX+27}" y="${busY+2}" width="5" height="7" rx="1" fill="#eef7ff"/>
-                    <circle cx="${busX+9}" cy="${busY+15}" r="3" fill="#3a3a3a"/>
-                    <circle cx="${busX+25}" cy="${busY+15}" r="3" fill="#3a3a3a"/>
-                    <text x="${busX+17}" y="${busY-2}" text-anchor="middle" font-size="8">☁️</text>
-                </g>`;
-                // Mini-Tier, das hin und her laeuft (SVG-Animation, laeuft auch ohne JS-Tick)
-                let walkFrom = busX + 40, walkTo = W - 22;
-                svg += `<g>
-                    <text text-anchor="middle" font-size="15" y="${laneY}">
-                        <animate attributeName="x" values="${walkFrom};${walkTo};${walkFrom}" dur="7s" repeatCount="indefinite"/>
-                        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-2; 0,0; 0,-2; 0,0" dur="0.6s" repeatCount="indefinite" additive="sum"/>
+                    <text text-anchor="middle" font-size="15">
+                        <animateMotion dur="26s" repeatCount="indefinite" rotate="0" path="${path}"/>
+                        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-1.5; 0,0" dur="0.7s" repeatCount="indefinite" additive="sum"/>
                         ${animal}
                     </text>
                 </g>`;
-                // kleine Staubwoelkchen-Deko
-                svg += `<text x="${busX+44}" y="${laneY+4}" font-size="7" opacity="0.6">💨</text>`;
             }
 
             svg += `</svg>`;
