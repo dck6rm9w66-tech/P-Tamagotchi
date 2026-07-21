@@ -1990,6 +1990,7 @@
             { id: 'poop_rainbow', cat: '🎨 Lacke & Skins', name: 'Regenbogen-Kot', desc: 'Macht die Häufchen magisch bunt (dauerhaft).', price: 600, ticketPrice: 3, type: 'unlock_poop' },
             { id: 'custom_skin', cat: '🎨 Lacke & Skins', name: 'Eigenes Bild / Skin', desc: 'Schaltet frei, eine eigene Bild-URL als Gehäuse-Textur zu nutzen.', price: 1500, ticketPrice: 10, type: 'unlock_skin' },
             { id: 'custom_bg', cat: '🎨 Lacke & Skins', name: 'Hintergrundbild 🖼️', desc: 'Nutze eine eigene Bild-URL als Display-Hintergrund.', price: 500, ticketPrice: 4, type: 'unlock_bg' },
+            { id: 'chaos_orb', cat: '🎨 Lacke & Skins', name: 'Chaos-Kugel 🔮', desc: 'Würfelt die komplette Hülle neu durch: Farbe, Muster, Farbton UND Form. Jedes Mal eine Überraschung – manchmal wunderschön, manchmal ein Albtraum!', price: 120, ticketPrice: 1, type: 'consumable' },
 
             // === 🎟️ Events & Dating ===
             { id: 'dating_app', cat: '🎟️ Events & Dating', name: 'Dating-App 💖', desc: 'Swipe für 5 Münzen. 10% Match (+20 Happy), 90% Ghosting (-10 Happy).', price: 5, type: 'consumable' },
@@ -2832,6 +2833,29 @@
                     pet.hueShift = Math.round(Math.random() * 360);
                     applyColors(); playSound('gacha'); spawnConfetti && spawnConfetti();
                     playAnimation('👾 GLITCH!<br>Neue Farbe!', 2500);
+                }
+                else if (id === 'chaos_orb') {
+                    // Alles neu wuerfeln: Farbe, Muster, Musterfarbe, Skalierung, Farbton, Form.
+                    // Overrides zuruecksetzen, sonst wuerde ein gekaufter Lack die Wuerfelung ueberdecken.
+                    pet.overrideColor = null; pet.overridePatColor = null; pet.overridePatIdx = null;
+                    pet.colorIndex        = pickEggColorIndex();   // respektiert freigeschaltete (auch seltene) Farben
+                    pet.patternIndex      = Math.floor(Math.random() * patternGenerators.length);
+                    pet.patternColorIndex = Math.floor(Math.random() * patternColors.length);
+                    pet.patternScale      = 0.6 + Math.random() * 1.4;                 // 0.6x .. 2.0x
+                    pet.hueShift          = Math.round(Math.random() * 360);
+                    pet.distortType       = DISTORT_TYPES[Math.floor(Math.random() * DISTORT_TYPES.length)];
+                    pet.distortAmount     = Math.round(Math.random() * 80 - 40);       // -40% .. +40%
+                    syncPetDistortFilter && syncPetDistortFilter(pet);
+                    applyColors();
+                    playSound('gacha'); spawnConfetti && spawnConfetti();
+                    // Kleiner Spannungsaufbau: erst Kugel, dann Verwandlung
+                    playAnimation('🔮✨ CHAOS-KUGEL!', 1400);
+                    setTimeout(() => {
+                        if (pet.isDead || pet.isDeparted) return;
+                        playSound('sparkle');
+                        let verdicts = ['Wunderschön! 😍','Ähm... interessant. 🤔','Ein Albtraum! 😱','Voll das Kunstwerk! 🎨','Was ist DAS denn?! 🫠','Perfektion! ✨'];
+                        playAnimation(petG + '<br>' + verdicts[Math.floor(Math.random()*verdicts.length)], 2200);
+                    }, 1400);
                 }
                 else if (id === 'premium_food') { pet.hunger = Math.min(100, pet.hunger + 60); pet.happiness = Math.min(100, pet.happiness + 15); pet.energy = Math.min(100, pet.energy + 5); markCareInteraction(); playSound('achievement'); playAnimation(petG+' 🍽️ Gourmet!', 2000); }
                 else if (id === 'spicy_ramen') {
