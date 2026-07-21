@@ -3932,7 +3932,9 @@
         function addAccountXP(amount) {
             if (!amount || amount <= 0) return;
             let bonus = (typeof getVillageEffect === 'function') ? getVillageEffect('observatory') : 0;
-            amount = Math.max(1, Math.round(amount * (1 + bonus) * getActiveMultiplier('xp') * (1 + getLegacyBonus('xpGain')))); // Sternwarte + XP-Booster + Vermächtnis
+            // Klügere Tamagotchis bringen mehr XP: +1% je IQ-Punkt, gedeckelt bei +100%.
+            let iqBonus = (typeof pet !== 'undefined' && pet && pet.intelligence > 0) ? Math.min(1, pet.intelligence * 0.01) : 0;
+            amount = Math.max(1, Math.round(amount * (1 + bonus) * (1 + iqBonus) * getActiveMultiplier('xp') * (1 + getLegacyBonus('xpGain')))); // Sternwarte + IQ + XP-Booster + Vermächtnis
             accountXP += amount;
             let leveledUp = false;
             let newLevels = [];
@@ -4871,6 +4873,18 @@
         Object.keys(village).forEach(k => { if (village[k] === true) village[k] = 1; });
 
         // Liefert den aktuellen Effektwert eines Gebäudes (0, falls noch nicht gebaut)
+        // Wie stark unterdrueckt das Dorf Krankheit/Schmutz/Hunger/Unartigkeit? (0..~1 je Gebaeude)
+        // Daraus ein XP-Bonus: ruhigere Pflege = mehr Belohnung, damit es sich lohnt.
+        function villageComfortXpBonus() {
+            let clinic = getVillageEffect('clinic') / 0.20;       // 0..1 (Krankheit)
+            let spa    = getVillageEffect('spa') / 0.15;          // 0..1 (Schmutz)
+            let tower  = getVillageEffect('watchtower') / 0.075;  // 0..1 (Unartig)
+            let cafe   = getVillageEffect('cafeteria') / 45;      // 0..1 (Hunger-Drain)
+            let comfort = clinic + spa + tower + cafe;            // 0..4
+            // Bis zu +40 XP pro Tag obendrauf bei voll ausgebautem Komfort-Dorf (10 je Achse).
+            return Math.round(comfort * 10);
+        }
+
         function getVillageEffect(id) {
             let lvl = village[id] || 0;
             if (lvl <= 0) return 0;
@@ -5454,7 +5468,7 @@
                 let ageDaysNow = Math.floor(pet.activeSeconds / 1800);
                 if (ageDaysNow > (pet.lastXpAgeDay || 0)) {
                     pet.lastXpAgeDay = ageDaysNow;
-                    addAccountXP(15);
+                    addAccountXP(15 + villageComfortXpBonus());
                 }
 
                 // BUFF LOGIC
@@ -5532,9 +5546,20 @@
                     let isDebuffed1h = (pet.buffs && pet.buffs.mysteryBadUntil && pet.activeSeconds < pet.buffs.mysteryBadUntil);
                     let drainMod = isDebuffed1h ? 2 : 1;
 
-                    // Stete Energie-Entladung während des Wachseins
+                    // Stete Energie-Entladung während des Wachseins.
+                    // Gewicht und Laune beeinflussen, wie schnell die Energie sinkt:
+                    //  - schwerere Tamagotchis verbrauchen mehr (Übergewicht ermüdet),
+                    //  - glückliche Tamagotchis sind spritziger und verlieren langsamer,
+                    //    unglückliche/lustlose schneller.
                     if (pet.activeSeconds % 20 === 0) {
-                        pet.energy = Math.max(0, pet.energy - 1);
+                        let drain = 1;
+                        // Gewicht: ab 20g wird es spürbar zäher (bis +1 zusätzlich bei 50g)
+                        if (pet.weight > 20) drain += Math.min(1, (pet.weight - 20) / 30);
+                        // Laune: über 70 spart Energie (bis -0.5), unter 30 kostet extra (bis +0.5)
+                        if (pet.happiness >= 70) drain -= (pet.happiness - 70) / 60;      // 70->0, 100->-0.5
+                        else if (pet.happiness < 30) drain += (30 - pet.happiness) / 60;  // 30->0, 0->+0.5
+                        drain = Math.max(0.3, drain);
+                        pet.energy = Math.max(0, pet.energy - drain);
                     }
 
                     if(pet.stage > 0) {
