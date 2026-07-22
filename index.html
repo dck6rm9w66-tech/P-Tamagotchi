@@ -1187,8 +1187,8 @@
     <div class="modal-bg" id="stepsModal">
         <div class="modal-content" style="max-width: 330px;">
             <span class="modal-close" onclick="closeModal('stepsModal')">&times;</span>
-            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-shoe-prints"></i> Schrittzähler</h2>
-            <p style="font-size: 11px; color: #747d8c; margin: 0 0 12px;">
+            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-shoe-prints"></i> <span data-i18n>Schrittzähler</span></h2>
+            <p data-i18n-block="stepsIntro" style="font-size: 11px; color: #747d8c; margin: 0 0 12px;">
                 Je <b>100 Schritte</b> gibt es <b>50 T-Coins</b>. Steh auf, dein Wolkenwesen kommt mit.
             </p>
             <div id="stepsBody"></div>
@@ -1199,9 +1199,9 @@
     <div class="modal-bg" id="saveModal">
         <div class="modal-content" style="max-width: 330px;">
             <span class="modal-close" onclick="closeModal('saveModal')">&times;</span>
-            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-floppy-disk"></i> Spielstand</h2>
+            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n>Spielstand</span></h2>
             <div id="saveRank" style="margin-bottom: 8px;"></div>
-            <p style="font-size: 11px; color: #747d8c; margin: 0 0 14px;">
+            <p data-i18n-block="saveIntro" style="font-size: 11px; color: #747d8c; margin: 0 0 14px;">
                 Sichert <b>alles</b>: Tamagotchi, Coins, Tickets, Level, Medaillen, Inventar,
                 Wolkendorf und Highscores. Damit ziehst du auch auf ein anderes Gerät um.
             </p>
@@ -1234,7 +1234,7 @@
             <div class="shop-tabs">
                 <div class="shop-tab active" id="tabShop" onclick="switchShopTab('shop')">Laden</div>
                 <div class="shop-tab" id="tabInventory" onclick="switchShopTab('inventory')">Inventar</div>
-                <div class="shop-tab" id="tabWheel" onclick="switchShopTab('wheel')">Glücksrad</div>
+                <div class="shop-tab" id="tabWheel" onclick="switchShopTab('wheel')" data-i18n>Glücksrad</div>
             </div>
 
             <div class="scroll-container" id="shopContentContainer">
@@ -1297,12 +1297,12 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('leaderboardModal')">&times;</span>
             <h2 data-i18n style="margin-bottom: 0;">Highscores 🏆</h2>
-            <p style="font-size: 11px; margin-bottom: 8px; margin-top: 5px;">Überleben, PvP, Mini-Bosse und Arcade – vergleiche dich mit deinen Kolleginnen und Kollegen.</p>
+            <p data-i18n-block="lbIntro" style="font-size: 11px; margin-bottom: 8px; margin-top: 5px;">Überleben, PvP, Mini-Bosse und Arcade – vergleiche dich mit deinen Kolleginnen und Kollegen.</p>
 
             <div class="scroll-container" id="leaderboardContent"></div>
 
             <div style="flex-shrink: 0; margin-top: 10px;">
-                <p style="font-size: 10px; margin-bottom:5px; color:#576574;">Lade die .json-Dateien der anderen aus eurem Netzwerkordner – oder teile deinen eigenen Steckbrief.</p>
+                <p data-i18n-block="lbHint" style="font-size: 10px; margin-bottom:5px; color:#576574;">Lade die .json-Dateien der anderen aus eurem Netzwerkordner – oder teile deinen eigenen Steckbrief.</p>
                 <button onclick="document.getElementById('officeScoreInput').click()" class="onboard-btn btn-blue"><i class="fa-solid fa-folder-open"></i> Scores laden</button>
                 <button onclick="exportMyScoreFile()" class="onboard-btn btn-gray" style="margin-top:6px;"><i class="fa-solid fa-share-nodes"></i> Meinen Steckbrief teilen</button>
             </div>
@@ -1333,7 +1333,7 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('pokedexModal')">&times;</span>
             <h2 data-i18n>📖 Wolkendorf-Tagebuch</h2>
-            <p style="font-size:11px; color:#576574; margin-top:-8px;">Erziehe jede Spezies bis zum Erwachsenenalter!</p>
+            <p style="font-size:11px; color:#576574; margin-top:-8px;" data-i18n>Erziehe jede Spezies bis zum Erwachsenenalter!</p>
             <p id="pokedexProgress" style="font-weight:bold; font-size:13px; margin:6px 0;"></p>
             <div class="scroll-container"><div class="pokedex-grid" id="pokedexGrid"></div></div>
             <div id="pokedexLore" style="font-size:11px; color:#576574; margin-top:8px; min-height:28px; font-style:italic; text-align:center;"></div>
@@ -1345,7 +1345,7 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('villageModal')">&times;</span>
             <h2 data-i18n>🏘️ Wolkendorf-Ausbau</h2>
-            <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:8px;">Investiere 🎫 Tickets in mehrstufige Gebäude – dein Wolkendorf wächst mit jeder Stufe sichtbar mit!</p>
+            <p data-i18n-block="villageIntro" style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:8px;">Investiere 🎫 Tickets in mehrstufige Gebäude – dein Wolkendorf wächst mit jeder Stufe sichtbar mit!</p>
             <div class="scroll-container" id="villageContent"></div>
         </div>
     </div>
@@ -1355,7 +1355,7 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('levelModal')">&times;</span>
             <h2 data-i18n>🎓 Pfleger-Level</h2>
-            <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:10px;">Sammle XP, indem dein Tamagotchi älter wird, Medaillen verdient und Minispiele löst.</p>
+            <p data-i18n-block="levelIntro" style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:10px;">Sammle XP, indem dein Tamagotchi älter wird, Medaillen verdient und Minispiele löst.</p>
             <div id="levelProgressText" style="font-weight:bold; font-size:13px; margin-bottom:6px;"></div>
             <div class="quest-bar-bg" style="height:10px; margin-bottom:14px;"><div class="quest-bar-fill" id="levelProgressBar" style="background:#a29bfe; width:0%;"></div></div>
             <h3 style="font-size:13px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50; text-align:left; margin-bottom:4px;">🔓 Freischaltungen</h3>
@@ -1377,7 +1377,7 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeModal('endgameModal')">&times;</span>
             <h2 data-i18n>🔭 Wolkendorf-Fernrohr</h2>
-            <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:12px;">Endgame ab Pfleger-Level 32</p>
+            <p data-i18n-block="endgameIntro" style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:12px;">Endgame ab Pfleger-Level 32</p>
             <div class="scroll-container" id="endgameContent" style="text-align:center;"></div>
         </div>
     </div>
@@ -2086,14 +2086,14 @@
             { id: 'arcade_defender', cat: '🕹️ Arcade-Automaten', name: 'Defender 🚀', desc: 'Rasanter 80er-Shooter! Dein Ei fliegt durchs Weltall und ballert sich durch UFO-Schwärme. Einmalkauf, beliebig oft spielbar.', price: 1100, ticketPrice: 10, type: 'arcade', arcade: 'defender' },
 
             // === 🏕️ Hobbys & Abenteuer ===
-            { id: 'toy_ball', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Kreisel 🪀', desc: 'Lieblings-Spielzeug: +15 Laune bei jedem Spielen. Mehrfach nutzbar.', price: 40, type: 'consumable' },
-            { id: 'robot_friend', cat: '🏕️ Hobbys & Abenteuer', name: 'Roboter-Kumpel 🤖', desc: 'Ein treuer Blechfreund: +12 Laune, +3 Intelligenz. Nie mehr allein.', price: 90, type: 'consumable' },
-            { id: 'book', cat: '🏕️ Hobbys & Abenteuer', name: 'Bilderbuch 📖', desc: 'Eine gute Geschichte: +5 Intelligenz und +5 Laune.', price: 35, type: 'consumable' },
-            { id: 'instrument', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Ukulele 🎸', desc: 'Musizieren macht glücklich: +18 Laune, +2 Intelligenz und eine kleine Melodie.', price: 65, type: 'consumable' },
-            { id: 'tent', cat: '🏕️ Hobbys & Abenteuer', name: 'Abenteuer-Zelt ⛺', desc: 'Camping unterm Sternenhimmel: +20 Laune und +15 Energie durch Erholung.', price: 75, type: 'consumable' },
-            { id: 'diving_gear', cat: '🏕️ Hobbys & Abenteuer', name: 'Taucher-Set 🤿', desc: 'Abtauchen ins Wolkenmeer: +18 Laune und wäscht das Tamagotchi blitzsauber.', price: 70, type: 'consumable' },
-            { id: 'diary', cat: '🏕️ Hobbys & Abenteuer', name: 'Geheimes Tagebuch 📔', desc: 'Gedanken sortieren: +10 Laune und beruhigt (heilt leichten Stress).', price: 45, type: 'consumable' },
-            { id: 'camera', cat: '🏕️ Hobbys & Abenteuer', name: 'Sofortbild-Kamera 📸', desc: 'Schnappschuss fürs Album: +12 Laune und mit etwas Glück ein Trinkgeld-Fund (Münzen).', price: 55, type: 'consumable' },
+            { id: 'toy_ball', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Kreisel 🪀', desc: 'Lieblings-Spielzeug: +15 Laune bei jedem Spielen. Mehrfach nutzbar.', price: 200, type: 'consumable' },
+            { id: 'robot_friend', cat: '🏕️ Hobbys & Abenteuer', name: 'Roboter-Kumpel 🤖', desc: 'Ein treuer Blechfreund: +12 Laune, +3 Intelligenz. Nie mehr allein.', price: 450, type: 'consumable' },
+            { id: 'book', cat: '🏕️ Hobbys & Abenteuer', name: 'Bilderbuch 📖', desc: 'Eine gute Geschichte: +5 Intelligenz und +5 Laune.', price: 175, type: 'consumable' },
+            { id: 'instrument', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Ukulele 🎸', desc: 'Musizieren macht glücklich: +18 Laune, +2 Intelligenz und eine kleine Melodie.', price: 325, type: 'consumable' },
+            { id: 'tent', cat: '🏕️ Hobbys & Abenteuer', name: 'Abenteuer-Zelt ⛺', desc: 'Camping unterm Sternenhimmel: +20 Laune und +15 Energie durch Erholung.', price: 375, type: 'consumable' },
+            { id: 'diving_gear', cat: '🏕️ Hobbys & Abenteuer', name: 'Taucher-Set 🤿', desc: 'Abtauchen ins Wolkenmeer: +18 Laune und wäscht das Tamagotchi blitzsauber.', price: 350, type: 'consumable' },
+            { id: 'diary', cat: '🏕️ Hobbys & Abenteuer', name: 'Geheimes Tagebuch 📔', desc: 'Gedanken sortieren: +10 Laune und beruhigt (heilt leichten Stress).', price: 225, type: 'consumable' },
+            { id: 'camera', cat: '🏕️ Hobbys & Abenteuer', name: 'Sofortbild-Kamera 📸', desc: 'Schnappschuss fürs Album: +12 Laune und mit etwas Glück ein Trinkgeld-Fund (Münzen).', price: 275, type: 'consumable' },
             // === 🎟️ Events & Dating ===
             { id: 'dating_app', cat: '🎟️ Events & Dating', name: 'Dating-App 💖', desc: 'Swipe für 5 Münzen. 10% Match (+20 Happy), 90% Ghosting (-10 Happy).', price: 5, type: 'consumable' },
             { id: 'casino', cat: '🎟️ Events & Dating', name: 'Casino: All-in 🎰', desc: 'Setze 50 Münzen auf Kopf/Zahl. Gewinne 100 oder verliere alles.', price: 50, type: 'consumable' },
@@ -2450,7 +2450,7 @@
                     }
                 });
                 if(!hasItems) {
-                    grid.innerHTML = `<div style="text-align:center; padding: 20px; font-size:12px; color:#576574;">Dein Inventar ist leer. Kauf etwas im Laden!</div>`;
+                    grid.innerHTML = `<div style="text-align:center; padding: 20px; font-size:12px; color:#576574;">${t('Dein Inventar ist leer. Kauf etwas im Laden!')}</div>`;
                 }
             }
         }
@@ -2515,7 +2515,7 @@
             let raw = parseInt(safeGetItem(LAST_BACKUP_KEY) || '0', 10);
             if (!raw) {
                 el.className = 'save-status warn';
-                el.innerText = '⚠️ Noch nie gesichert';
+                el.innerText = '⚠️ ' + t('Noch nie gesichert');
                 return;
             }
             let age = Date.now() - raw;
@@ -2552,7 +2552,28 @@
         // die Uebersetzung nach - so mussten die Datentabellen nicht umgebaut
         // werden, nur die Stellen, an denen sie angezeigt werden.
         const LANG_KEY = 'tama_lang';
-        let lang = safeGetItem(LANG_KEY) || 'de';
+        // Beim allerersten Start die Systemsprache uebernehmen: Deutsch (inkl.
+        // Schweizer und oesterreichischem Deutsch) bleibt Deutsch, alles andere
+        // startet auf Englisch. Danach zaehlt nur noch die eigene Wahl.
+        function detectSystemLanguage() {
+            try {
+                // Nur die PRIMAERE Systemsprache zaehlt. Wer Franzoesisch eingestellt hat
+                // und Deutsch nur als Zweitsprache fuehrt, bekommt Englisch.
+                let code = '';
+                if (navigator.languages && navigator.languages.length) code = navigator.languages[0];
+                if (!code) code = navigator.language || navigator.userLanguage || '';
+                code = String(code).toLowerCase();
+                if (code.indexOf('de') === 0) return 'de';    // de, de-DE, de-CH, de-AT
+                if (code.indexOf('gsw') === 0) return 'de';   // Schweizerdeutsch
+            } catch (e) {}
+            return 'en';
+        }
+
+        let lang = safeGetItem(LANG_KEY);
+        if (lang !== 'de' && lang !== 'en') {
+            lang = detectSystemLanguage();
+            safeSetItem(LANG_KEY, lang);   // Wahl merken, damit die Erkennung nur einmal greift
+        }
         const I18N = {};        // wird weiter unten befuellt: deutsch -> englisch
 
         function t(s) {
@@ -2645,6 +2666,14 @@
         const I18N_BLOCKS = {};   // ganze HTML-Abschnitte (weiter unten befuellt)
 
         // --- Englische Fassung des Handbuchs (wird als ganzer Block getauscht) ---
+        I18N_BLOCKS['saveIntro'] = 'Backs up your <b>complete</b> progress as a file: Tamagotchi, coins, tickets, caretaker level, medals, inventory, Cloud Village and high scores. This is also how you move to another device.';
+        I18N_BLOCKS['levelIntro'] = 'Earn XP as your Tamagotchi grows older, wins medals and solves mini-games.';
+        I18N_BLOCKS['stepsIntro'] = 'Every <b>100 steps</b> earns you <b>50 T-Coins</b>. Get up – your cloud creature is coming along.';
+        I18N_BLOCKS['endgameIntro'] = 'Endgame from caretaker level 32';
+        I18N_BLOCKS['lbIntro'] = 'Survival, PvP, mini-bosses and arcade – see how you compare with your colleagues.';
+        I18N_BLOCKS['lbHint'] = 'Load the .json files of the others from your shared folder – or share your own profile.';
+        I18N_BLOCKS['villageIntro'] = 'Invest 🎫 tickets into multi-level buildings – your Cloud Village visibly grows with every level!';
+
         I18N_BLOCKS['manual'] = `
                 <p style="font-size: 12px;">This Tamagotchi is here to help you take real <b>breaks</b>. It only grows while this window is actively open.</p>
 
@@ -2738,6 +2767,7 @@
             '🏆 Boss-Trophäen': '🏆 Boss Trophies',
             // Shop-Reiter
             'Inventar': 'Inventory', 'Dein Inventar ist leer.': 'Your inventory is empty.',
+            'Dein Inventar ist leer. Kauf etwas im Laden!': 'Your inventory is empty. Buy something in the shop!',
             // Statusmeldungen
             'Dein Tamagotchi muss aktiv sein!': 'Your Tamagotchi must be active!',
             'Es liegt kein Haufen am Gehäuse!': 'There is no poop on the shell!',
@@ -2987,7 +3017,146 @@
             "Tama zum Kampf senden": "Send Tama into battle",
             "Teile deine Spielstand-Datei, damit andere gegen dich antreten oder dich als Verbündeten in den Raid mitnehmen können.": "Share your save file so others can fight you or bring you along as an ally in the raid.",
             "Dieses Woche schon gespielt": "Already played this week",
-            "Gegner-JSON laden & kämpfen": "Load opponent JSON & fight"
+            "Gegner-JSON laden & kämpfen": "Load opponent JSON & fight",
+            // Pfleger-Level
+            "Sammle XP, indem dein Tamagotchi älter wird, Medaillen verdient und Minispiele löst.": "Earn XP as your Tamagotchi grows older, wins medals and solves mini-games.",
+            "Ab Pfleger-Level": "From caretaker level",
+            "🎩 Shop-Kategorie: Hüte & Accessoires": "🎩 Shop category: Hats & Accessories",
+            "🍔 Shop-Kategorie: Essen & Trinken": "🍔 Shop category: Food & Drink",
+            "💊 Shop-Kategorie: Apotheke & Heilung": "💊 Shop category: Pharmacy & Healing",
+            "🎨 Shop-Kategorie: Lacke & Skins": "🎨 Shop category: Paints & Skins",
+            "🕹️ Shop-Kategorie: Arcade-Automaten": "🕹️ Shop category: Arcade Machines",
+            "🏕️ Shop-Kategorie: Hobbys & Abenteuer": "🏕️ Shop category: Hobbies & Adventures",
+            "🎟️ Shop-Kategorie: Events & Dating": "🎟️ Shop category: Events & Dating",
+            "✖️ Shop-Kategorie: Multiplikatoren": "✖️ Shop category: Multipliers",
+            "🧪 Shop-Kategorie: Buffs & Substanzen": "🧪 Shop category: Buffs & Substances",
+            "👿 Shop-Kategorie: Debuffs & Trolle": "👿 Shop category: Debuffs & Trolls",
+            "💳 Shop-Kategorie: Abos & Mikros": "💳 Shop category: Subscriptions & Micros",
+            "🌟 Shop-Kategorie: Pfleger-Elite": "🌟 Shop category: Caretaker Elite",
+            "🏆 Büro-Highscores": "🏆 Office High Scores", "🏘️ Wolkendorf-Ausbau": "🏘️ Cloud Village",
+            "⚔️ Wolkendorf-Arena": "⚔️ Cloud Village Arena", "🕹️ Arcade-Automaten": "🕹️ Arcade Machines",
+            "🔭 Endgame: Wolkendorf-Fernrohr & Vermächtnis": "🔭 Endgame: Cloud Village Telescope & Legacy",
+            "🥚 Seltene Ei-Farbe: Sonnenuntergang": "🥚 Rare egg colour: Sunset",
+            "🥚 Seltene Ei-Farbe: Galaxie": "🥚 Rare egg colour: Galaxy",
+            "🥚 Seltene Ei-Farbe: Tiefsee": "🥚 Rare egg colour: Deep Sea",
+            "🥚 Seltene Ei-Farbe: Diamant": "🥚 Rare egg colour: Diamond",
+            "🥚 Seltene Ei-Farbe: Vulkan": "🥚 Rare egg colour: Volcano",
+            "🥚 Seltene Ei-Farbe: Aurora": "🥚 Rare egg colour: Aurora",
+            // Medaillen / Tagebuch
+            "freigeschaltet": "unlocked",
+            "Erziehe jede Spezies bis zum Erwachsenenalter!": "Raise every species to adulthood!",
+            "Klicke auf eine Spezies für mehr Info.": "Tap a species for more information.",
+            "??? — Erziehe diese Spezies zum Erwachsenen, um sie zu entdecken!": "??? — Raise this species to adulthood to discover it!",
+            // Ahnengalerie
+            "Erreichtes Alter": "Age reached", "Ursache": "Cause", "Geschlüpft": "Hatched",
+            "Von uns gegangen": "Passed away", "Chronik": "Chronicle", "Unbekannt": "Unknown",
+            "📋 Pfleger-Bewertung anzeigen": "📋 Show caretaker review",
+            "📋 Pfleger-Bewertung ausblenden": "📋 Hide caretaker review",
+            "Vorbildlicher Pfleger": "Exemplary caretaker", "Guter Pfleger": "Good caretaker",
+            "Solider Pfleger": "Solid caretaker", "Ausbaufähig": "Room for improvement", "Überfordert": "Overwhelmed",
+            "Füttern": "Feeding", "Sauberkeit": "Cleanliness", "Zuwendung": "Affection",
+            "Beschäftigung": "Activity", "Gesundheit": "Health",
+            "Pflege-Bewertung": "Care rating", "Deine Prioritäten:": "Your priorities:", "Fürs nächste Mal:": "For next time:",
+            // Highscores
+            "von": "by", "mit": "with",
+            "Lade Steckbriefe deiner Kolleginnen und Kollegen, um zu vergleichen.": "Load your colleagues\' profiles to compare.",
+            // Wolkendorf
+            "Noch nicht gebaut": "Not built yet", "Stufen": "levels",
+            "Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests und Pomodoro-Sessions.": "Levels are kept permanently, even after your Tamagotchi dies! Earn 🎫 tickets through daily quests and Pomodoro sessions.",
+            // Arena
+            "Kämpfe können je 1× pro Woche gestartet werden": "Each fight can be started once per week",
+            "Lade die Spielstand-JSON eines anderen Nutzers und lasst eure Tamagotchis gegeneinander antreten!": "Load another player\'s save JSON and let your Tamagotchis face off!",
+            "Raid": "Raid", "1× pro Woche": "once per week", "1× pro Woche je Boss": "once per week per boss",
+            "Mini-Bosse": "Mini-bosses", "zufällige Gegenstände": "random items",
+            "Mindestens": "At least", "nötig": "required", "aktuell": "currently",
+            "mehr Verbündete = mehr Beute": "more allies = more loot",
+            "Raid starten": "Start raid", "Diese Woche schon gekämpft": "Already fought this week",
+            "Nächste Woche": "Next week", "Kämpfen!": "Fight!", "Trophäe": "trophy",
+            // Fernrohr
+            "Blick ins Wolkendorf": "A look into the Cloud Village",
+            "Dein Vermächtnis (dauerhaft)": "Your legacy (permanent)",
+            "Noch keine Boni. Verschicke dein erstes Geschenk!": "No bonuses yet. Send your first gift!",
+            // Schrittzaehler
+            "Schritte": "steps", "Bis zu den nächsten 50 🪙": "Until the next 50 🪙",
+            "stepsNote": "<b>Important:</b> steps are only counted while the app is open and visible – browsers receive no sensor data in the background. So take your phone with you on the walk. Detection uses the accelerometer and is an estimate.",
+            // Bus / Besuchszeit / Pomodoro
+            "morgen": "tomorrow", "Bis morgen! 👋": "See you tomorrow! 👋",
+            "Der Wolken-Bus hat mich abgeholt.": "The cloud bus has picked me up.",
+            "Besuchszeit aufgebraucht — dein Wolkenwesen kommt morgen wieder.": "Visiting time used up — your cloud creature returns tomorrow.",
+            "Kein aktives Tama!": "No active Tama!",
+            "villageFootnote": "Levels are kept permanently, even after your Tamagotchi dies! Earn 🎫 tickets through daily quests (📋) and Pomodoro sessions (🍅).",
+            "Freigeschaltet": "Unlocked",
+            "Arena-Quests setzen sich jeden Montag zurück.": "Arena quests reset every Monday.",
+            "Noch nie gesichert": "Never backed up",
+            // Pfleger-Bewertung
+            "Häufigeres Baden (🛁) hält dein Tamagotchi sauber und gesund.": "Bathing more often (🛁) keeps your Tamagotchi clean and healthy.",
+            "Etwas regelmäßigeres Füttern gibt dem nächsten Tamagotchi einen ruhigeren Alltag.": "Feeding a little more regularly will give your next Tamagotchi a calmer daily life.",
+            "Mehr Streicheleinheiten (❤️) stärken die Bindung und die Laune.": "More cuddles (❤️) strengthen the bond and the mood.",
+            "Öfter spielen (🎮) hebt Laune und Intelligenz zugleich.": "Playing more often (🎮) lifts both mood and intelligence.",
+            "Reagiere schneller auf Krankheit (🩺), um Folgeschäden zu vermeiden.": "React faster to illness (🩺) to avoid lasting damage.",
+            "Füttere regelmäßiger – der Hunger war die Todesursache. Ein Blick aufs 🍖-Symbol hilft.": "Feed more regularly – hunger was the cause of death. Keep an eye on the 🍖 symbol.",
+            "Schenke mehr Aufmerksamkeit: Streicheln (❤️) und Spielen halten die Laune oben.": "Give more attention: petting (❤️) and playing keep the mood up.",
+            "Weniger Snacks, mehr Minispiele – so bleibt das Gewicht im Rahmen.": "Fewer snacks, more mini-games – that keeps the weight in check.",
+            "Tipp: Investiere 🎫 Tickets ins Wolkendorf – schon die Klinik senkt das Krankheitsrisiko für alle künftigen Tamagotchis.": "Tip: invest 🎫 tickets into the Cloud Village – even the clinic lowers the illness risk for all future Tamagotchis.",
+            "Tipp: Ein Gesundheits-Gebäude (Klinik oder Therme) würde deinem nächsten Schützling spürbar helfen.": "Tip: a health building (clinic or spa) would noticeably help your next charge.",
+            "Tipp: Du pflegst stark – eine Münzprägerei oder Sternwarte würde dein Wachstum zusätzlich beschleunigen.": "Tip: you care well – a mint or observatory would speed up your growth even further.",
+            "Das Wolkendorf blieb unbebaut – die Prioritäten lagen ganz beim Tamagotchi selbst.": "The Cloud Village stayed empty – your priorities were entirely with the Tamagotchi itself.",
+            "Beim Dorfausbau dachtest du vor allem <b>wirtschaftlich</b> (Münzprägerei & Sternwarte) – Effizienz vor Fürsorge.": "When building the village you thought mainly <b>economically</b> (mint & observatory) – efficiency before care.",
+            "Dein Dorf war klar auf <b>Gesundheit & Wohlbefinden</b> ausgerichtet (Klinik, Therme, Fitness, Ernährung).": "Your village was clearly focused on <b>health & wellbeing</b> (clinic, spa, gym, nutrition).",
+            "Du hast auf <b>Laune, Bildung & gutes Benehmen</b> gesetzt (Spielplatz, Bibliothek, Wachturm).": "You went for <b>mood, education & good behaviour</b> (playground, library, watchtower).",
+            "Du hast das Dorf <b>ausgewogen</b> entwickelt – Wirtschaft, Gesundheit und Wohlfühlen im Gleichgewicht.": "You developed the village in a <b>balanced</b> way – economy, health and comfort in equilibrium.",
+            // Fernrohr / Vermaechtnis
+            "Richte das Fernrohr auf das Wolkendorf und sieh, was dein Tamagotchi dort treibt. Der Blick gilt für den heutigen Tag.": "Point the telescope at the Cloud Village and see what your Tamagotchi is up to. The view is valid for today.",
+            "Glückspfote": "Lucky Paw", "Wolkenglück": "Cloud Fortune", "Frohes Gemüt": "Cheerful Spirit",
+            "Aller Pfleger-XP-Gewinn.": "All caretaker XP gained.",
+            "(Du)": "(You)",
+            // Fehlende Shop-Artikel (Multiplikatoren)
+            "Coin-Verstärker 💰 ×3": "Coin Amplifier 💰 ×3", "Verdreifacht alle T-Coin-Gewinne für 30 Min.": "Triples all T-Coin gains for 30 min.",
+            "Ticket-Verstärker 🎫 ×3": "Ticket Amplifier 🎫 ×3", "Verdreifacht alle Ticket-Gewinne für 1 Std.": "Triples all ticket gains for 1 h.",
+            "XP-Verstärker 🎓 ×3": "XP Amplifier 🎓 ×3", "Verdreifacht allen Pfleger-XP-Gewinn für 30 Min.": "Triples all caretaker XP gains for 30 min.",
+            "Wissens-Turbo 🧠 ×5": "Knowledge Turbo 🧠 ×5", "Verfünffacht allen Pfleger-XP-Gewinn für 25 Min.": "Quintuples all caretaker XP gains for 25 min.",
+            "Glücks-Verstärker 🍀 +50%": "Luck Amplifier 🍀 +50%", "50% Chance auf einen Rettungs-Sieg in Minispielen (30 Min).": "50% chance of a rescue win in mini-games (30 min).",
+            "Kraft-Booster 💪 ×1.5": "Power Booster 💪 ×1.5", "Kampfkraft in Bosskämpfen & PvP ×1,5 für 24 Std.": "Combat power in boss fights & PvP ×1.5 for 24 h.",
+            "Coin-Booster 💰 ×2": "Coin Booster 💰 ×2", "Verdoppelt alle T-Coin-Gewinne für 30 Min.": "Doubles all T-Coin gains for 30 min.",
+            "Ticket-Booster 🎫 ×2": "Ticket Booster 🎫 ×2", "Verdoppelt alle Ticket-Gewinne für 1 Std.": "Doubles all ticket gains for 1 h.",
+            "XP-Booster 🎓 ×2": "XP Booster 🎓 ×2", "Verdoppelt allen Pfleger-XP-Gewinn für 30 Min.": "Doubles all caretaker XP gains for 30 min.",
+            "Coin-Rausch 💰 ×5": "Coin Rush 💰 ×5", "Verfünffacht alle T-Coin-Gewinne für 25 Min.": "Quintuples all T-Coin gains for 25 min.",
+            "Coin-Sturm 💰 ×8": "Coin Storm 💰 ×8", "Ver-8-facht alle T-Coin-Gewinne für 20 Min.": "Multiplies all T-Coin gains by 8 for 20 min.",
+            // Vermaechtnis-Werte
+            "Angeborene Klugheit": "Innate Wisdom", "Start-Intelligenz jedes neuen Eis.": "Starting intelligence of every new egg.",
+            "Lebenskraft": "Vitality", "Maximale Lebensdauer.": "Maximum lifespan.",
+            "Glückspfote": "Lucky Paw", "Alle T-Coin-Gewinne.": "All T-Coin gains.",
+            "Lehrmeister": "Mentor", "Kampfgeist": "Fighting Spirit", "Kampfkraft in Arena & PvP.": "Combat power in the arena & PvP.",
+            "Wolkenglück": "Cloud Fortune", "Rettungs-Chance in Minispielen.": "Rescue chance in mini-games.",
+            "Guter Stoffwechsel": "Good Metabolism", "Hunger sinkt langsamer.": "Hunger decreases more slowly.",
+            "Robuste Gesundheit": "Robust Health", "Geringeres Krankheitsrisiko.": "Lower illness risk.",
+            "Reinliche Natur": "Tidy Nature", "Wird seltener schmutzig.": "Gets dirty less often.",
+            "Frohes Gemüt": "Cheerful Spirit", "Mehr Laune beim Spielen.": "More mood when playing.",
+            "Tiefschlaf": "Deep Sleep", "Schnellere Energie-Regeneration.": "Faster energy regeneration.",
+            // Restliche Titel
+            "Wolkendorf-Arena": "Cloud Village Arena", "Schrittzähler": "Step Counter", "Spielstand": "Save Game",
+            "Glücksrad": "Wheel of Fortune",
+            "besiegt!": "defeated!", "hat gewonnen! Nächste Woche Revanche!": "won! Rematch next week!",
+            // Restliche Multiplikatoren
+            "Coin-Magnet 🧲 ×5": "Coin Magnet 🧲 ×5", "Coin-Rausch 💰 ×8": "Coin Rush 💰 ×8",
+            "Goldrausch 🌟 ×15": "Gold Rush 🌟 ×15", "Ticket-Maschine 🎰 ×5": "Ticket Machine 🎰 ×5",
+            "Ticket-Flut 🎫 ×8": "Ticket Flood 🎫 ×8", "Ticket-Jackpot 💎 ×12": "Ticket Jackpot 💎 ×12",
+            "XP-Explosion 💥 ×8": "XP Explosion 💥 ×8", "Genie-Modus 🌟 ×12": "Genius Mode 🌟 ×12",
+            "Glücks-Booster 🍀 +33%": "Luck Booster 🍀 +33%", "Kleeblatt-Zauber ☘️ +66%": "Clover Charm ☘️ +66%",
+            "Glücks-Aura ✨ +85%": "Luck Aura ✨ +85%", "Berserker 😤 ×3": "Berserker 😤 ×3",
+            "Titan-Kraft 🗿 ×4": "Titan Strength 🗿 ×4", "Gottmodus ⚡ ×6": "God Mode ⚡ ×6",
+            "Ver-8-facht alle Ticket-Gewinne für 30 Min.": "Multiplies all ticket gains by 8 for 30 min.",
+            "Verfünffacht alle Ticket-Gewinne für 45 Min.": "Quintuples all ticket gains for 45 min.",
+            "Ver-12-facht alle Ticket-Gewinne für 20 Min!": "Multiplies all ticket gains by 12 for 20 min!",
+            "Ver-15-facht alle T-Coin-Gewinne für 15 Min!": "Multiplies all T-Coin gains by 15 for 15 min!",
+            "Ver-8-facht allen Pfleger-XP-Gewinn für 20 Min.": "Multiplies all caretaker XP gains by 8 for 20 min.",
+            "Ver-12-facht allen Pfleger-XP-Gewinn für 15 Min!": "Multiplies all caretaker XP gains by 12 for 15 min!",
+            "33% Chance, eine Niederlage im Minispiel in einen Sieg zu drehen (30 Min).": "33% chance to turn a mini-game loss into a win (30 min).",
+            "66% Chance auf einen Rettungs-Sieg in Minispielen (30 Min).": "66% chance of a rescue win in mini-games (30 min).",
+            "85% Chance auf einen Rettungs-Sieg in Minispielen (20 Min).": "85% chance of a rescue win in mini-games (20 min).",
+            "Kampfkraft in Bosskämpfen & PvP ×3 für 12 Std.": "Combat power in boss fights & PvP ×3 for 12 h.",
+            "Kampfkraft in Bosskämpfen & PvP ×4 für 6 Std.": "Combat power in boss fights & PvP ×4 for 6 h.",
+            "Kampfkraft in Bosskämpfen & PvP ×6 für 3 Std!": "Combat power in boss fights & PvP ×6 for 3 h!"
         });
 
         // --- Woerterbuch: Arten & ihre Beschreibungen (Wolkendorf-Tagebuch) ---
@@ -3932,7 +4101,7 @@
             let counts = [0,0,0,0];
             ACHIEVEMENTS.forEach(a => { let t = getMedalTier(a.id); if (t > 0) counts[t-1]++; });
             document.getElementById('medalProgressText').innerHTML =
-                `${getUnlockedMedalCount()} / ${ACHIEVEMENTS.length} freigeschaltet &nbsp;·&nbsp; 🥉${counts[0]} 🥈${counts[1]} 🥇${counts[2]} 💎${counts[3]}`;
+                `${getUnlockedMedalCount()} / ${ACHIEVEMENTS.length} ${t('freigeschaltet')} &nbsp;·&nbsp; 🥉${counts[0]} 🥈${counts[1]} 🥇${counts[2]} 💎${counts[3]}`;
 
             let grid = document.getElementById('medalGrid'); grid.innerHTML = '';
             ACHIEVEMENTS.forEach(ach => {
@@ -4232,8 +4401,8 @@
                 html += `
                     <div style="text-align:center; padding:14px 10px; background:linear-gradient(135deg,#6a89cc,#a29bfe); border-radius:12px; color:white; margin-bottom:12px;">
                         <div style="font-size:44px;">🔭</div>
-                        <div style="font-size:13px; font-weight:bold; margin-top:4px;">Blick ins Wolkendorf</div>
-                        <div style="font-size:11px; opacity:0.9; margin-top:4px; line-height:1.5;">Richte das Fernrohr auf das Wolkendorf und sieh, was dein Tamagotchi dort treibt. Der Blick gilt für den heutigen Tag.</div>
+                        <div style="font-size:13px; font-weight:bold; margin-top:4px;">${t('Blick ins Wolkendorf')}</div>
+                        <div style="font-size:11px; opacity:0.9; margin-top:4px; line-height:1.5;">${t('Richte das Fernrohr auf das Wolkendorf und sieh, was dein Tamagotchi dort treibt. Der Blick gilt für den heutigen Tag.')}</div>
                     </div>
                     <button class="onboard-btn ${tickets >= OBSERVE_TICKET_COST ? 'btn-blue' : 'btn-gray'}"
                         ${tickets >= OBSERVE_TICKET_COST ? 'onclick="buyObservation()"' : 'disabled'}
@@ -4263,7 +4432,7 @@
 
             // Vermächtnis-Übersicht
             html += `<div style="margin-top:16px; text-align:left;">
-                <div style="font-size:12px; font-weight:bold; color:#2d3436; border-bottom:1px solid #dfe6e9; padding-bottom:4px; margin-bottom:6px;">🏛️ Dein Vermächtnis (dauerhaft)</div>`;
+                <div style="font-size:12px; font-weight:bold; color:#2d3436; border-bottom:1px solid #dfe6e9; padding-bottom:4px; margin-bottom:6px;">🏛️ ${t('Dein Vermächtnis (dauerhaft)')}</div>`;
             let any = false;
             LEGACY_STATS.forEach(s => {
                 let b = getLegacyBonus(s.id);
@@ -4273,13 +4442,13 @@
                     <div style="display:flex; align-items:center; gap:8px; padding:4px 0; ${b > 0 ? '' : 'opacity:0.4;'}">
                         <div style="font-size:17px; width:24px; text-align:center;">${s.icon}</div>
                         <div style="flex:1;">
-                            <div style="font-size:11px; font-weight:bold;">${s.name}</div>
-                            <div style="font-size:9.5px; color:#576574;">${s.desc}</div>
+                            <div style="font-size:11px; font-weight:bold;">${t(s.name)}</div>
+                            <div style="font-size:9.5px; color:#576574;">${t(s.desc)}</div>
                         </div>
                         <div style="font-size:11px; font-weight:bold; color:${b > 0 ? '#00b894' : '#b2bec3'}; white-space:nowrap;">${b > 0 ? '+' + pct + '%' : '—'}</div>
                     </div>`;
             });
-            if (!any) html += `<div style="font-size:10px; color:#b2bec3; text-align:center; padding:6px;">Noch keine Boni. Verschicke dein erstes Geschenk!</div>`;
+            if (!any) html += `<div style="font-size:10px; color:#b2bec3; text-align:center; padding:6px;">${t('Noch keine Boni. Verschicke dein erstes Geschenk!')}</div>`;
             html += `</div>`;
 
             document.getElementById('endgameContent').innerHTML = html;
@@ -4378,17 +4547,17 @@
                         </div>
                     </div>
                     <div style="font-size:10px; color:#ffd166; margin-top:8px;">
-                        💰${Math.round(RAID_BOSS.base.coins*mult)} · 🎫${Math.round(RAID_BOSS.base.tickets*mult)} · +${Math.round(RAID_BOSS.base.xp*mult)}XP · 🎁 ${lootCount} zufällige Gegenstände
+                        💰${Math.round(RAID_BOSS.base.coins*mult)} · 🎫${Math.round(RAID_BOSS.base.tickets*mult)} · +${Math.round(RAID_BOSS.base.xp*mult)}XP · 🎁 ${lootCount} ${t('zufällige Gegenstände')}
                     </div>
                     <div style="font-size:10px; opacity:0.8; margin-top:4px;">
-                        Mindestens <b>2 Tamagotchis</b> nötig · aktuell <b>${participants}</b> · mehr Verbündete = mehr Beute
+                        ${t('Mindestens')} <b>2 ${t('Tamagotchis')}</b> ${t('nötig')} · ${t('aktuell')} <b>${participants}</b> · ${t('mehr Verbündete = mehr Beute')}
                     </div>
                     ${allyList}
                 </div>
                 ${used
-                    ? `<button class="onboard-btn btn-gray" disabled style="font-size:11px;">⏳ Diese Woche schon gekämpft</button>`
-                    : `<button class="onboard-btn btn-blue" style="font-size:11px;" onclick="triggerRaidImport()">📂 Tagesaktuelle Spielstände laden</button>
-                       <button class="onboard-btn ${ready ? 'btn-gold' : 'btn-gray'}" style="font-size:11px; margin-top:6px;" ${ready ? '' : 'disabled'} onclick="startRaidFight()">⚔️ Raid starten (${participants} Tamagotchis)</button>
+                    ? `<button class="onboard-btn btn-gray" disabled style="font-size:11px;">⏳ ${t('Diese Woche schon gekämpft')}</button>`
+                    : `<button class="onboard-btn btn-blue" style="font-size:11px;" onclick="triggerRaidImport()">📂 ${t('Tagesaktuelle Spielstände laden')}</button>
+                       <button class="onboard-btn ${ready ? 'btn-gold' : 'btn-gray'}" style="font-size:11px; margin-top:6px;" ${ready ? '' : 'disabled'} onclick="startRaidFight()">⚔️ ${t('Raid starten')} (${participants} ${t('Tamagotchis')})</button>
                        ${ready ? `<button class="onboard-btn btn-gray" style="font-size:10px; margin-top:6px;" onclick="clearRaidAllies()">Verbündete zurücksetzen</button>` : ''}`
                 }`;
         }
@@ -4400,21 +4569,21 @@
             let html = `
                 <div style="background:linear-gradient(135deg,#2d3436,#636e72); border-radius:10px; padding:12px; margin-bottom:12px; text-align:center; color:white;">
                     <div style="font-size:28px; margin-bottom:4px;">⚔️</div>
-                    <div style="font-size:13px; font-weight:bold;">Wolkendorf-Arena</div>
+                    <div style="font-size:13px; font-weight:bold;">${t('Wolkendorf-Arena')}</div>
                     <div style="margin-top:5px;">${medalRankBadgeHtml(dominantMedalTier(medalTiers), getUnlockedMedalCount(), true)}</div>
-                    <div style="font-size:10px; opacity:0.7; margin-top:3px;">Kämpfe können je 1× pro Woche gestartet werden</div>
+                    <div style="font-size:10px; opacity:0.7; margin-top:3px;">${t('Kämpfe können je 1× pro Woche gestartet werden')}</div>
                 </div>
                 <div style="font-size:13px; font-weight:bold; color:#2d3436; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🤝 PvP — Tamagotchi-Duell</div>
-                <p style="font-size:11px; color:#576574; margin-bottom:8px;">Lade die Spielstand-JSON eines anderen Nutzers und lasst eure Tamagotchis gegeneinander antreten!</p>
+                <p style="font-size:11px; color:#576574; margin-bottom:8px;">${t('Lade die Spielstand-JSON eines anderen Nutzers und lasst eure Tamagotchis gegeneinander antreten!')}</p>
                 ${pvpUsed
                     ? `<button class="onboard-btn btn-gray" disabled style="font-size:11px;">⏳ ${t('Dieses Woche schon gespielt')}</button>`
                     : `<button class="onboard-btn btn-blue" style="font-size:11px;" onclick="triggerPvPImport()">📂 ${t('Gegner-JSON laden & kämpfen')}</button>`
                 }
                 <button class="onboard-btn btn-gray" style="font-size:11px; margin-top:6px;" onclick="shareTamaForFight()"><i class="fa-solid fa-share-nodes"></i> ${t('Tama zum Kampf senden')}</button>
                 <p style="font-size:10px; color:#576574; margin-top:4px;">${t('Teile deine Spielstand-Datei, damit andere gegen dich antreten oder dich als Verbündeten in den Raid mitnehmen können.')}</p>
-                <div style="font-size:13px; font-weight:bold; color:#2d3436; margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🌩️ Raid — ${RAID_BOSS.name} (1× pro Woche)</div>
+                <div style="font-size:13px; font-weight:bold; color:#2d3436; margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🌩️ ${t('Raid')} — ${t(RAID_BOSS.name)} (${t('1× pro Woche')})</div>
                 ${raidSectionHtml()}
-                <div style="font-size:13px; font-weight:bold; color:#2d3436; margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">👹 Mini-Bosse (1× pro Woche je Boss)</div>`;
+                <div style="font-size:13px; font-weight:bold; color:#2d3436; margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">👹 ${t('Mini-Bosse')} (${t('1× pro Woche je Boss')})</div>`;
 
             ARENA_BOSSES.forEach(b => {
                 let used = arenaState.usedBosses.includes(b.id);
@@ -4425,17 +4594,17 @@
                         <div style="flex:1;">
                             <div style="font-size:12px; font-weight:bold;">${t(b.name)} <span style="font-size:10px;">Lvl ${b.lvl}</span></div>
                             <div style="font-size:10px; color:#576574; margin-top:1px;">${t(b.desc)}</div>
-                            <div style="font-size:10px; color:#f39c12; margin-top:2px;">💰${b.reward.coins} · 🎫${b.reward.tickets} · +${b.reward.xp}XP · ${Math.round(b.reward.lootChance*100)}% Trophäe</div>
+                            <div style="font-size:10px; color:#f39c12; margin-top:2px;">💰${b.reward.coins} · 🎫${b.reward.tickets} · +${b.reward.xp}XP · ${Math.round(b.reward.lootChance*100)}% ${t('Trophäe')}</div>
                         </div>
                         <div>${used
-                            ? `<button class="shop-btn btn-gray" disabled style="font-size:10px; white-space:nowrap;">⏳ Nächste Woche</button>`
+                            ? `<button class="shop-btn btn-gray" disabled style="font-size:10px; white-space:nowrap;">⏳ ${t('Nächste Woche')}</button>`
                             : (canFight
-                                ? `<button class="shop-btn btn-gold" onclick="startBossFight('${b.id}')" style="font-size:10px; white-space:nowrap;">⚔️ Kämpfen!</button>`
+                                ? `<button class="shop-btn btn-gold" onclick="startBossFight('${b.id}')" style="font-size:10px; white-space:nowrap;">⚔️ ${t('Kämpfen!')}</button>`
                                 : `<button class="shop-btn btn-gray" disabled style="font-size:10px; white-space:nowrap;">Kein Tama</button>`)
                         }</div>
                     </div>`;
             });
-            html += `<div style="margin-top:10px; font-size:10px; color:#b2bec3; text-align:center;">Arena-Quests setzen sich jeden Montag zurück.</div>`;
+            html += `<div style="margin-top:10px; font-size:10px; color:#b2bec3; text-align:center;">${t('Arena-Quests setzen sich jeden Montag zurück.')}</div>`;
             document.getElementById('arenaContent').innerHTML = html;
             document.getElementById('arenaModal').style.display = 'flex';
         }
@@ -4541,11 +4710,11 @@
                     safeSetItem('tama_inventory', JSON.stringify(inventory));
                     setTimeout(() => showAchievementBanner('🏆', `SELTENER LOOT: ${SHOP_ITEMS.find(i=>i.id===boss.reward.lootId)?.name || 'Trophäe'}!`, 'building'), 2400);
                 }
-                showAchievementBanner('🏆', `${boss.name} besiegt! +${boss.reward.coins}🪙 +${gotT}🎫`, 'building');
+                showAchievementBanner('🏆', `${t(boss.name)} ${t('besiegt!')} +${boss.reward.coins}🪙 +${gotT}🎫`, 'building');
             } else {
                 pet.happiness = Math.max(0, pet.happiness - 15);
                 pet.energy = Math.max(0, pet.energy - 20);
-                showAchievementBanner('💀', `${boss.name} hat gewonnen! Nächste Woche Revanche!`, 'generic');
+                showAchievementBanner('💀', `${t(boss.name)} ${t('hat gewonnen! Nächste Woche Revanche!')}`, 'generic');
                 playSound('lose');
             }
         }
@@ -4759,8 +4928,8 @@
             pill.classList.toggle('gone', departed);
 
             if (departed) {
-                if (txt) txt.innerText = 'morgen';
-                pill.title = 'Besuchszeit aufgebraucht — dein Wolkenwesen kommt morgen wieder.';
+                if (txt) txt.innerText = t('morgen');
+                pill.title = t('Besuchszeit aufgebraucht — dein Wolkenwesen kommt morgen wieder.');
             } else {
                 let m = Math.floor(left / 60), s = left % 60;
                 if (txt) txt.innerText = `${m}:${String(s).padStart(2, '0')}`;
@@ -4805,7 +4974,7 @@
 
         function checkLevelUnlocks(level) {
             LEVEL_UNLOCKS.filter(u => u.level === level).forEach(u => {
-                showAchievementBanner('🔓', `Freigeschaltet: ${u.name}`, 'unlock');
+                showAchievementBanner('🔓', `${t('Freigeschaltet')}: ${t(u.name)}`, 'unlock');
             });
         }
 
@@ -4822,8 +4991,8 @@
                     <div style="display:flex; align-items:center; gap:8px; padding:6px 2px; border-bottom:1px solid rgba(0,0,0,0.06);">
                         <div style="font-size:16px;">${unlocked ? '✅' : '🔒'}</div>
                         <div style="flex:1;">
-                            <div style="font-size:12px; font-weight:bold;">${u.name}</div>
-                            <div style="font-size:10px; color:#576574;">${unlocked ? 'Freigeschaltet!' : `Ab Pfleger-Level ${u.level}`}</div>
+                            <div style="font-size:12px; font-weight:bold;">${t(u.name)}</div>
+                            <div style="font-size:10px; color:#576574;">${unlocked ? 'Freigeschaltet!' : `${t('Ab Pfleger-Level')} ${u.level}`}</div>
                         </div>
                     </div>`;
             });
@@ -4889,19 +5058,19 @@
                     <div class="tombstone-rip">R.I.P.</div>
                     <div class="tombstone-head">
                         ${miniShellHtml}
-                        <div><span class="tombstone-name">${gPet.name}</span><br><span style="font-size:9px; color:#5a5148;">Pfleger: ${gPet.ownerName || 'Unbekannt'}</span></div>
+                        <div><span class="tombstone-name">${gPet.name}</span><br><span style="font-size:9px; color:#5a5148;">${t('Pfleger')}: ${gPet.ownerName || t('Unbekannt')}</span></div>
                     </div>
                     <div class="tombstone-dates">
                         ${gPet.bornDate || '-'} &nbsp;–&nbsp; ${gPet.deathDate || '-'}
                     </div>
                     <div class="tombstone-body">
-                        <b>Erreichtes Alter:</b> ${Math.floor(gPet.activeSeconds/1800)} Lebenstage<br>
-                        <b>Ursache:</b> ${gPet.causeOfDeath || 'Altersschwäche'}<br><br>
-                        <b>Chronik:</b><br>
+                        <b>${t('Erreichtes Alter')}:</b> ${Math.floor(gPet.activeSeconds/1800)} ${t('Lebenstage')}<br>
+                        <b>${t('Ursache')}:</b> ${t(gPet.causeOfDeath || 'Altersschwäche')}<br><br>
+                        <b>${t('Chronik')}:</b><br>
                         🍔 ${gPet.countFed||0}x &nbsp; 🛁 ${gPet.countBathed||0}x &nbsp; ❤️ ${gPet.countLoved||0}x<br>
                         🎮 ${gPet.countPlayed||0}x &nbsp; 🩺 ${gPet.countDoctor||0}x &nbsp; 💢 ${gPet.countDiscipline||0}x
                     </div>
-                    <button class="tombstone-toggle" onclick="toggleGraveReport()">📋 Pfleger-Bewertung anzeigen</button>
+                    <button class="tombstone-toggle" onclick="toggleGraveReport()">${t('📋 Pfleger-Bewertung anzeigen')}</button>
                     <div id="graveReport" style="display:none;">${caretakerReportHtml(gPet)}</div>
                 </div>`;
             document.getElementById('graveyardModal').style.display = 'flex';
@@ -4914,7 +5083,7 @@
             if (!el) return;
             let show = el.style.display === 'none';
             el.style.display = show ? 'block' : 'none';
-            if (btn) btn.textContent = show ? '📋 Pfleger-Bewertung ausblenden' : '📋 Pfleger-Bewertung anzeigen';
+            if (btn) btn.textContent = show ? t('📋 Pfleger-Bewertung ausblenden') : t('📋 Pfleger-Bewertung anzeigen');
             playSound('beep');
         }
 
@@ -5122,7 +5291,7 @@
             let topScores = list.slice(0, 20);
 
             if (topScores.length === 0) {
-                content.innerHTML = tabs + `<p style="font-size:11px; color:#576574; text-align:center; padding:18px 8px;">${t(cat.empty)}<br><span style="font-size:10px;">Lade Steckbriefe deiner Kolleginnen und Kollegen, um zu vergleichen.</span></p>`;
+                content.innerHTML = tabs + `<p style="font-size:11px; color:#576574; text-align:center; padding:18px 8px;">${t(cat.empty)}<br><span style="font-size:10px;">${t('Lade Steckbriefe deiner Kolleginnen und Kollegen, um zu vergleichen.')}</span></p>`;
                 return;
             }
 
@@ -5134,14 +5303,14 @@
                 let medalsCountHtml = entry.medals !== undefined ? `<span style="font-size:9px; color:#f39c12; margin-left:4px;">🏅 ${entry.medals}</span>` : '';
                 // In den Spieler-Wertungen steht der Pfleger oben, sonst das Tamagotchi
                 let title = cat.id === 'survival' ? entry.name : (entry.ownerName || 'Unbekannt');
-                let sub   = cat.id === 'survival' ? `von ${entry.ownerName || 'Unbekannt'}` : `mit ${entry.name}`;
+                let sub   = cat.id === 'survival' ? `${t('von')} ${entry.ownerName || t('Unbekannt')}` : `${t('mit')} ${entry.name}`;
 
                 html += `<tr${entry.isMe ? ' style="background:rgba(84,160,255,0.14);"' : ''}>
                             <td class="lb-rank">${medal}</td>
                             <td style="line-height:1.2; padding:8px 0;">
                                 <div style="display:flex; align-items:center;">
                                     ${miniShellHtml}
-                                    <div><b style="font-size:13px;">${title}</b>${entry.isMe ? ' <span style="font-size:9px;color:#54a0ff;font-weight:bold;">(Du)</span>' : ''} ${medalsCountHtml}<br><span style="font-size:9px; color:#576574;">${sub}</span></div>
+                                    <div><b style="font-size:13px;">${title}</b>${entry.isMe ? ' <span style="font-size:9px;color:#54a0ff;font-weight:bold;">' + t('(Du)') + '</span>' : ''} ${medalsCountHtml}<br><span style="font-size:9px; color:#576574;">${sub}</span></div>
                                 </div>
                             </td>
                             <td class="lb-score">${cat.fmt(entry)}</td>
@@ -5432,6 +5601,7 @@
                 tips.push('Tipp: Du pflegst stark – eine Münzprägerei oder Sternwarte würde dein Wachstum zusätzlich beschleunigen.');
             }
 
+            tips = tips.map(x => t(x));   // Tipps gleich in der aktiven Sprache
             return {
                 overall, grade, gradeIcon, gradeColor,
                 dims: { sFeed, sClean, sLove, sPlay, sHealth },
@@ -5456,19 +5626,19 @@
                 <div style="background:#f8f9fb; border-radius:10px; padding:10px 12px; margin-top:12px; text-align:left;">
                     <div style="text-align:center; margin-bottom:6px;">
                         <div style="font-size:26px;">${r.gradeIcon}</div>
-                        <div style="font-size:14px; font-weight:bold; color:${r.gradeColor};">${r.grade}</div>
-                        <div style="font-size:10px; color:#576574;">Pflege-Bewertung: ${r.overall}/100</div>
+                        <div style="font-size:14px; font-weight:bold; color:${r.gradeColor};">${t(r.grade)}</div>
+                        <div style="font-size:10px; color:#576574;">${t('Pflege-Bewertung')}: ${r.overall}/100</div>
                     </div>
-                    ${bar('Füttern', r.dims.sFeed)}
-                    ${bar('Sauberkeit', r.dims.sClean)}
-                    ${bar('Zuwendung', r.dims.sLove)}
-                    ${bar('Beschäftigung', r.dims.sPlay)}
-                    ${bar('Gesundheit', r.dims.sHealth)}
+                    ${bar(t('Füttern'), r.dims.sFeed)}
+                    ${bar(t('Sauberkeit'), r.dims.sClean)}
+                    ${bar(t('Zuwendung'), r.dims.sLove)}
+                    ${bar(t('Beschäftigung'), r.dims.sPlay)}
+                    ${bar(t('Gesundheit'), r.dims.sHealth)}
                     <div style="font-size:11px; color:#2f3542; margin-top:8px; line-height:1.5;">
-                        <b>${r.priorityIcon} Deine Prioritäten:</b><br>${r.priorityText}
+                        <b>${r.priorityIcon} ${t('Deine Prioritäten:')}</b><br>${t(r.priorityText)}
                     </div>
                     <div style="font-size:11px; color:#0b6b7d; margin-top:8px; line-height:1.5; background:#e7f7fb; border-radius:7px; padding:7px 9px;">
-                        <b>💡 Fürs nächste Mal:</b><br>${r.tip}
+                        <b>💡 ${t('Fürs nächste Mal:')}</b><br>${r.tip}
                     </div>
                 </div>`;
         }
@@ -5815,7 +5985,7 @@
                 </div>`;
             });
             document.getElementById('pokedexGrid').innerHTML = html;
-            document.getElementById('pokedexLore').innerText = 'Klicke auf eine Spezies für mehr Info.';
+            document.getElementById('pokedexLore').innerText = t('Klicke auf eine Spezies für mehr Info.');
             document.getElementById('pokedexModal').style.display = 'flex';
         }
 
@@ -6248,7 +6418,7 @@
                     ? `<button class="shop-btn btn-gray" disabled style="white-space:nowrap;">MAX ✓</button>`
                     : `<button class="shop-btn ${canAfford ? 'btn-gold' : 'btn-gray'}" onclick="${canAfford ? `buyVillageUpgrade('${b.id}')` : ''}" style="white-space:nowrap;">${nextTier.price} 🎫</button>`;
 
-                let currentEffectText = curLevel > 0 ? b.tiers[curLevel - 1].effectLabel : 'Noch nicht gebaut';
+                let currentEffectText = curLevel > 0 ? t(b.tiers[curLevel - 1].effectLabel) : t('Noch nicht gebaut');
                 let nextEffectText = !isMaxed ? `${t('Nächste Stufe')}: ${t(nextTier.effectLabel)} (${nextTier.price} 🎫)` : t('Maximalstufe erreicht!');
 
                 html += `
@@ -6266,8 +6436,8 @@
                     </div>`;
             });
             html += `<div style="margin-top:10px; font-size:11px; color:#576574; text-align:center; padding:8px; background:rgba(0,0,0,0.04); border-radius:8px;">
-                🌤️ Wolkendorf-Ausbau: <b>${totalLevels} / ${maxLevels}</b> Stufen<br>
-                <span style="font-size:10px;">Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Pomodoro-Sessions (🍅).</span>
+                🌤️ ${t('Wolkendorf-Ausbau')}: <b>${totalLevels} / ${maxLevels}</b> ${t('Stufen')}<br>
+                <span style="font-size:10px;">${t('villageFootnote')}</span>
             </div>`;
             document.getElementById('villageContent').innerHTML = '<div id="villageCity"></div>' + html;
             drawVillageCity();
@@ -6312,7 +6482,7 @@
 
         function openPomodoroModal() {
             if (!state.isStarted || pet.isDead || pet.isDeparted) {
-                playSound('cancel'); playAnimation('🍅❌<br>Kein aktives Tama!', 2000); return;
+                playSound('cancel'); playAnimation('🍅❌<br>' + t('Kein aktives Tama!'), 2000); return;
             }
             if (pomodoroActive) {
                 document.getElementById('pomodoroOverlay').style.display = 'flex'; return;
@@ -7345,7 +7515,7 @@
         const ARCADE_META = {
             invaders: { name: 'SPACE INVADERS', owned: 'arcade_invaders', controls: 'lrf', hint: '◀ ▶ BEWEGEN · ● FEUER' },
             pong:     { name: 'PONG',           owned: 'arcade_pong',     controls: 'ud',  hint: '▲ ▼ SCHLÄGER BEWEGEN' },
-            defender: { name: 'DEFENDER',       owned: 'arcade_defender', controls: 'udf', hint: '▲ ▼ FLIEGEN · ● FEUER' }
+            defender: { name: 'DEFENDER',       owned: 'arcade_defender', controls: 'ud',  hint: '▲ ▼ FLIEGEN · DAUERFEUER' }
         };
         let arcadeHi = JSON.parse(safeGetItem('tama_arcade_hi') || '{}');
         function saveArcadeHi() { safeSetItem('tama_arcade_hi', JSON.stringify(arcadeHi)); }
@@ -7732,14 +7902,15 @@
             function burst(x, y, col) { for (let i = 0; i < 10; i++) particles.push({ x, y, vx:(Math.random()-.5)*190, vy:(Math.random()-.5)*190, life:0.5, color: col }); }
             function loseLife() { g.lives--; burst(player.x, player.y, '#ff5d73'); playSound('lose'); if (g.lives <= 0) arcadeEnd(false); }
             g.hudCenter = () => 'DIST ' + Math.floor(dist);
-            g.intro = 'Fliege durchs All und ballere\ndich durch die UFO-Schwärme!';
+            g.intro = 'Fliege durchs All!\nDeine Kanone feuert von allein.';
             g.update = (dt) => {
                 dist += dt*12;
                 if (arcade.input.up) player.y -= player.speed*dt;
                 if (arcade.input.down) player.y += player.speed*dt;
                 player.y = Math.max(20, Math.min(H-20, player.y));
                 cool -= dt;
-                if (arcade.input.fire && cool <= 0) { bullets.push({ x: player.x+20, y: player.y }); cool = 0.26; playSound('beep'); }
+                // Dauerfeuer: drei Knoepfe gleichzeitig waren zu fummelig - jetzt nur noch fliegen.
+                if (cool <= 0) { bullets.push({ x: player.x+20, y: player.y }); cool = 0.26; playSound('beep'); }
                 bullets.forEach(b => b.x += 400*dt); bullets = bullets.filter(b => b.x < W+12);
                 spawnT += dt;
                 let every = Math.max(0.45, 1.2 - dist*0.0025);
@@ -8006,7 +8177,7 @@
             btn.style.display = '';
             btn.style.opacity = stepMotion.active ? '1' : '0.55';
             let el = document.getElementById('stepCount');
-            if (el) el.innerText = stepData.steps.toLocaleString('de-CH');
+            if (el) el.innerText = stepData.steps.toLocaleString(lang === 'en' ? 'en-GB' : 'de-CH');
         }
 
         function openStepsModal() {
@@ -8025,19 +8196,18 @@
             box.innerHTML = `
                 <div class="step-ring" style="background: conic-gradient(#70a1ff ${pct}%, #eef1f6 ${pct}%);">
                     <div style="width:88px;height:88px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                        <b style="font-size:21px;color:#2f3542;line-height:1;">${stepData.steps.toLocaleString('de-CH')}</b>
-                        <small style="font-size:9px;color:#747d8c;">Schritte heute</small>
+                        <b style="font-size:21px;color:#2f3542;line-height:1;">${stepData.steps.toLocaleString(lang === 'en' ? 'en-GB' : 'de-CH')}</b>
+                        <small style="font-size:9px;color:#747d8c;">${t('Schritte heute')}</small>
                     </div>
                 </div>
-                <div class="step-row"><span>Verdient heute</span><b>${stepData.rewarded} 🪙</b></div>
-                <div class="step-row"><span>${capped ? 'Tageslimit erreicht' : 'Bis zu den nächsten 50 🪙'}</span><b>${capped ? '✓' : toNext + ' Schritte'}</b></div>
-                <div class="step-row"><span>Tageslimit</span><b>${STEP_DAILY_CAP.toLocaleString('de-CH')} Schritte</b></div>
+                <div class="step-row"><span>${t('Verdient heute')}</span><b>${stepData.rewarded} 🪙</b></div>
+                <div class="step-row"><span>${capped ? t('Tageslimit erreicht') : t('Bis zu den nächsten 50 🪙')}</span><b>${capped ? '✓' : toNext + ' ' + t('Schritte')}</b></div>
+                <div class="step-row"><span>${t('Tageslimit')}</span><b>${STEP_DAILY_CAP.toLocaleString(lang === 'en' ? 'en-GB' : 'de-CH')} ${t('Schritte')}</b></div>
                 ${stepMotion.active
-                    ? `<button class="onboard-btn btn-gray" style="width:100%; margin-top:12px;" onclick="disableStepCounter()">Zählen pausieren</button>`
-                    : `<button class="onboard-btn btn-blue" style="width:100%; margin-top:12px;" onclick="enableStepCounter()">Schrittzählung starten</button>`}
+                    ? `<button class="onboard-btn btn-gray" style="width:100%; margin-top:12px;" onclick="disableStepCounter()">${t('Zählen pausieren')}</button>`
+                    : `<button class="onboard-btn btn-blue" style="width:100%; margin-top:12px;" onclick="enableStepCounter()">${t('Schrittzählung starten')}</button>`}
                 <div class="step-note">
-                    <b>Wichtig:</b> Gezählt wird nur, solange die App offen und sichtbar ist – Browser bekommen im Hintergrund keine Sensordaten.
-                    Nimm dein Handy also mit auf die Runde. Die Erkennung läuft über den Beschleunigungssensor und ist ein Schätzwert.
+                    ${t('stepsNote')}
                 </div>`;
         }
 
@@ -8389,7 +8559,7 @@
                         let icons = openErgo.slice(0, 6).map(o => o.def.title.split(' ')[0]).join(' ');
                         ergoHtml = `<div style="margin-top:4px; padding:4px 6px; background:rgba(0,184,148,0.18); border-radius:6px; font-size:8.5px; line-height:1.3; cursor:pointer;" onclick="openQuestModal()">💭 Denk an deine Pausen!<br><span style="font-size:13px;">${icons}</span><br><b>${openErgo.length} offen › tippen</b></div>`;
                     }
-                    screenContent.innerHTML = `<div style="font-size:24px; margin-top:0;">☁️🚌</div><div style="font-size:9px; padding: 1px; line-height: 1.2;">Der Wolken-Bus hat mich abgeholt.<br><b>Bis morgen! 👋</b></div>${ergoHtml}`;
+                    screenContent.innerHTML = `<div style="font-size:24px; margin-top:0;">☁️🚌</div><div style="font-size:9px; padding: 1px; line-height: 1.2;">${t('Der Wolken-Bus hat mich abgeholt.')}<br><b>${t('Bis morgen! 👋')}</b></div>${ergoHtml}`;
                 }
                 else if(isCrash) {
                     screenContent.innerHTML = `<div style="font-size:20px;">:(</div><div style="font-size:10px; margin-top:10px; text-align:left;">FATAL_ERROR<br>SYSTEM HALTED<br>REBOOT IN:<br>${Math.max(0, pet.isCrashedUntil - pet.activeSeconds)}s</div>`;
