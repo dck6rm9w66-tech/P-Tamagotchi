@@ -503,6 +503,43 @@
         .fighter-hurt { animation: hurtJolt 0.35s ease-out; }
         @keyframes hurtJolt { 0%,100% { transform: translateX(0); filter: none; } 30% { transform: translateX(-7px); filter: brightness(2.2) saturate(0); } 60% { transform: translateX(5px); } }
 
+        /* === AMBIENTE HINTER DER HUELLE === */
+        .ambient-layer {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .amb {
+            position: absolute; will-change: transform, opacity;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.18));
+        }
+        /* Geister: steigen langsam auf und schweben seitlich */
+        .amb-ghost { font-size: 34px; opacity: 0; animation: ghostFloat linear infinite; }
+        @keyframes ghostFloat {
+            0%   { transform: translate(0, 22vh) scale(0.7) rotate(-6deg); opacity: 0; }
+            12%  { opacity: 0.55; }
+            50%  { transform: translate(30px, -12vh) scale(1) rotate(5deg); opacity: 0.7; }
+            88%  { opacity: 0.4; }
+            100% { transform: translate(-14px, -46vh) scale(1.15) rotate(-4deg); opacity: 0; }
+        }
+        /* Heimsuchung faerbt den Hintergrund duester */
+        body.haunted { background-color: #241a2e; }
+        body.haunted::after {
+            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 50% 60%, rgba(120,60,160,0.20), transparent 62%);
+            animation: hauntPulse 5s ease-in-out infinite;
+        }
+        @keyframes hauntPulse { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+        /* Item-Ambiente: sanft aufsteigende Symbole */
+        .amb-item { font-size: 22px; opacity: 0; animation: ambRise linear infinite; }
+        @keyframes ambRise {
+            0%   { transform: translateY(16vh) scale(0.6) rotate(0deg); opacity: 0; }
+            15%  { opacity: 0.5; }
+            85%  { opacity: 0.35; }
+            100% { transform: translateY(-42vh) scale(1.1) rotate(22deg); opacity: 0; }
+        }
+        /* Die Buehne muss ueber dem Ambiente liegen */
+        .stage { position: relative; z-index: 1; }
+
         /* === POMODORO OVERLAY === */
         .pomodoro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 300; flex-direction: column; color: white; font-family: 'Courier New', monospace; text-align: center; padding: 20px; box-sizing: border-box; }
         .pomodoro-timer { font-size: 52px; font-weight: bold; margin: 15px 0; color: #1dd1a1; letter-spacing: 2px; }
@@ -585,6 +622,16 @@
         .tombstone-name { font-size: 15px; font-weight: bold; color: #2f2a22; }
         .tombstone-dates { font-size: 11px; color: #5a5148; font-style: italic; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,0.15); }
         .tombstone-body { font-size: 12px; line-height: 1.6; text-align: left; display: inline-block; }
+        .grave-care-btn {
+            margin-top: 12px; width: 100%; padding: 9px; border: none; border-radius: 8px;
+            background: #6c5b7b; color: #fff; font-size: 11px; font-weight: bold; cursor: pointer;
+            font-family: Arial, sans-serif; transition: background 0.15s;
+        }
+        .grave-care-btn:hover { background: #5a4b68; }
+        .grave-care-btn.on { background: #1dd1a1; color: #06301f; }
+        .grave-care-btn.on:hover { background: #17b98d; }
+        .tombstone.cared { box-shadow: inset 0 3px 8px rgba(255,255,255,0.5), inset 0 -4px 10px rgba(0,0,0,0.15), 0 0 0 2px #1dd1a1, 0 4px 12px rgba(29,209,161,0.35); }
+
         .tombstone-toggle {
             margin-top: 14px; width: 100%; padding: 8px; border: none; border-radius: 8px;
             background: #8a8474; color: #fff; font-size: 11px; font-weight: bold; cursor: pointer;
@@ -1135,6 +1182,30 @@
                     <li><b>Altersschwäche:</b> Natürliches Ende nach ca. 5,5 bis 8,5 Stunden <b>aktiver Bildschirmzeit</b>.</li>
                 </ul>
 
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #6c5b7b;">🪦 Grabpflege & die Ahnen</h3>
+                <p style="font-size: 12px; margin-bottom: 8px;">Jedes verstorbene Tamagotchi bekommt einen Grabstein in der <b>Ahnengalerie</b> (💀). Für <b>5 🪙 pro Tag und Grab</b> kannst du ein Grab pflegen lassen – das Abo wird täglich automatisch abgebucht.</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 8px;">
+                    <li><b>Ab 50% gepflegter Gräber</b> ist alles in Ordnung – die Ahnen ruhen in Frieden.</li>
+                    <li><b>Unter 50%</b> suchen sie dich heim: Dein Tamagotchi fürchtet sich und wird nur noch <b>maximal 25% glücklich</b>, egal wie sehr du dich bemühst. Im Hintergrund schweben dann Geister umher.</li>
+                </ul>
+                <p style="font-size: 12px; margin-bottom: 15px;">Reicht dein Guthaben beim täglichen Einzug nicht, werden so viele Abos wie möglich behalten – der Rest wird eingestellt. Je mehr Ahnen du sammelst, desto teurer wird die Ruhe: Plane dein Budget entsprechend!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #c0392b;">💸 Was der Tod kostet</h3>
+                <p style="font-size: 12px; margin-bottom: 6px;">Stirbt dein Tamagotchi, beginnt der nächste Schützling bei null. <b>Verloren gehen:</b></p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 8px;">
+                    <li><b>Alle T-Coins</b> 🪙 und <b>alle Pausen-Tickets</b> 🎫 – dein Konto wird auf 0 zurückgesetzt.</li>
+                    <li>Alle gekauften Gegenstände, Hüte, Lacke und aktiven Buffs.</li>
+                </ul>
+                <p style="font-size: 12px; margin-bottom: 6px;"><b>Dir bleiben</b> – das gehört dem Pfleger, nicht dem Tamagotchi:</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 10px;">
+                    <li>Dein <b>Pfleger-Level</b> samt XP und alle <b>Medaillen</b>.</li>
+                    <li>Der komplette <b>Wolkendorf-Ausbau</b> mit allen Stufen-Boni.</li>
+                    <li>Gekaufte <b>Arcade-Automaten</b> und deren Bestenliste.</li>
+                    <li>Dein eigenes <b>Bild/Skin</b> und <b>Hintergrundbild</b>.</li>
+                    <li>Friedhof, Highscores und dein Lebenswerk.</li>
+                </ul>
+                <p style="font-size: 11px; color: #576574; margin-bottom: 15px;">Tipp: Investiere Tickets rechtzeitig ins Wolkendorf – dort sind sie dauerhaft sicher. Was auf dem Konto liegt, ist beim Tod weg.</p>
+
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #6c5ce7;">🧠 Clevere Zusammenhänge</h3>
                 <p style="font-size: 12px; margin-bottom: 6px;">Ein paar Dinge greifen im Hintergrund ineinander – wer sie kennt, pflegt effizienter und sammelt mehr Pfleger-XP:</p>
                 <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 15px;">
@@ -1209,15 +1280,15 @@
                 <button class="save-action" onclick="exportBackup()">
                     <i class="fa-solid fa-file-arrow-down"></i>
                     <span class="sa-text">
-                        <span class="sa-title">Sichern</span>
-                        <span class="sa-sub">Kompletten Fortschritt als Datei speichern</span>
+                        <span class="sa-title" data-i18n>Sichern</span>
+                        <span class="sa-sub" data-i18n>Kompletten Fortschritt als Datei speichern</span>
                     </span>
                 </button>
                 <button class="save-action" onclick="triggerBackupImport()">
                     <i class="fa-solid fa-file-arrow-up"></i>
                     <span class="sa-text">
-                        <span class="sa-title">Laden</span>
-                        <span class="sa-sub">Aus Datei wiederherstellen (ersetzt alles)</span>
+                        <span class="sa-title" data-i18n>Laden</span>
+                        <span class="sa-sub" data-i18n>Aus Datei wiederherstellen (ersetzt alles)</span>
                     </span>
                 </button>
             </div>
@@ -1304,7 +1375,7 @@
             <div style="flex-shrink: 0; margin-top: 10px;">
                 <p data-i18n-block="lbHint" style="font-size: 10px; margin-bottom:5px; color:#576574;">Lade die .json-Dateien der anderen aus eurem Netzwerkordner – oder teile deinen eigenen Steckbrief.</p>
                 <button onclick="document.getElementById('officeScoreInput').click()" class="onboard-btn btn-blue"><i class="fa-solid fa-folder-open"></i> Scores laden</button>
-                <button onclick="exportMyScoreFile()" class="onboard-btn btn-gray" style="margin-top:6px;"><i class="fa-solid fa-share-nodes"></i> Meinen Steckbrief teilen</button>
+                <button onclick="exportMyScoreFile()" class="onboard-btn btn-gray" style="margin-top:6px;"><i class="fa-solid fa-share-nodes"></i> <span data-i18n>Meinen Steckbrief teilen</span></button>
             </div>
         </div>
     </div>
@@ -1413,6 +1484,9 @@
             <button class="onboard-btn btn-red" style="width:auto; padding:8px 20px;" onclick="interruptPomodoro()">❌ Abbrechen</button>
         </div>
     </div>
+
+    <!-- Ambiente hinter der Hülle: Geister bei Ahnen-Heimsuchung, Effekte aktiver Shop-Items -->
+    <div class="ambient-layer" id="ambientLayer" aria-hidden="true"></div>
 
     <div class="stage">
         <div class="active-buffs-bar" id="activeBuffsBar"></div>
@@ -2293,12 +2367,12 @@
                 });
 
                 let btnClass = w.hasSpun ? 'btn-gray' : 'btn-gold';
-                let btnText = w.hasSpun ? 'Heute schon gedreht' : 'Rad drehen!';
+                let btnText = w.hasSpun ? t('Heute schon gedreht') : t('Rad drehen!');
                 let btnAction = w.hasSpun ? '' : 'spinWheel()';
                 
                 container.innerHTML = `
                     <div style="text-align:center; padding:10px;">
-                        <p style="font-size:12px; margin-bottom:15px; color:#576574;">Einmal täglich kostenlos drehen und T-Coins oder Items gewinnen!</p>
+                        <p style="font-size:12px; margin-bottom:15px; color:#576574;">${t('Einmal täglich kostenlos drehen und T-Coins oder Items gewinnen!')}</p>
                         <div class="wheel-container">
                             <div class="wheel-pointer"></div>
                             <div class="wheel" id="fortuneWheel" style="transform: rotate(${w.lastRotation || 0}deg)">
@@ -2539,7 +2613,7 @@
             'tama_inventory', 'tama_buff_expiries',  // Inventar & Buffs
             'tama_village', 'tama_arena', 'tama_legacy',
             'tama_quests', 'tama_pokedex',
-            'tama_graveyard_v6', 'tama_leaderboard_v6',
+            'tama_graveyard_v6', 'tama_leaderboard_v6', 'tama_graves_care',
             'tama_arcade_hi', 'tama_pomodoro',
             'tama_story_seen', 'tama_notif_seen',
             'tama_muted', 'tama_last_backup', 'tama_lang',
@@ -2576,8 +2650,17 @@
         }
         const I18N = {};        // wird weiter unten befuellt: deutsch -> englisch
 
+        // Einige Texte sind zu lang/HTML-lastig fuer den deutschen Wortlaut als
+        // Schluessel - die bekommen einen Kurzschluessel und hier den DE-Wortlaut.
+        const I18N_DE = {
+            'giftNote': 'Jedes Geschenk hebt einen <b>zufälligen Stat dauerhaft um 0,5%</b> – auch für alle zukünftigen Tamagotchis.',
+            'stepsNote': '<b>Wichtig:</b> Gezählt wird nur, solange die App offen und sichtbar ist – Browser bekommen im Hintergrund keine Sensordaten. Nimm dein Handy also mit auf die Runde. Die Erkennung läuft über den Beschleunigungssensor und ist ein Schätzwert.',
+            'villageFootnote': 'Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Pomodoro-Sessions (🍅).'
+        };
+
         function t(s) {
-            if (lang === 'de' || s === undefined || s === null) return s;
+            if (s === undefined || s === null) return s;
+            if (lang === 'de') return (I18N_DE[s] !== undefined) ? I18N_DE[s] : s;
             let str = String(s);
             if (I18N[str] !== undefined) return I18N[str];
             let trimmed = str.trim();
@@ -2727,6 +2810,30 @@
                     <li><b>Illness:</b> untreated for too long.</li>
                     <li><b>Old age:</b> the natural end after roughly 5.5 to 8.5 hours of <b>active screen time</b>.</li>
                 </ul>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #6c5b7b;">🪦 Grave Care & the Ancestors</h3>
+                <p style="font-size: 12px; margin-bottom: 8px;">Every Tamagotchi that passes away gets a tombstone in the <b>Hall of Ancestors</b> (💀). For <b>5 🪙 per day and grave</b> you can keep a grave maintained – the plan is charged automatically each day.</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 8px;">
+                    <li><b>From 50% of graves maintained</b> everything is fine – the ancestors rest in peace.</li>
+                    <li><b>Below 50%</b> they come to haunt you: your Tamagotchi is frightened and can only reach <b>25% happiness</b>, no matter how hard you try. Ghosts will drift through the background.</li>
+                </ul>
+                <p style="font-size: 12px; margin-bottom: 15px;">If your balance is not enough on the daily charge, as many plans as possible are kept and the rest are suspended. The more ancestors you gather, the more expensive their peace becomes – budget accordingly!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #c0392b;">💸 What Death Costs You</h3>
+                <p style="font-size: 12px; margin-bottom: 6px;">When your Tamagotchi dies, the next one starts from scratch. <b>You lose:</b></p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 8px;">
+                    <li><b>All T-Coins</b> 🪙 and <b>all break tickets</b> 🎫 – your balance is reset to 0.</li>
+                    <li>Every purchased item, hat, paint and active buff.</li>
+                </ul>
+                <p style="font-size: 12px; margin-bottom: 6px;"><b>You keep</b> – this belongs to the caretaker, not the Tamagotchi:</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 10px;">
+                    <li>Your <b>caretaker level</b> with its XP and all your <b>medals</b>.</li>
+                    <li>The entire <b>Cloud Village</b> with all its level bonuses.</li>
+                    <li>Purchased <b>arcade machines</b> and their high scores.</li>
+                    <li>Your own <b>image/skin</b> and <b>background image</b>.</li>
+                    <li>The graveyard, the leaderboards and your lifetime record.</li>
+                </ul>
+                <p style="font-size: 11px; color: #576574; margin-bottom: 15px;">Tip: invest tickets into the Cloud Village in good time – they are safe there for good. Whatever sits in your balance is gone when your Tamagotchi dies.</p>
 
         `;
 
@@ -3156,7 +3263,62 @@
             "85% Chance auf einen Rettungs-Sieg in Minispielen (20 Min).": "85% chance of a rescue win in mini-games (20 min).",
             "Kampfkraft in Bosskämpfen & PvP ×3 für 12 Std.": "Combat power in boss fights & PvP ×3 for 12 h.",
             "Kampfkraft in Bosskämpfen & PvP ×4 für 6 Std.": "Combat power in boss fights & PvP ×4 for 6 h.",
-            "Kampfkraft in Bosskämpfen & PvP ×6 für 3 Std!": "Combat power in boss fights & PvP ×6 for 3 h!"
+            "Kampfkraft in Bosskämpfen & PvP ×6 für 3 Std!": "Combat power in boss fights & PvP ×6 for 3 h!",
+            // Spielstand-Knoepfe
+            "Sichern": "Back up", "Laden": "Load",
+            "Kompletten Fortschritt als Datei speichern": "Save your complete progress as a file",
+            "Aus Datei wiederherstellen (ersetzt alles)": "Restore from a file (replaces everything)",
+            "Meinen Steckbrief teilen": "Share my profile",
+            // Medaillen-Rang
+            "Überwiegend": "Mostly", "Medaillen": "medals", "-Rang": " rank", "Medaillen-Rang": "Medal rank",
+            // Glücksrad
+            "Einmal täglich kostenlos drehen und T-Coins oder Items gewinnen!": "One free spin a day – win T-Coins or items!",
+            "Heute schon gedreht": "Already spun today", "Rad drehen!": "Spin the wheel!",
+            // Medaillen-Detail
+            "Geheim": "Secret", "Bedingung noch nicht erfüllt.": "Requirement not met yet.",
+            // Arcade-Einleitungen
+            "Wehre die Alien-Wellen ab!": "Fend off the alien waves!",
+            "Dein Ei ist die Laserkanone.": "Your egg is the laser cannon.",
+            "Fliege durchs All!": "Fly through space!",
+            "Deine Kanone feuert von allein.": "Your cannon fires by itself.",
+            "Erreiche 7 Punkte gegen die Wolken-KI!": "Reach 7 points against the cloud AI!",
+            "Dein Ei ist der Schläger.": "Your egg is the paddle.",
+            // Fernrohr
+            "Live aus dem Wolkendorf": "Live from the Cloud Village",
+            "Geschenk schicken": "Send a gift",
+            // Grabpflege
+            "Die Ahnen sind erzürnt!": "The ancestors are furious!",
+            "Die Ahnen ruhen in Frieden": "The ancestors rest in peace",
+            "{0} von {1} Gräbern gepflegt ({2}%)": "{0} of {1} graves maintained ({2}%)",
+            "Unter 50% Pflege suchen sie dein Tamagotchi heim: Es fürchtet sich und wird nur noch maximal 25% glücklich.": "Below 50% maintenance they haunt your Tamagotchi: it is frightened and can only reach 25% happiness.",
+            "Ab 50% gepflegter Gräber bleibt alles beim Alten.": "From 50% maintained graves onwards, nothing changes.",
+            "Kosten: {0} 🪙 pro Tag ({1} 🪙 je Grab)": "Cost: {0} 🪙 per day ({1} 🪙 per grave)",
+            "Gepflegt — Abo beenden": "Maintained — cancel plan",
+            "Pflegen für {0} 🪙/Tag": "Maintain for {0} 🪙/day",
+            "Nicht genug T-Coins für die Grabpflege!": "Not enough T-Coins for grave maintenance!",
+            "Grabpflege: -{0} 🪙 für {1} Gräber": "Grave care: -{0} 🪙 for {1} graves",
+            "Zu wenig T-Coins - Grabpflege teilweise eingestellt!": "Too few T-Coins – grave care partly suspended!",
+            "Mit ins Grab gegangen": "Gone to the grave",
+            "Alle T-Coins 🪙 und Pausen-Tickets 🎫 sowie gekaufte Gegenstände sind verloren.": "All T-Coins 🪙 and break tickets 🎫 as well as purchased items are lost.",
+            "Dir bleiben": "You keep",
+            "Pfleger-Level, Medaillen, Wolkendorf, Arcade-Automaten und dein eigenes Bild.": "Caretaker level, medals, the Cloud Village, arcade machines and your own image.",
+            "Highscore gesichert": "High score saved",
+            "Deine fälschungssichere Datei wurde heruntergeladen – verschiebe sie in euren Büro-Ordner fürs Leaderboard!": "Your tamper-proof file has been downloaded – move it into your office folder for the leaderboard!",
+            "Freigeschaltet!": "Unlocked!",
+            "Geschenk senden": "Send gift", "Heute alle 3 verschickt": "All 3 sent today",
+            "Heute noch": "Remaining today", "Geschenke": "gifts", "Du hast": "You have",
+            "giftNote": "Every gift permanently raises a <b>random stat by 0.5%</b> – for all your future Tamagotchis too.",
+            // Wolkendorf-Szenen (Fernrohr)
+            "Es macht ein Nickerchen auf einer besonders flauschigen Wolke.": "It is having a nap on a particularly fluffy cloud.",
+            "Es turnt vergnügt über einen Regenbogen.": "It is happily tumbling across a rainbow.",
+            "Es trinkt Wolkentee mit seinen Freunden.": "It is drinking cloud tea with its friends.",
+            "Es planscht in einem Wolkenbad voller Seifenblasen.": "It is splashing in a cloud bath full of soap bubbles.",
+            "Es liest in der Wolkenbibliothek – ganz vertieft.": "It is reading in the cloud library – completely absorbed.",
+            "Es angelt Sternschnuppen vom Himmelsrand.": "It is fishing shooting stars off the edge of the sky.",
+            "Es lässt bunte Ballons über das Dorf steigen.": "It is letting colourful balloons rise above the village.",
+            "Im Dorf wird gefeiert – es hat das größte Stück Kuchen!": "The village is celebrating – it got the biggest slice of cake!",
+            "Es schaut nach unten zur Erde… und vermisst dich ein bisschen.": "It is looking down at the earth… and missing you a little.",
+            "Es poliert den Mond, damit er heute Nacht besonders hell scheint.": "It is polishing the moon so it shines extra brightly tonight."
         });
 
         // --- Woerterbuch: Arten & ihre Beschreibungen (Wolkendorf-Tagebuch) ---
@@ -3320,9 +3482,10 @@
             return best;
         }
         function medalRankBadgeHtml(tier, medalCount, small) {
-            if (!tier) return `<span class="rank-badge rank-none" style="${small?'font-size:9px;':''}">ohne Medaillen-Rang</span>`;
-            let t = MEDAL_TIERS[tier - 1];
-            return `<span class="rank-badge" style="background:${t.color}22; border-color:${t.color}; color:${t.text}; ${small?'font-size:9px;':''}" title="Überwiegend ${t.name}-Medaillen">${t.badge} ${t.name}-Rang${medalCount !== undefined ? ` · ${medalCount} 🏅` : ''}</span>`;
+            if (!tier) return `<span class="rank-badge rank-none" style="${small?'font-size:9px;':''}">${t('ohne Medaillen-Rang')}</span>`;
+            // Bewusst NICHT "t" nennen - das ist die Uebersetzungsfunktion.
+            let mt = MEDAL_TIERS[tier - 1];
+            return `<span class="rank-badge" style="background:${mt.color}22; border-color:${mt.color}; color:${mt.text}; ${small?'font-size:9px;':''}" title="${t('Überwiegend')} ${t(mt.name)}-${t('Medaillen')}">${mt.badge} ${t(mt.name)}${t('-Rang')}${medalCount !== undefined ? ` · ${medalCount} 🏅` : ''}</span>`;
         }
 
         // Pruefsumme ueber den kompletten Inhalt (sortierte Schluessel + Salt).
@@ -3381,7 +3544,7 @@
                     else safeRemoveItem(k);   // nicht im Backup = gab es dort nicht
                 });
                 let rank = dominantMedalTier(JSON.parse(parsed.data.tama_medals || '{}'));
-                let rankTxt = rank ? ` Medaillen-Rang: ${MEDAL_TIERS[rank-1].badge} ${MEDAL_TIERS[rank-1].name}.` : '';
+                let rankTxt = rank ? ` ${t('Medaillen-Rang')}: ${MEDAL_TIERS[rank-1].badge} ${t(MEDAL_TIERS[rank-1].name)}.` : '';
                 return { msg: `Kompletter Spielstand wiederhergestellt (${Object.keys(parsed.data).length} Bereiche).${rankTxt}${note}` };
             }
             // Altes Format (vor V2.16): die Datei war nur das Tamagotchi-Objekt
@@ -3865,8 +4028,18 @@
             // Aktive Buffs samt Echtzeit-Ablauf entfernen
             buffExpiries = {};
             safeSetItem('tama_buff_expiries', JSON.stringify(buffExpiries));
-            // Nicht angetastet: T-Coins, Pausen-Tickets, Pfleger-Level/-XP, Medaillen,
-            // Arcade-Bestenliste, Arcade-Automaten, eigener Skin & Hintergrund.
+
+            // Waehrungen verfallen mit dem Tamagotchi: Der naechste Schuetzling
+            // startet finanziell bei null. Erspieltes des PFLEGERS (Level, XP,
+            // Medaillen, Dorf, Highscores) bleibt davon unberuehrt.
+            tCoins = 0;
+            safeSetItem('tama_tcoins', '0');
+            tickets = 0;
+            safeSetItem('tama_tickets', '0');
+            try { updateCoinDisplay(); updateTicketDisplay(); } catch(e) {}
+
+            // Nicht angetastet: Pfleger-Level/-XP, Medaillen,
+            // Wolkendorf, Arcade-Bestenliste, Arcade-Automaten, eigener Skin & Hintergrund.
             try { applyColors(); } catch(e) {}
         }
 
@@ -4130,10 +4303,10 @@
 
             document.getElementById('mdTitle').innerHTML = isUnlocked
                 ? `${ach.icon} ${t(ach.title)} <span style="color:${MEDAL_TIERS[tier-1].text};">${MEDAL_TIERS[tier-1].badge} ${t(MEDAL_TIERS[tier-1].name)}</span>`
-                : `🔒 Geheim`;
+                : `🔒 ${t('Geheim')}`;
 
             if (!isUnlocked) {
-                document.getElementById('mdDesc').innerHTML = 'Bedingung noch nicht erfüllt.';
+                document.getElementById('mdDesc').innerHTML = t('Bedingung noch nicht erfüllt.');
                 document.getElementById('medalDetail').style.display = 'block';
                 return;
             }
@@ -4414,20 +4587,20 @@
                 let scene = getWolkendorfScene();
                 html += `
                     <div style="text-align:center; padding:14px 10px; background:linear-gradient(160deg,#74b9ff,#a29bfe 60%,#b8e994); border-radius:12px; color:#fff; margin-bottom:12px; position:relative; overflow:hidden;">
-                        <div style="font-size:10px; opacity:0.85; letter-spacing:1px; text-transform:uppercase;">Live aus dem Wolkendorf</div>
+                        <div style="font-size:10px; opacity:0.85; letter-spacing:1px; text-transform:uppercase;">${t('Live aus dem Wolkendorf')}</div>
                         <div style="font-size:48px; margin:6px 0; animation:storyFloat 3s ease-in-out infinite;">${scene.emoji}</div>
                         <div style="font-size:12px; font-weight:bold;">${(pet && pet.name) ? pet.name : 'Dein Tamagotchi'}</div>
                         <div style="font-size:11px; opacity:0.95; margin-top:3px;">${scene.text}</div>
                     </div>
 
-                    <div style="font-size:12px; color:#2d3436; font-weight:bold; margin-bottom:4px;">🎁 Geschenk schicken</div>
-                    <p style="font-size:11px; color:#576574; margin:0 0 10px;">Jedes Geschenk hebt einen <b>zufälligen Stat dauerhaft um 0,5%</b> – auch für alle zukünftigen Tamagotchis.</p>
+                    <div style="font-size:12px; color:#2d3436; font-weight:bold; margin-bottom:4px;">🎁 ${t('Geschenk schicken')}</div>
+                    <p style="font-size:11px; color:#576574; margin:0 0 10px;">${t('giftNote')}</p>
                     <button class="onboard-btn ${(giftsLeft > 0 && tCoins >= GIFT_COIN_COST) ? 'btn-gold' : 'btn-gray'}"
                         ${(giftsLeft > 0 && tCoins >= GIFT_COIN_COST) ? 'onclick="sendGift()"' : 'disabled'}
                         style="width:auto; padding:10px 22px;">
-                        ${giftsLeft > 0 ? `🎁 Geschenk senden — ${GIFT_COIN_COST} 🪙` : '✅ Heute alle 3 verschickt'}
+                        ${giftsLeft > 0 ? `🎁 ${t('Geschenk senden')} — ${GIFT_COIN_COST} 🪙` : '✅ ' + t('Heute alle 3 verschickt')}
                     </button>
-                    <div style="font-size:10px; color:#b2bec3; margin-top:6px;">Heute noch ${giftsLeft} / ${GIFTS_PER_DAY} Geschenke · Du hast ${tCoins} 🪙</div>`;
+                    <div style="font-size:10px; color:#b2bec3; margin-top:6px;">${t('Heute noch')} ${giftsLeft} / ${GIFTS_PER_DAY} ${t('Geschenke')} · ${t('Du hast')} ${tCoins} 🪙</div>`;
             }
 
             // Vermächtnis-Übersicht
@@ -4470,7 +4643,8 @@
         function getWolkendorfScene() {
             // Szene wechselt stündlich, damit sie sich nicht bei jedem Klick ändert
             let h = Math.floor(Date.now() / 3600000);
-            return WOLKENDORF_SCENES[h % WOLKENDORF_SCENES.length];
+            let sc = WOLKENDORF_SCENES[h % WOLKENDORF_SCENES.length];
+            return { emoji: sc.emoji, text: t(sc.text) };
         }
 
         function buyObservation() {
@@ -4992,7 +5166,7 @@
                         <div style="font-size:16px;">${unlocked ? '✅' : '🔒'}</div>
                         <div style="flex:1;">
                             <div style="font-size:12px; font-weight:bold;">${t(u.name)}</div>
-                            <div style="font-size:10px; color:#576574;">${unlocked ? 'Freigeschaltet!' : `${t('Ab Pfleger-Level')} ${u.level}`}</div>
+                            <div style="font-size:10px; color:#576574;">${unlocked ? t('Freigeschaltet!') : `${t('Ab Pfleger-Level')} ${u.level}`}</div>
                         </div>
                     </div>`;
             });
@@ -5031,29 +5205,208 @@
         }
         function closeModal(id) { playSound('cancel'); document.getElementById(id).style.display = 'none'; if (id === 'shopModal') stopCountdownUpdater(); }
         
+        // ================================================================
+        // === AHNENGALERIE: mehrere Graeber + Grabpflege ==================
+        // ================================================================
+        // Frueher lag im Friedhof nur das zuletzt verstorbene Tamagotchi.
+        // Fuer die Grabpflege braucht es alle Ahnen - daher eine Liste, die
+        // alte Einzel-Eintraege beim ersten Laden automatisch uebernimmt.
+        const GRAVE_CARE_KEY = 'tama_graves_care';
+        const GRAVE_CARE_COST = 5;        // T-Coins pro Grab und Tag
+        const HAUNT_HAPPY_CAP = 25;       // Laune-Deckel, wenn die Ahnen heimsuchen
+
+        function loadGraves() {
+            let raw = safeGetItem('tama_graveyard_v6');
+            if (!raw) return [];
+            try {
+                let data = JSON.parse(raw);
+                if (Array.isArray(data)) return data;
+                if (data && data.name) return [data];      // alter Einzel-Eintrag
+            } catch(e) {}
+            return [];
+        }
+        function saveGraves(list) { safeSetItem('tama_graveyard_v6', JSON.stringify(list)); }
+        function graveId(g, i) { return g.id || ('grave_' + i + '_' + (g.deathDate || g.name || '')); }
+
+        let graveCare = {};
+        try { graveCare = JSON.parse(safeGetItem(GRAVE_CARE_KEY) || '{}'); } catch(e) { graveCare = {}; }
+        function saveGraveCare() { safeSetItem(GRAVE_CARE_KEY, JSON.stringify(graveCare)); }
+
+        // Wie viele Graeber werden gepflegt? Liefert Anteil 0..1 (ohne Graeber: 1 = alles gut)
+        function graveCareRatio() {
+            let list = loadGraves();
+            if (list.length === 0) return 1;
+            let cared = list.filter((g, i) => graveCare[graveId(g, i)]).length;
+            return cared / list.length;
+        }
+        // Suchen die Ahnen den Pfleger heim?
+        function isHaunted() {
+            let list = loadGraves();
+            if (list.length === 0) return false;
+            return graveCareRatio() < 0.5;
+        }
+
+        function toggleGraveCare(id) {
+            if (graveCare[id]) {
+                delete graveCare[id];
+                playSound('cancel');
+            } else {
+                if (tCoins < GRAVE_CARE_COST) {
+                    alert(t('Nicht genug T-Coins für die Grabpflege!'));
+                    playSound('lose'); return;
+                }
+                graveCare[id] = true;
+                addCoins(-GRAVE_CARE_COST);         // erster Tag sofort faellig
+                playSound('coin');
+            }
+            saveGraveCare();
+            openGraveyardModal();
+            updateHauntState();
+        }
+
+        // Taegliche Abbuchung. Reicht das Guthaben nicht, verfallen Abos.
+        function chargeGraveCare() {
+            let ids = Object.keys(graveCare);
+            if (ids.length === 0) return;
+            let due = ids.length * GRAVE_CARE_COST;
+            if (tCoins >= due) {
+                addCoins(-due);
+                showAchievementBanner('🪦', tf('Grabpflege: -{0} 🪙 für {1} Gräber', due, ids.length), 'generic');
+            } else {
+                // So viele Graeber pflegen, wie das Guthaben hergibt
+                let affordable = Math.floor(tCoins / GRAVE_CARE_COST);
+                let keep = ids.slice(0, affordable);
+                graveCare = {};
+                keep.forEach(id => graveCare[id] = true);
+                saveGraveCare();
+                if (affordable > 0) addCoins(-(affordable * GRAVE_CARE_COST));
+                showAchievementBanner('🪦', t('Zu wenig T-Coins - Grabpflege teilweise eingestellt!'), 'generic');
+            }
+            updateHauntState();
+        }
+
+        // ================================================================
+        // === AMBIENTE HINTER DER HUELLE =================================
+        // ================================================================
+        // Zeigt Geister bei Ahnen-Heimsuchung und dezente Symbole, solange
+        // bestimmte Shop-Effekte laufen. Wird nur neu aufgebaut, wenn sich der
+        // Zustand aendert - sonst wuerden die Animationen jede Sekunde neu starten.
+
+        // Welche Shop-Effekte bekommen ein Hintergrund-Ambiente?
+        const AMBIENT_ITEMS = [
+            { id: 'spicy_ramen',  emoji: '🔥', count: 5, check: () => pet.buffs && pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil },
+            { id: 'dance_mat',    emoji: '🎵', count: 5, check: () => pet.buffs && pet.buffs.danceUntil && pet.activeSeconds < pet.buffs.danceUntil },
+            { id: 'personal_dj',  emoji: '🎧', count: 4, check: () => pet.buffs && pet.buffs.djUntil && pet.activeSeconds < pet.buffs.djUntil },
+            { id: 'maryjane',     emoji: '🌿', count: 5, check: () => pet.buffs && pet.buffs.mjUntil && pet.activeSeconds < pet.buffs.mjUntil },
+            { id: 'love_arrow',   emoji: '💖', count: 5, check: () => pet.buffs && pet.buffs.loveArrowUntil && pet.activeSeconds < pet.buffs.loveArrowUntil },
+            { id: 'double_happy', emoji: '🍀', count: 4, check: () => pet.buffs && pet.buffs.doubleHappyUntil && pet.activeSeconds < pet.buffs.doubleHappyUntil },
+            { id: 'cookie',       emoji: '🥠', count: 3, check: () => isBuffCurrentlyActive('cookie') },
+            { id: 'party',        emoji: '🪩', count: 4, check: () => pet.buffs && pet.buffs.partyToday },
+            { id: 'shiny',        emoji: '✨', count: 4, check: () => pet.buffs && pet.buffs.shinyToday },
+            { id: 'mult_mega',    emoji: '🌈', count: 4, check: () => getActiveMultiplier('coins') >= 3 },
+            { id: 'chronic_cold', emoji: '🤧', count: 3, check: () => pet.buffs && pet.buffs.chronicCold },
+            { id: 'existential_void', emoji: '🌌', count: 4, check: () => pet.buffs && pet.buffs.existentialVoid }
+        ];
+
+        let ambientSignature = '';
+
+        function currentAmbientState() {
+            let haunt = (typeof isHaunted === 'function' && state.isStarted) ? isHaunted() : false;
+            let items = [];
+            if (state.isStarted && typeof pet !== 'undefined' && pet && !pet.isDead) {
+                AMBIENT_ITEMS.forEach(a => { try { if (a.check()) items.push(a); } catch(e) {} });
+            }
+            return { haunt, items };
+        }
+
+        function updateHauntState() {
+            let layer = document.getElementById('ambientLayer');
+            if (!layer) return;
+            let st = currentAmbientState();
+            let sig = (st.haunt ? 'H' : '-') + '|' + st.items.map(i => i.id).join(',');
+            if (sig === ambientSignature) return;      // nichts veraendert
+            ambientSignature = sig;
+
+            document.body.classList.toggle('haunted', st.haunt);
+            let html = '';
+
+            if (st.haunt) {
+                // Geister steigen aus dem Boden auf
+                const ghosts = ['👻','👻','💀','🕯️','👻','🪦'];
+                for (let i = 0; i < 7; i++) {
+                    let left = 4 + Math.random() * 92;
+                    let dur = 11 + Math.random() * 9;
+                    let delay = -Math.random() * dur;
+                    let size = 26 + Math.random() * 18;
+                    html += `<div class="amb amb-ghost" style="left:${left}%; bottom:-8vh; font-size:${size}px;
+                             animation-duration:${dur}s; animation-delay:${delay}s;">${ghosts[i % ghosts.length]}</div>`;
+                }
+            }
+
+            st.items.forEach((a, k) => {
+                for (let i = 0; i < a.count; i++) {
+                    let left = 3 + Math.random() * 94;
+                    let dur = 9 + Math.random() * 7;
+                    let delay = -Math.random() * dur;
+                    let size = 16 + Math.random() * 12;
+                    html += `<div class="amb amb-item" style="left:${left}%; bottom:-6vh; font-size:${size}px;
+                             animation-duration:${dur}s; animation-delay:${delay}s;">${a.emoji}</div>`;
+                }
+            });
+
+            layer.innerHTML = html;
+        }
+
         function openGraveyardModal() {
             playSound('select');
-            let graveData = safeGetItem('tama_graveyard_v6'); 
             let content = document.getElementById('graveyardContent');
-            let gPet;
+            let list = loadGraves();
+            let isExample = list.length === 0;
 
-            if (graveData) { gPet = JSON.parse(graveData); } 
-            else {
-                gPet = {
+            if (isExample) {
+                list = [{
                     name: "Bello (Bsp.)", ownerName: "Max", speciesIndex: 0, activeSeconds: 28800,
                     causeOfDeath: "Altersschwäche", bornDate: "14.06.2026, 09:12", deathDate: "30.06.2026, 17:41",
                     countFed: 42, countBathed: 5, countLoved: 12, countPlayed: 20, countDoctor: 1, countDiscipline: 3,
                     colorIndex: 1, patternIndex: 2, patternColorIndex: 0, patternScale: 1.0
-                };
+                }];
             }
 
-            let graveG = speciesList[gPet.speciesIndex] || '👻';
-            let style = getShellStyle(gPet.colorIndex, gPet.patternIndex, gPet.patternColorIndex, gPet.patternScale);
-            let miniShellHtml = `<div class="mini-shell" style="${style}">${graveG}</div>`;
+            // --- Kopfzeile: Pflegestand aller Graeber ---
+            let cared = isExample ? 0 : list.filter((g, i) => graveCare[graveId(g, i)]).length;
+            let ratio = isExample ? 1 : (cared / list.length);
+            let haunted = !isExample && ratio < 0.5;
+            let dailyCost = cared * GRAVE_CARE_COST;
 
-            // Grabstein: abgerundete Oberkante, Steinstruktur, eingravierte Chronik.
-            content.innerHTML = `
-                <div class="tombstone">
+            let header = isExample ? '' : `
+                <div style="background:${haunted ? '#3b2430' : '#eef7ee'}; border:2px solid ${haunted ? '#8e44ad' : '#a8d5a8'};
+                            border-radius:10px; padding:10px 12px; margin-bottom:12px; color:${haunted ? '#f5e6ff' : '#2f3542'};">
+                    <div style="font-size:13px; font-weight:bold;">
+                        ${haunted ? '👻 ' + t('Die Ahnen sind erzürnt!') : '🕯️ ' + t('Die Ahnen ruhen in Frieden')}
+                    </div>
+                    <div style="font-size:11px; margin-top:4px; line-height:1.5;">
+                        ${tf('{0} von {1} Gräbern gepflegt ({2}%)', cared, list.length, Math.round(ratio * 100))}<br>
+                        ${haunted
+                            ? t('Unter 50% Pflege suchen sie dein Tamagotchi heim: Es fürchtet sich und wird nur noch maximal 25% glücklich.')
+                            : t('Ab 50% gepflegter Gräber bleibt alles beim Alten.')}
+                    </div>
+                    <div style="font-size:10px; margin-top:6px; opacity:0.85;">
+                        ${tf('Kosten: {0} 🪙 pro Tag ({1} 🪙 je Grab)', dailyCost, GRAVE_CARE_COST)}
+                    </div>
+                </div>`;
+
+            // --- Grabsteine, neueste zuerst ---
+            let stones = list.slice().reverse().map((gPet, revIdx) => {
+                let idx = list.length - 1 - revIdx;
+                let gid = graveId(gPet, idx);
+                let isCared = !isExample && !!graveCare[gid];
+                let graveG = speciesList[gPet.speciesIndex] || '👻';
+                let style = getShellStyle(gPet.colorIndex, gPet.patternIndex, gPet.patternColorIndex, gPet.patternScale);
+                let miniShellHtml = `<div class="mini-shell" style="${style}">${graveG}</div>`;
+                let reportId = 'graveReport_' + revIdx;
+
+                return `
+                <div class="tombstone ${isCared ? 'cared' : ''}">
                     <div class="tombstone-cross">†</div>
                     <div class="tombstone-rip">R.I.P.</div>
                     <div class="tombstone-head">
@@ -5064,22 +5417,28 @@
                         ${gPet.bornDate || '-'} &nbsp;–&nbsp; ${gPet.deathDate || '-'}
                     </div>
                     <div class="tombstone-body">
-                        <b>${t('Erreichtes Alter')}:</b> ${Math.floor(gPet.activeSeconds/1800)} ${t('Lebenstage')}<br>
+                        <b>${t('Erreichtes Alter')}:</b> ${Math.floor((gPet.activeSeconds||0)/1800)} ${t('Lebenstage')}<br>
                         <b>${t('Ursache')}:</b> ${t(gPet.causeOfDeath || 'Altersschwäche')}<br><br>
                         <b>${t('Chronik')}:</b><br>
                         🍔 ${gPet.countFed||0}x &nbsp; 🛁 ${gPet.countBathed||0}x &nbsp; ❤️ ${gPet.countLoved||0}x<br>
                         🎮 ${gPet.countPlayed||0}x &nbsp; 🩺 ${gPet.countDoctor||0}x &nbsp; 💢 ${gPet.countDiscipline||0}x
                     </div>
-                    <button class="tombstone-toggle" onclick="toggleGraveReport()">${t('📋 Pfleger-Bewertung anzeigen')}</button>
-                    <div id="graveReport" style="display:none;">${caretakerReportHtml(gPet)}</div>
+                    ${isExample ? '' : `
+                    <button class="grave-care-btn ${isCared ? 'on' : ''}" onclick="toggleGraveCare('${gid}')">
+                        ${isCared ? '🕯️ ' + t('Gepflegt — Abo beenden') : '🪦 ' + tf('Pflegen für {0} 🪙/Tag', GRAVE_CARE_COST)}
+                    </button>`}
+                    <button class="tombstone-toggle" onclick="toggleGraveReport('${reportId}', this)">${t('📋 Pfleger-Bewertung anzeigen')}</button>
+                    <div id="${reportId}" style="display:none;">${caretakerReportHtml(gPet)}</div>
                 </div>`;
+            }).join('');
+
+            content.innerHTML = header + stones;
             document.getElementById('graveyardModal').style.display = 'flex';
         }
 
         // Pfleger-Bewertung im Friedhof ein-/ausblenden
-        function toggleGraveReport() {
-            let el = document.getElementById('graveReport');
-            let btn = document.querySelector('.tombstone-toggle');
+        function toggleGraveReport(id, btn) {
+            let el = document.getElementById(id || 'graveReport');
             if (!el) return;
             let show = el.style.display === 'none';
             el.style.display = show ? 'block' : 'none';
@@ -5655,7 +6014,11 @@
             
             text += `<br><br><i>Seine Geschichte liegt nun in der Ahnengalerie (💀).</i>`;
             text += caretakerReportHtml(pet);
-            text += `<br><b style="color:#d63031;">Highscore gesichert:</b> Deine fälschungssichere Datei wurde heruntergeladen – verschiebe sie in euren Büro-Ordner fürs Leaderboard!`;
+            text += `<div style="background:#fff0f0; border-left:4px solid #d63031; border-radius:7px; padding:8px 10px; margin-top:12px; font-size:11px; line-height:1.5; text-align:left;">
+                        <b>💸 ${t('Mit ins Grab gegangen')}:</b> ${t('Alle T-Coins 🪙 und Pausen-Tickets 🎫 sowie gekaufte Gegenstände sind verloren.')}<br>
+                        <b>✅ ${t('Dir bleiben')}:</b> ${t('Pfleger-Level, Medaillen, Wolkendorf, Arcade-Automaten und dein eigenes Bild.')}
+                     </div>`;
+            text += `<br><b style="color:#d63031;">${t('Highscore gesichert')}:</b> ${t('Deine fälschungssichere Datei wurde heruntergeladen – verschiebe sie in euren Büro-Ordner fürs Leaderboard!')}`;
 
             document.getElementById('deathModalText').innerHTML = text;
             document.getElementById('deathModal').style.display = 'flex';
@@ -6721,11 +7084,17 @@
             gameLoop = setInterval(() => {
                 if(!state.isStarted || document.hidden || pet.isDead) return;
 
+                // Ahnen-Heimsuchung: ungepflegte Graeber druecken die Laune
+                if (isHaunted() && pet.happiness > HAUNT_HAPPY_CAP) {
+                    pet.happiness = HAUNT_HAPPY_CAP;
+                }
+
                 let today = new Date().toDateString();
                 if(pet.lastPlayedDate !== today) { 
                     pet.dailyPlaytimeSeconds = 0; 
                     pet.lastPlayedDate = today; 
                     pet.isDeparted = false;
+                    chargeGraveCare();   // taegliches Grabpflege-Abo abbuchen
                     initDailyQuests(); // Reset daily quests
                     // Reset daily buffs
                     if(pet.buffs) {
@@ -6790,7 +7159,7 @@
                         pet.isDead = true; 
                         pet.deathDate = new Date().toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
                         foldPetIntoLifetime(pet); // Werte ins Lebenswerk übernehmen (für Medaillen-Stufen)
-                        safeSetItem('tama_graveyard_v6', JSON.stringify(pet)); 
+                        let gl = loadGraves(); gl.push(JSON.parse(JSON.stringify(pet))); saveGraves(gl);
                         exportScoreFile(pet); 
                         clearInventoryOnDeath();   // Shop-Items (inkl. Arcade) verfallen - T-Coins & XP bleiben
                         saveGame(); render(); openDeathModal();
@@ -7806,7 +8175,7 @@
                 if (g.lives <= 0) arcadeEnd(false);
             }
             g.hudCenter = () => 'WAVE ' + g.wave;
-            g.intro = 'Wehre die Alien-Wellen ab!\nDein Ei ist die Laserkanone.';
+            g.intro = t('Wehre die Alien-Wellen ab!') + '\n' + t('Dein Ei ist die Laserkanone.');
             g.update = (dt) => {
                 if (arcade.input.left) player.x -= player.speed*dt;
                 if (arcade.input.right) player.x += player.speed*dt;
@@ -7861,7 +8230,7 @@
             resetBall(Math.random() < .5 ? 1 : -1);
             function burst(x, y) { for (let i = 0; i < 8; i++) particles.push({ x, y, vx:(Math.random()-.5)*170, vy:(Math.random()-.5)*170, life:0.4, color:'#2afadf' }); }
             g.hudCenter = () => `${scoreP} : ${scoreAI}`;
-            g.intro = 'Erreiche 7 Punkte gegen die\nWolken-KI! Dein Ei ist der Schläger.';
+            g.intro = t('Erreiche 7 Punkte gegen die Wolken-KI!') + '\n' + t('Dein Ei ist der Schläger.');
             g.update = (dt) => {
                 let spd = 280;
                 if (arcade.input.up) pad.y -= spd*dt;
@@ -7902,7 +8271,7 @@
             function burst(x, y, col) { for (let i = 0; i < 10; i++) particles.push({ x, y, vx:(Math.random()-.5)*190, vy:(Math.random()-.5)*190, life:0.5, color: col }); }
             function loseLife() { g.lives--; burst(player.x, player.y, '#ff5d73'); playSound('lose'); if (g.lives <= 0) arcadeEnd(false); }
             g.hudCenter = () => 'DIST ' + Math.floor(dist);
-            g.intro = 'Fliege durchs All!\nDeine Kanone feuert von allein.';
+            g.intro = t('Fliege durchs All!') + '\n' + t('Deine Kanone feuert von allein.');
             g.update = (dt) => {
                 dist += dt*12;
                 if (arcade.input.up) player.y -= player.speed*dt;
@@ -8445,6 +8814,7 @@
             updateActiveBuffsBar();
             updateVisitTimer();
             updateDockNotifications();
+            updateHauntState();
 
             // --- BUFF CSS CLASSES ---
             let sClasses = ["screen"];
