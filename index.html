@@ -995,6 +995,7 @@
     </div>
 
     <input type="file" id="arenaOpponentInput" accept=".json" style="display:none" onchange="handlePvPImport(event)">
+    <input type="file" id="raidAllyInput" multiple accept=".json,application/json,text/plain" style="display:none" onchange="handleRaidImport(event)">
     <input type="file" id="officeScoreInput" multiple accept=".json" style="display:none" onchange="handleOfficeScoresImport(event)">
     <input type="file" id="backupFileInput" accept=".json,application/json,text/plain" style="display:none" onchange="handleBackupImport(event)">
 
@@ -1152,6 +1153,7 @@
                 <p style="font-size: 12px; margin-bottom: 10px;">Für jeden überlebten Tamagotchi-Tag, jede verdiente Medaille und jedes gewonnene Minispiel sammelst du Pfleger-XP. Steigst du im Level (🎓) auf, schaltest du exklusive Shop-Kategorien und seltene Ei-Farben frei. Gesperrte Inhalte siehst du bereits im Shop – inklusive des Levels, ab dem du sie freischalten kannst!</p>
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">⚔️ Wolkendorf-Arena</h3>
+                <p style="font-size: 12px; margin-bottom: 8px;"><b>🌩️ Raid — der Wolken-Titan:</b> Der grösste Gegner der Arena ist allein nicht zu schaffen. Für ihn braucht ihr <b>mindestens 2 Tamagotchis</b>: dein eigenes plus wenigstens einen <b>tagesaktuellen</b> Spielstand (JSON) einer anderen Person – ältere Dateien lehnt der Titan ab. Lade ruhig mehrere auf einmal: Je grösser der Verbund, desto höher eure Kampfkraft <b>und</b> die Beute. Es gibt deutlich mehr Coins, Tickets und XP als bei jedem Mini-Boss – plus <b>3 zufällige Gegenstände</b> aus dem Laden (ab 4 Teilnehmenden sogar 4). Einmal pro Woche.</p>
                 <p style="font-size: 12px; margin-bottom: 10px;">In der Arena lässt du dein Tamagotchi gegen andere Tamagotchis oder Minibosse kämpfen! Für <b>PvP-Duelle</b> lädst du die Spielstand-JSON eines Mitspielers. Für <b>Minibosse</b> (5 Stufen) brauchst du ein aktives Tamagotchi. Jeder Kampf ist 1× pro Woche möglich. Gewinne: Coins, Tickets, XP und bei Glück seltene <b>Boss-Trophäen</b>! Verlierst du, leidet dein Tama an Laune/Energie. Die Kampfstärke hängt von Glück, Alter und Stats ab.</p>
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🧠 Intelligenz & Vernachlässigung</h3>
@@ -2016,6 +2018,7 @@
             updateCoinDisplay();
             playSound('coin');
             if (amount > 0) spawnFloatText('tCoinDisplay', `+${amount}`, '#f1c40f');
+            return amount;   // Aufrufer zeigen den tatsaechlich gutgeschriebenen Betrag an
         }
 
         // Zentraler Ticket-Gewinn inkl. Multiplikator
@@ -2636,13 +2639,33 @@
             return /Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1;
         }
 
-        function downloadBlobFile(blob, name) {
+        function downloadBlobFile(blob, name, isBackup) {
             let url = URL.createObjectURL(blob);
             let dl = document.createElement('a');
             dl.href = url; dl.download = name;
             document.body.appendChild(dl); dl.click(); dl.remove();
             setTimeout(() => URL.revokeObjectURL(url), 2000);
-            markBackupDone();
+            if (isBackup !== false) markBackupDone();
+        }
+
+        // Einheitlicher Datei-Export fuer alle Downloads.
+        // Auf iOS ignoriert Safari das download-Attribut - dort muss der
+        // Teilen-Dialog her, und zwar DIREKT aus der Nutzer-Geste (kein await davor).
+        function saveOrShareFile(text, name, title, isBackup) {
+            let blob = new Blob([text], { type: 'application/json' });
+            if (!isIOSLike()) { downloadBlobFile(blob, name, isBackup); return; }
+            try {
+                let file = new File([blob], name, { type: 'application/json' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({ files: [file], title: title })
+                        .then(() => { if (isBackup !== false) markBackupDone(); })
+                        .catch(err => {
+                            if (!err || err.name !== 'AbortError') downloadBlobFile(blob, name, isBackup);
+                        });
+                    return;
+                }
+            } catch (e) { /* kein File/Share vorhanden -> reguläerer Download */ }
+            downloadBlobFile(blob, name, isBackup);
         }
 
         function exportBackup() {
@@ -2651,27 +2674,9 @@
             let stamp = new Date().toISOString().slice(0, 10);
             let who = (typeof pet !== 'undefined' && pet && pet.name) ? pet.name : 'spielstand';
             let name = `pausentamagotchi_${who}_${stamp}.json`;
-            let blob = new Blob([buildBackup()], { type: 'application/json' });
-
-            // Windows/Edge, macOS, Linux und Android koennen alle regulaer herunterladen.
-            // Wichtig: NICHT auf navigator.canShare pruefen - Edge unter Windows meldet
-            // dafuer true und bekaeme den Teilen-Dialog statt des Downloads.
-            if (!isIOSLike()) { downloadBlobFile(blob, name); return; }
-
-            try {
-                let file = new File([blob], name, { type: 'application/json' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    // Kein await davor: Safari verlangt den Aufruf direkt aus der Nutzer-Geste.
-                    navigator.share({ files: [file], title: 'Pausentamagotchi Backup' })
-                        .then(() => markBackupDone())
-                        .catch(err => {
-                            if (!err || err.name !== 'AbortError') downloadBlobFile(blob, name);
-                        });
-                    return;
-                }
-            } catch (e) { /* kein File/Share vorhanden -> Download */ }
-
-            downloadBlobFile(blob, name);
+            // Windows/Edge, macOS, Linux und Android laden regulaer herunter;
+            // nur iOS bekommt den Teilen-Dialog (siehe saveOrShareFile).
+            saveOrShareFile(buildBackup(), name, 'Pausentamagotchi Backup', true);
         }
 
         function triggerBackupImport() {
@@ -3749,12 +3754,51 @@
         function resetArenaWeekIfNeeded() {
             let wk = getWeekKey();
             if (arenaState.weekKey !== wk) {
-                arenaState = { weekKey: wk, usedBosses: [], usedPvP: false };
+                arenaState = { weekKey: wk, usedBosses: [], usedPvP: false, usedRaid: false };
                 safeSetItem('tama_arena', JSON.stringify(arenaState));
             }
+            if (arenaState.usedRaid === undefined) arenaState.usedRaid = false;   // aeltere Spielstaende
         }
 
         function saveArenaState() { safeSetItem('tama_arena', JSON.stringify(arenaState)); }
+
+        function raidSectionHtml() {
+            let used = arenaState.usedRaid;
+            let participants = 1 + raidAllies.length;
+            let ready = raidAllies.length >= 1;
+            let mult = ready ? (1 + (participants - 2) * 0.35) : 1;
+            let lootCount = RAID_BOSS.lootItems + (participants >= 4 ? 1 : 0);
+
+            let allyList = raidAllies.length
+                ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin:6px 0;">`
+                  + raidAllies.map(a => `<span style="background:#eef4ff; border:1px solid #cfe0ff; border-radius:999px; padding:2px 8px; font-size:10px;">${speciesList[a.speciesIndex]||'🐾'} ${a.name}</span>`).join('')
+                  + `</div>`
+                : '';
+
+            return `
+                <div style="background:linear-gradient(135deg,#2c1e4a,#4a2c6b); border-radius:10px; padding:12px; color:#fff; margin-bottom:6px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="font-size:34px;">${RAID_BOSS.icon}</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px; font-weight:bold;">${RAID_BOSS.name} <span style="font-size:10px; opacity:0.8;">${RAID_BOSS.hp} HP</span></div>
+                            <div style="font-size:10px; opacity:0.85; margin-top:2px;">${RAID_BOSS.desc}</div>
+                        </div>
+                    </div>
+                    <div style="font-size:10px; color:#ffd166; margin-top:8px;">
+                        💰${Math.round(RAID_BOSS.base.coins*mult)} · 🎫${Math.round(RAID_BOSS.base.tickets*mult)} · +${Math.round(RAID_BOSS.base.xp*mult)}XP · 🎁 ${lootCount} zufällige Gegenstände
+                    </div>
+                    <div style="font-size:10px; opacity:0.8; margin-top:4px;">
+                        Mindestens <b>2 Tamagotchis</b> nötig · aktuell <b>${participants}</b> · mehr Verbündete = mehr Beute
+                    </div>
+                    ${allyList}
+                </div>
+                ${used
+                    ? `<button class="onboard-btn btn-gray" disabled style="font-size:11px;">⏳ Diese Woche schon gekämpft</button>`
+                    : `<button class="onboard-btn btn-blue" style="font-size:11px;" onclick="triggerRaidImport()">📂 Tagesaktuelle Spielstände laden</button>
+                       <button class="onboard-btn ${ready ? 'btn-gold' : 'btn-gray'}" style="font-size:11px; margin-top:6px;" ${ready ? '' : 'disabled'} onclick="startRaidFight()">⚔️ Raid starten (${participants} Tamagotchis)</button>
+                       ${ready ? `<button class="onboard-btn btn-gray" style="font-size:10px; margin-top:6px;" onclick="clearRaidAllies()">Verbündete zurücksetzen</button>` : ''}`
+                }`;
+        }
 
         function openArenaModal() {
             resetArenaWeekIfNeeded();
@@ -3773,6 +3817,8 @@
                     ? `<button class="onboard-btn btn-gray" disabled style="font-size:11px;">⏳ Dieses Woche schon gespielt</button>`
                     : `<button class="onboard-btn btn-blue" style="font-size:11px;" onclick="triggerPvPImport()">📂 Gegner-JSON laden & kämpfen</button>`
                 }
+                <div style="font-size:13px; font-weight:bold; color:#2d3436; margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🌩️ Raid — ${RAID_BOSS.name} (1× pro Woche)</div>
+                ${raidSectionHtml()}
                 <div style="font-size:13px; font-weight:bold; color:#2d3436; margin:14px 0 6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">👹 Mini-Bosse (1× pro Woche je Boss)</div>`;
 
             ARENA_BOSSES.forEach(b => {
@@ -3900,12 +3946,13 @@
             return new Promise(resolve => {
                 let overlay = document.getElementById('arenaOverlay');
                 let box = document.getElementById('arenaAnimBox');
-                const isBoss = (mode === 'boss');
+                const isBoss = (mode === 'boss' || mode === 'raid');
+                const isRaid = (mode === 'raid');
                 overlay.style.display = 'flex';
                 overlay.classList.toggle('boss-mode', isBoss);
                 box.classList.toggle('boss-box', isBoss);
 
-                let rounds = isBoss ? 6 : 5, frame = 0, myHp = 100, enemyHp = 100;
+                let rounds = isRaid ? 7 : (isBoss ? 6 : 5), frame = 0, myHp = 100, enemyHp = 100;
                 const ATK = ['💥','⚡','🌀','🔥','💫','✨','💢','🗡️'];
                 const WIN_L = ['Perfekter Treffer! ⚡','Unaufhaltsam! 💪','Bravour! 🎯','Schachmatt! ♟️'];
                 const MISS_L = ['Knapp! 😤','Fast! 🙈','Aua! 😵','Weiter so! 🎲'];
@@ -3934,12 +3981,13 @@
                     let enHurt  = (dmg != null && hitEnemy) ? 'fighter-hurt' : '';
                     box.innerHTML = `
                         <div style="font-size:10px;color:${cSub};margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;">
-                            ${isBoss ? `<span style="color:#ff3b5c;font-weight:bold;">☠️ Mini-Boss-Kampf ☠️</span>` : 'Tamagotchi-Duell'}
+                            ${isRaid ? `<span style="color:#ffd166;font-weight:bold;">🌩️ RAID · VERBUND-KAMPF 🌩️</span>`
+                              : (isBoss ? `<span style="color:#ff3b5c;font-weight:bold;">☠️ Mini-Boss-Kampf ☠️</span>` : 'Tamagotchi-Duell')}
                         </div>
                         <div style="display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:14px;">
                             <div style="text-align:center;position:relative;" class="${myHurt}">
                                 ${(dmg != null && !hitEnemy) ? dmgHtml : ''}
-                                <div style="font-size:46px;filter:drop-shadow(0 0 8px rgba(255,200,0,0.5));">${myEmoji}</div>
+                                <div style="font-size:${isRaid && myEmoji.length > 4 ? '26px' : '46px'};filter:drop-shadow(0 0 8px rgba(255,200,0,0.5));line-height:1.1;max-width:110px;">${myEmoji}</div>
                                 <div style="font-size:11px;font-weight:bold;color:${cMain};margin-top:3px;">${myName}</div>
                                 ${mode==='pvp' ? `<div style="margin-top:2px;">${medalRankBadgeHtml(myRank||0, undefined, true)}</div>` : ''}
                                 <div style="width:76px;background:${isBoss?'#3b3054':'#dfe6e9'};border-radius:4px;margin:3px auto 0;overflow:hidden;">${myBar}</div>
@@ -4032,8 +4080,8 @@
 
                 if (isBoss) {
                     // Dramatischer Auftritt: Warnung -> Boss erscheint -> VS -> Kampf
-                    box.innerHTML = `<div class="boss-warn">⚠️ WARNUNG ⚠️</div>
-                        <div style="font-size:12px;color:#9aa4c4;margin-top:10px;">Ein Mini-Boss betritt die Arena...</div>`;
+                    box.innerHTML = `<div class="boss-warn">${isRaid ? '⚠️ RAID-ALARM ⚠️' : '⚠️ WARNUNG ⚠️'}</div>
+                        <div style="font-size:12px;color:#9aa4c4;margin-top:10px;">${isRaid ? 'Der Himmel verdunkelt sich...' : 'Ein Mini-Boss betritt die Arena...'}</div>`;
                     playSound('alarm');
                     setTimeout(() => {
                         box.innerHTML = `<div class="boss-entry">${enemyEmoji}</div>
@@ -4322,13 +4370,18 @@
             };
         }
 
-        function downloadScoreObj(entry, filename) {
+        function downloadScoreObj(entry, filename, fromUserGesture) {
             let exportObj = { data: entry, sig: createHashV2(entry), v: 2 };
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
-            let dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", filename);
-            document.body.appendChild(dl); dl.click(); dl.remove();
+            let text = JSON.stringify(exportObj);
+            // Kein data:-Link mehr - iOS ignoriert dort das download-Attribut,
+            // dadurch passierte beim Antippen schlicht nichts.
+            if (fromUserGesture) {
+                saveOrShareFile(text, filename, 'Pausentamagotchi Highscore', false);
+            } else {
+                // Automatischer Export (beim Tod): ohne Nutzer-Geste lehnt iOS das
+                // Teilen ab - hier bleibt nur der reguläre Download.
+                downloadBlobFile(new Blob([text], { type: 'application/json' }), filename, false);
+            }
         }
 
         function exportScoreFile(deadPet) {
@@ -4350,7 +4403,7 @@
                 localLb = localLb.filter(e => !(e.kind === 'player' && e.id === entry.id));
                 localLb.push(entry);
                 safeSetItem('tama_leaderboard_v6', JSON.stringify(localLb));
-                downloadScoreObj(entry, `tama_steckbrief_${entry.ownerName}_${entry.timestamp}.json`);
+                downloadScoreObj(entry, `tama_steckbrief_${entry.ownerName}_${entry.timestamp}.json`, true);
                 playSound('win');
                 renderLeaderboardTable(localLb);
             } catch(e) { alert('Export fehlgeschlagen.'); }
@@ -4511,6 +4564,161 @@
             }
             renderLeaderboardTable(withMyLiveEntry(lb));
             document.getElementById('leaderboardModal').style.display = 'flex';
+        }
+
+        // ================================================================
+        // === RAID-BOSS: der Wolken-Titan ================================
+        // ================================================================
+        // Nur im Verbund zu schaffen: Es braucht mindestens zwei Tamagotchis,
+        // also dein eigenes plus wenigstens einen tagesaktuellen Spielstand
+        // einer anderen Person. Je mehr mitkaempfen, desto groesser die Beute.
+        const RAID_BOSS = {
+            id: 'raid_titan', icon: '🌩️', name: 'Wolken-Titan',
+            desc: 'Ein gewaltiges Gewitterwesen. Allein chancenlos – nur ein Verbund aus mehreren Tamagotchis kann ihn stellen.',
+            hp: 900,
+            base: { coins: 1800, tickets: 24, xp: 280 },
+            lootItems: 3            // drei zufaellige Shop-Gegenstaende als Beute
+        };
+
+        let raidAllies = [];        // geladene Verbuendete dieser Sitzung
+
+        // Ein Spielstand zaehlt nur, wenn er von heute ist.
+        function isSaveFromToday(parsed, allyPet) {
+            let today = new Date().toDateString();
+            if (parsed && parsed.created) {
+                let d = new Date(parsed.created);
+                if (!isNaN(d) && d.toDateString() === today) return true;
+            }
+            if (allyPet && allyPet.lastPlayedDate === today) return true;
+            return false;
+        }
+
+        function triggerRaidImport() {
+            resetArenaWeekIfNeeded();
+            if (arenaState.usedRaid) { playSound('cancel'); return; }
+            playSound('select');
+            document.getElementById('raidAllyInput').click();
+        }
+
+        function handleRaidImport(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            let added = 0, stale = 0, bad = 0, dupes = 0;
+            let promises = [];
+
+            for (let i = 0; i < files.length; i++) {
+                promises.push(new Promise(resolve => {
+                    let reader = new FileReader();
+                    reader.onload = e => {
+                        try {
+                            let parsed = JSON.parse(e.target.result);
+                            let allyPet = null;
+                            if (parsed && parsed.format === BACKUP_FORMAT && parsed.data && parsed.data.tama_save_v6) {
+                                allyPet = JSON.parse(parsed.data.tama_save_v6);
+                            } else if (parsed && parsed.name && parsed.id) {
+                                allyPet = parsed;                       // aeltere, blanke Spielstaende
+                            }
+                            if (!allyPet || !allyPet.name) { bad++; resolve(); return; }
+                            if (allyPet.isDead) { bad++; resolve(); return; }
+                            if (!isSaveFromToday(parsed, allyPet)) { stale++; resolve(); return; }
+                            if (allyPet.id && allyPet.id === pet.id) { dupes++; resolve(); return; }
+                            if (raidAllies.some(a => a.id === allyPet.id)) { dupes++; resolve(); return; }
+                            raidAllies.push(allyPet);
+                            added++;
+                        } catch (err) { bad++; }
+                        resolve();
+                    };
+                    reader.readAsText(files[i]);
+                }));
+            }
+
+            Promise.all(promises).then(() => {
+                let notes = [];
+                if (added) notes.push(`${added} Verbündete${added === 1 ? 'r' : ''} bereit!`);
+                if (stale) notes.push(`${stale} Datei(en) sind nicht von heute – der Titan akzeptiert nur tagesaktuelle Spielstände.`);
+                if (dupes) notes.push(`${dupes} Datei(en) waren doppelt oder dein eigener Spielstand.`);
+                if (bad) notes.push(`${bad} Datei(en) waren ungültig oder gehören einem verstorbenen Tamagotchi.`);
+                if (notes.length) alert(notes.join('\n'));
+                playSound(added ? 'win' : 'lose');
+                openArenaModal();
+            });
+            event.target.value = '';
+        }
+
+        function clearRaidAllies() { raidAllies = []; playSound('cancel'); openArenaModal(); }
+
+        // Beute: drei zufaellige Gegenstaende aus dem Laden (keine Debuffs, keine Freischaltungen)
+        function pickRaidLoot(count) {
+            let pool = SHOP_ITEMS.filter(i =>
+                i.cat !== '👿 Debuffs & Trolle' &&
+                i.cat !== '🏆 Boss-Trophäen' &&
+                !String(i.type).startsWith('unlock'));
+            // Ohne Zuruecklegen ziehen, damit die Beute wirklich abwechslungsreich ist
+            let bag = pool.slice(), picked = [];
+            for (let k = 0; k < count && bag.length; k++) {
+                picked.push(bag.splice(Math.floor(Math.random() * bag.length), 1)[0]);
+            }
+            return picked;
+        }
+
+        async function startRaidFight() {
+            resetArenaWeekIfNeeded();
+            if (arenaState.usedRaid) { playSound('cancel'); return; }
+            if (!state.isStarted || pet.isDead) { alert('Dein Tamagotchi muss aktiv sein!'); return; }
+            if (raidAllies.length < 1) {
+                alert('Der Wolken-Titan ist zu mächtig für ein einzelnes Tamagotchi!\n\nLade mindestens einen tagesaktuellen Spielstand einer anderen Person, damit ihr zu zweit antreten könnt.');
+                playSound('cancel'); return;
+            }
+
+            closeModal('arenaModal');
+            let participants = 1 + raidAllies.length;
+            let myPow = calcPetPower(pet);
+            let allyPow = raidAllies.reduce((sum, a) => sum + calcPetPower(a), 0);
+            let teamPow = myPow + allyPow;
+            let winChance = Math.min(0.90, Math.max(0.12, teamPow / (teamPow + RAID_BOSS.hp * 0.75)));
+            let myWin = Math.random() < winChance;
+
+            arenaState.usedRaid = true; saveArenaState();
+
+            let teamEmoji = [speciesList[pet.speciesIndex] || '🐾']
+                .concat(raidAllies.map(a => speciesList[a.speciesIndex] || '🐾')).join('');
+            let teamName = participants === 2 ? `${pet.name} & ${raidAllies[0].name}` : `${pet.name} + ${raidAllies.length} Verbündete`;
+
+            await showArenaAnimation('raid', teamEmoji, teamName, teamPow, RAID_BOSS.icon, RAID_BOSS.name, RAID_BOSS.hp, myWin);
+
+            if (myWin) {
+                lifetime.raidWins = (lifetime.raidWins || 0) + 1;
+                lifetime.bossWins = (lifetime.bossWins || 0) + 1;   // zaehlt auch als Boss-Sieg
+                saveLifetime();
+                // Mehr Teilnehmer = mehr Beute
+                let mult = 1 + (participants - 2) * 0.35;
+                let gotC = addCoins(Math.round(RAID_BOSS.base.coins * mult));
+                let gotT = addTickets(Math.round(RAID_BOSS.base.tickets * mult));
+                spawnFloatText('ticketDisplay', `+${gotT} 🎫`, '#1dd1a1');
+                addAccountXP(Math.round(RAID_BOSS.base.xp * mult));
+
+                // Drei zufaellige Gegenstaende (ein zusaetzlicher ab vier Teilnehmern)
+                let lootCount = RAID_BOSS.lootItems + (participants >= 4 ? 1 : 0);
+                let loot = pickRaidLoot(lootCount);
+                loot.forEach(it => { inventory.items[it.id] = (inventory.items[it.id] || 0) + 1; });
+                safeSetItem('tama_inventory', JSON.stringify(inventory));
+
+                spawnConfetti('building');
+                showAchievementBanner('🌩️', `Wolken-Titan bezwungen! +${gotC}🪙 +${gotT}🎫`, 'building');
+                setTimeout(() => {
+                    alert(`🌩️ DER WOLKEN-TITAN IST BESIEGT!\n\n`
+                        + `Verbund: ${participants} Tamagotchis\n`
+                        + `Beute: ${gotC} 🪙 · ${gotT} 🎫 · ${Math.round(RAID_BOSS.base.xp * mult)} XP\n\n`
+                        + `Gegenstände:\n` + loot.map(i => '• ' + i.name).join('\n'));
+                }, 2600);
+            } else {
+                pet.happiness = Math.max(0, pet.happiness - 20);
+                pet.energy = Math.max(0, pet.energy - 25);
+                showAchievementBanner('💀', `Der Wolken-Titan war zu stark! Nächste Woche mit mehr Verbündeten!`, 'generic');
+                playSound('lose');
+            }
+            raidAllies = [];
+            saveGame();
         }
 
         // ================================================================
