@@ -124,7 +124,7 @@ function resetPetState() {
         colorIndex: pickEggColorIndex(),
         patternIndex: Math.floor(Math.random() * patternGenerators.length),
         patternColorIndex: Math.floor(Math.patternColorIndex || Math.floor(Math.random() * patternColors.length)),
-        patternScale: scale, x: 60, y: 30, targetX: 60, targetY: 30, facingRight: true,
+        patternScale: scale, x: 60, y: 20, targetX: 60, targetY: 20, facingRight: true,
         overrideColor: null, overridePatColor: null, overridePatIdx: null,
         hueShift: Math.round(Math.random() * 180),                                   // 0%..50% Farbton-Verschiebung (0-180°)
         distortType: DISTORT_TYPES[Math.floor(Math.random() * DISTORT_TYPES.length)], // zufällige Verzerrungshülle
@@ -385,10 +385,21 @@ function startLoop() {
         else if(pet.starvingSeconds >= 600) pet.causeOfDeath = "Verhungern"; 
         else if(pet.depressedSeconds >= 600) pet.causeOfDeath = "Traurigkeit"; 
 
+        // Laufbereich des Tamagotchis innerhalb von .screen-content.
+        // Frueher 10..40 - dabei lief das Tier so tief, dass es die untere
+        // Icon-Reihe teilweise verdeckte (das Pet liegt auf z-index 15, die
+        // Icons auf 5). Der Bereich ist deshalb um 10px angehoben.
+        const WALK_Y_MIN = 0, WALK_Y_MAX = 30;
+
         // Walking animation
         if(state.view === 'main' && pet.stage > 0 && !isActuallySleeping && !pet.isSick && !pet.misbehaving && !isDoomscrolling) {
+            // Bestehende Spielstaende laufen noch im alten, tieferen Bereich -
+            // hier einmalig nach oben ziehen, damit die Umstellung sofort greift.
+            if (pet.targetY > WALK_Y_MAX) pet.targetY = WALK_Y_MAX;
+            if (pet.y > WALK_Y_MAX) pet.y = WALK_Y_MAX;
+
             if(Math.abs(pet.x - pet.targetX) < 5 && Math.abs(pet.y - pet.targetY) < 5) {
-                if(Math.random() < 0.4) { pet.targetX = 10 + Math.random() * 100; pet.targetY = 10 + Math.random() * 30; }
+                if(Math.random() < 0.4) { pet.targetX = 10 + Math.random() * 100; pet.targetY = WALK_Y_MIN + Math.random() * (WALK_Y_MAX - WALK_Y_MIN); }
             } else {
                 pet.facingRight = pet.targetX > pet.x;
                 pet.x += (pet.targetX - pet.x) * 0.3; pet.y += (pet.targetY - pet.y) * 0.3;
