@@ -865,8 +865,15 @@ function wrapWithHat(base) {
         let hatObj = SHOP_ITEMS.find(i=>i.id === inventory.equippedHat);
         let fxClass = hatObj && hatObj.fx ? hatObj.fx : '';
         let isHandheld = ['hat_bottle', 'hat_palette', 'hat_bat', 'hat_mic', 'hat_knife', 'hat_controller'].includes(inventory.equippedHat);
-        if(isHandheld) return `${base}<div class="pet-handheld ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
-        return `${base}<div class="pet-hat ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
+        // Sprite und Zubehoer stecken zusammen in .pet-acc. Der Wrapper ist
+        // selbst positioniert und umschliesst das Sprite exakt - dadurch sitzt
+        // das Zubehoer in JEDEM Container gleich (Hauptbild, Fuettern, Waschen,
+        // Schlafen, Wut). Vorher richtete es sich nach dem naechsten
+        // positionierten Vorfahren und verrutschte nach links oben.
+        let acc = isHandheld
+            ? `<div class="pet-handheld ${fxClass}">${hatObj ? hatObj.val : ''}</div>`
+            : `<div class="pet-hat ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
+        return `<span class="pet-acc">${base}${acc}</span>`;
     }
     return base;
 }

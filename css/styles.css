@@ -971,9 +971,24 @@ body::before {
     50%      { transform: scale(1.035); }
 }
 
-/* Hut/Handheld sitzen relativ zum Sprite - Feinjustierung */
-.pet .pet-hat { top: -0.25em; }
-.pet .pet-handheld { bottom: 0.15em; right: -0.35em; }
+/* Hut/Handheld sitzen relativ zum Sprite.
+   .pet-acc umschliesst Sprite + Zubehoer und ist selbst positioniert, damit
+   das Zubehoer seinen Bezugsrahmen immer direkt am Sprite hat - egal in
+   welchem Container (Hauptbild, Fuettern, Waschen, Schlafen, Wut).
+   Die Flex-Zentrierung sorgt dafuer, dass die statische Position des absolut
+   positionierten Zubehoers waagrecht mittig liegt; deshalb braucht es kein
+   left/transform, das mit den Hut-Effekten (fx-Klassen) kollidieren wuerde. */
+.pet-acc {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 0;
+}
+.pet-acc .pet-hat { top: -0.25em; }
+.pet-acc .pet-handheld { bottom: 0.15em; right: -0.35em; }
+/* line-height:0 des Wrappers darf das Zubehoer-Emoji nicht stauchen */
+.pet-acc .pet-hat, .pet-acc .pet-handheld { line-height: 1; }
 
 /* Geheime Spezies im Pokedex hervorheben */
 .pokedex-entry.secret-found {
@@ -989,12 +1004,13 @@ body::before {
    auf, damit nichts in den Text daneben ragt. */
 .mini-shell.grave-shell {
     overflow: visible;
-    margin-right: 26px;
-    margin-left: 12px;
+    margin-right: 14px;
+    margin-left: 4px;
 }
 .mini-shell.grave-shell img {
-    width: 3em;
-    height: 3em;
+    /* 2em von 28px Basis = 56px */
+    width: 2em;
+    height: 2em;
     position: relative;
     z-index: 2;
 }
