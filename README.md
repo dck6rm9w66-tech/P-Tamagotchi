@@ -73,7 +73,8 @@ kompletten Zustand:
 ```
 
 **Spezies** — `wuffi`, `miezi`, `maeusi`, `hamsti`, `hopsi`, `fuxx`, `baerli`,
-`pandoo`, `leo`, `tigri`, `quaxi`, `affe`, `enzo`, `okto`, `dino`, `eule`.
+`pandoo`, `leo`, `tigri`, `quaxi`, `affe`, `enzo`, `okto`, `dino`, `eule` und die
+drei geheimen `phoenix`, `kristo`, `stella`.
 Die Reihenfolge ist identisch zu `speciesList` in `01-storage-core.js` — wer
 dort etwas umsortiert, muss `SPRITE_SPECIES` in `00-sprites.js` mitziehen.
 
@@ -91,7 +92,15 @@ Dazu kommen die Sonderfaelle:
 | `kueken.png`, `kueken_schlaf.png`, `kueken_wuetend.png` | Stage 1, artunabhaengig |
 | `<spezies>_engel.png` | verstorben: Heiligenschein, Fluegel, Wolke |
 
-Macht `1 + 3 + 16 x (4 x 3 + 1)` = **212 Dateien**.
+Macht `1 + 3 + 19 x (4 x 3 + 1)` = **251 Dateien** (64x64, transparent).
+
+### Geheime Spezies
+
+Drei Arten sind bewusst versteckt: **Phoenix**, **Kristo** und **Stella**
+(Index 16-18). Sie schluepfen zusammen nur in 2 % aller Faelle, also je rund
+0,7 %. Im Pokedex bleiben sie bis zum Fund als `???` verborgen und werden
+danach golden mit einem Stern markiert. Gesteuert wird das ueber
+`SECRET_SPECIES_START` und `SECRET_SPECIES_CHANCE` in `01-storage-core.js`.
 
 Aufgeloest wird das in `00-sprites.js`:
 

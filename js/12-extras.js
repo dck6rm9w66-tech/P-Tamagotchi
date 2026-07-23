@@ -573,7 +573,7 @@ function render() {
     }
 
     if(pet.isDead) {
-        screenContent.innerHTML = `<div style="font-size:35px;">👻</div><div style="font-size:12px; margin-top:5px; font-weight:bold;">R.I.P. ${pet.name}</div><div style="font-size:8px; opacity:0.7; margin-top:3px;">Details im Friedhof (💀)</div>`;
+        screenContent.innerHTML = `<div class="pet" style="position:static; font-size:35px;">${getPetGraphic()}</div><div style="font-size:12px; margin-top:5px; font-weight:bold;">R.I.P. ${pet.name}</div><div style="font-size:8px; opacity:0.7; margin-top:3px;">Details im Friedhof (💀)</div>`;
         return;
     }
 

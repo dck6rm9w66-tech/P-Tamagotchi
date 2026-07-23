@@ -188,7 +188,11 @@ document.addEventListener('keydown', function(e) {
 });
 
 // --- OPTIK LOGIK ---
-const speciesList = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🦁','🐯','🐸','🐵','🦄','🐙','🦖','🦉'];
+// Index 16-18 sind geheime Spezies: sie erscheinen nur sehr selten und
+// werden im Pokedex erst nach dem Fund benannt.
+const speciesList = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🦁','🐯','🐸','🐵','🦄','🐙','🦖','🦉','🔥','💎','🌟'];
+const SECRET_SPECIES_START = 16;   // ab hier geheim
+const SECRET_SPECIES_CHANCE = 0.02; // 2 % Gesamtchance auf ein Geheimtier
 const shellColors = ['#ff9ff3', '#48dbfb', '#ff6b6b', '#9b59b6', '#ffb8b8', '#55efc4', '#feca57'];
 
 // === SELTENE EI-FARBEN (Pfleger-Level-Freischaltungen) ===

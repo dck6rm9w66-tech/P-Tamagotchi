@@ -277,7 +277,9 @@ function openQuestModal() {
 // ================================================================
 // === FEATURE: WOLKENDORF-TAGEBUCH (POKÉDEX) =====================
 // ================================================================
-let pokedex = JSON.parse(safeGetItem('tama_pokedex') || 'null') || new Array(16).fill(false);
+let pokedex = JSON.parse(safeGetItem('tama_pokedex') || 'null') || new Array(19).fill(false);
+// Migration: aeltere Speicherstaende kennen nur 16 Spezies.
+while (pokedex.length < 19) pokedex.push(false);
 
 const SPECIES_LORE = [
     { name: 'Wuffi',   lore: 'Treu bis in den Tod. Folgt dir überall hin, auch in Meetings.' },
@@ -296,6 +298,10 @@ const SPECIES_LORE = [
     { name: 'Okto',    lore: 'Hat 8 Arme und schafft damit 8× mehr als du. Respekt.' },
     { name: 'Dino',    lore: 'Uralt aber weise. Erinnert sich an die Zeit vor E-Mails.' },
     { name: 'Eule',    lore: 'Arbeitet am besten nachts. Kommt nie pünktlich ins Büro.' },
+    // --- geheime Spezies ---
+    { name: 'Phönix',  lore: 'Verbrennt zu Asche und steht wieder auf. Kennt keine Montagsmüdigkeit.', secret: true },
+    { name: 'Kristo',  lore: 'Ein wandelnder Kristall. Bricht dein Licht in siebzehn Farben.', secret: true },
+    { name: 'Stella',  lore: 'Trägt eine kleine Galaxie im Fell. Riecht nach kalter Nachtluft.', secret: true },
 ];
 
 function checkPokedexDiscovery() {
@@ -309,14 +315,15 @@ function checkPokedexDiscovery() {
 function openPokedexModal() {
     playSound('select');
     let count = pokedex.filter(Boolean).length;
-    document.getElementById('pokedexProgress').innerText = `${count} / 16 Spezies entdeckt`;
+    document.getElementById('pokedexProgress').innerText = `${count} / ${SPECIES_LORE.length} Spezies entdeckt`;
     let html = '';
     speciesList.forEach((sp, i) => {
         let found = pokedex[i];
         let lore = SPECIES_LORE[i];
-        html += `<div class="pokedex-entry ${found ? 'discovered' : ''}" onclick="showPokedexLore(${i})">
-            <div style="font-size:26px; ${found ? '' : 'color:#c8ccd4;'}">${found ? (typeof SPRITE_SPECIES !== 'undefined' ? `<img src="${SPRITE_BASE}${SPRITE_SPECIES[i]}_erwachsen.png" alt="${t(lore.name)}" style="width:44px;height:44px;object-fit:contain;display:block;margin:0 auto;">` : sp) : '?'}</div>
-            <div style="font-size:9px; margin-top:3px; font-weight:bold; color:${found ? '#2f3542' : '#bbb'};">${found ? t(lore.name) : '???'}</div>
+        let geheim = lore && lore.secret;
+        html += `<div class="pokedex-entry ${found ? 'discovered' : ''}${geheim && found ? ' secret-found' : ''}" onclick="showPokedexLore(${i})">
+            <div style="font-size:26px; ${found ? '' : 'color:#c8ccd4;'}">${found ? (typeof SPRITE_SPECIES !== 'undefined' ? `<img src="${SPRITE_BASE}${SPRITE_SPECIES[i]}_erwachsen.png" alt="${t(lore.name)}" style="width:44px;height:44px;object-fit:contain;display:block;margin:0 auto;image-rendering:pixelated;">` : sp) : '?'}</div>
+            <div style="font-size:9px; margin-top:3px; font-weight:bold; color:${found ? '#2f3542' : '#bbb'};">${found ? (geheim ? '✨ ' : '') + t(lore.name) : '???'}</div>
         </div>`;
     });
     document.getElementById('pokedexGrid').innerHTML = html;

@@ -81,7 +81,7 @@ body {
 .menu-icon.active:hover { opacity: 1; }
 
 .screen-content { flex-grow: 1; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; color: #1e272e; text-align: center; z-index: 2;}
-.pet { position: absolute; font-size: 35px; transition: all 0.5s linear; display: flex; flex-direction: column; align-items: center; z-index: 6; }
+.pet { position: absolute; font-size: 35px; transition: all 0.5s linear; display: flex; flex-direction: column; align-items: center; z-index: 15; }
 /* Mystic 8-Ball */
 .eightball { font-size: 42px; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
 .eight-shake { animation: eightShake 0.16s linear infinite; }
@@ -617,11 +617,14 @@ body.haunted::after {
 .tombstone-toggle:hover { background: #756f60; }
 
 .mini-shell {
-    display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 34px;
+    /* Doppelte Groesse: das Tier war in der Ahnengalerie kaum zu erkennen. */
+    display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 68px;
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4), inset 2px 2px 4px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.3);
-    font-size: 14px; vertical-align: middle; margin-right: 8px; position: relative; overflow: hidden; flex-shrink: 0;
+    box-shadow: inset -3px -3px 9px rgba(0,0,0,0.4), inset 3px 3px 7px rgba(255,255,255,0.6), 0 3px 7px rgba(0,0,0,0.3);
+    font-size: 28px; vertical-align: middle; margin-right: 10px; position: relative; overflow: hidden; flex-shrink: 0;
 }
+/* Sprite in der Huelle mitskalieren */
+.mini-shell img { width: 1.5em; height: 1.5em; object-fit: contain; image-rendering: pixelated; }
 .mini-shell::after {
     content: ''; position: absolute; top:0; left:0; right:0; bottom:0; border-radius: inherit;
     background: radial-gradient(circle at 25% 20%, rgba(255,255,255,0.5) 0%, transparent 40%, rgba(0,0,0,0.2) 100%); pointer-events: none;
@@ -971,3 +974,10 @@ body::before {
 /* Hut/Handheld sitzen relativ zum Sprite - Feinjustierung */
 .pet .pet-hat { top: -0.25em; }
 .pet .pet-handheld { bottom: 0.15em; right: -0.35em; }
+
+/* Geheime Spezies im Pokedex hervorheben */
+.pokedex-entry.secret-found {
+    background: linear-gradient(160deg, #fff8e1 0%, #ffeaa7 100%);
+    border-color: #e8b64c;
+    box-shadow: 0 0 8px rgba(232, 182, 76, 0.55);
+}

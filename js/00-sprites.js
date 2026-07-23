@@ -18,7 +18,9 @@ const SPRITE_SPECIES = [
     'wuffi',  'miezi', 'maeusi', 'hamsti',
     'hopsi',  'fuxx',  'baerli', 'pandoo',
     'leo',    'tigri', 'quaxi',  'affe',
-    'enzo',   'okto',  'dino',   'eule'
+    'enzo',   'okto',  'dino',   'eule',
+    // --- geheime Spezies (sehr selten, Index 16-18) ---
+    'phoenix', 'kristo', 'stella'
 ];
 
 // Stage-Index -> Phasenname. Stage 0/1 sind speziesunabhängig.

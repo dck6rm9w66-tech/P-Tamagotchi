@@ -94,7 +94,13 @@ function pickFirstSpeciesIndex() {
     let inWindow = now >= start && now <= end;
     let isFirstEver = (LT('hatched') || 0) === 0;       // noch nie ein Ei geschluepft
     if (inWindow && isFirstEver) return UNICORN_INDEX;
-    return Math.floor(Math.random() * speciesList.length);
+    // Geheime Spezies (Index 16-18) sind bewusst sehr selten: zusammen 2 %.
+    // Die uebrigen 98 % verteilen sich gleichmaessig auf die 16 normalen Tiere.
+    if (Math.random() < SECRET_SPECIES_CHANCE) {
+        let anzahlGeheim = speciesList.length - SECRET_SPECIES_START;
+        return SECRET_SPECIES_START + Math.floor(Math.random() * anzahlGeheim);
+    }
+    return Math.floor(Math.random() * SECRET_SPECIES_START);
 }
 
 function resetPetState() {
@@ -142,6 +148,10 @@ function startLoop() {
     if(gameLoop) clearInterval(gameLoop);
     gameLoop = setInterval(() => {
         if(!state.isStarted || document.hidden || pet.isDead) return;
+
+        // Gepufferte Display-Einblendungen nachholen. Der Tick greift auch
+        // dann, wenn ein Overlay nicht ueber closeModal() geschlossen wurde.
+        try { flushAnimationQueue(); } catch (e) {}
 
         // Ahnen-Heimsuchung: ungepflegte Graeber druecken die Laune
         if (isHaunted() && pet.happiness > HAUNT_HAPPY_CAP) {
@@ -448,9 +458,42 @@ function btnC() {
 }
 
 // --- AKTIONEN & SPIELE ---
+// Wird ein Item aus dem Inventar benutzt (z.B. aus "Events & Dating"), liegt das
+// Modal ueber dem Geraet - die Einblendung auf dem Display waere unsichtbar.
+// Deshalb: Ist irgendein Overlay offen, wird die Animation gepuffert und erst
+// abgespielt, sobald der Blick wieder frei ist.
+let _animQueue = [];
+
+function isOverlayVisible() {
+    let sel = '.modal-bg, .arcade-overlay, .arena-overlay, .pomodoro-overlay, .story-overlay, .feature-unlock-overlay';
+    return Array.from(document.querySelectorAll(sel)).some(el => {
+        if (!el) return false;
+        let d = el.style.display;
+        if (d === 'none' || d === '') return false;
+        return el.offsetParent !== null || d === 'flex' || d === 'block';
+    });
+}
+
 function playAnimation(htmlContent, duration) {
+    if (isOverlayVisible()) {
+        // Nicht verwerfen, sondern nachholen. Mehr als drei aufgestaute
+        // Einblendungen waeren nur noch nervig.
+        if (_animQueue.length < 3) _animQueue.push({ htmlContent, duration });
+        return;
+    }
     state.view = 'animating'; state.animFrame = htmlContent; render();
-    setTimeout(() => { state.view = 'main'; render(); checkAchievements(); }, duration);
+    setTimeout(() => {
+        state.view = 'main'; render(); checkAchievements();
+        flushAnimationQueue();
+    }, duration);
+}
+
+// Spielt gepufferte Einblendungen ab, sobald kein Overlay mehr im Weg ist.
+function flushAnimationQueue() {
+    if (!_animQueue.length || isOverlayVisible()) return;
+    if (state.view === 'animating') return;
+    let next = _animQueue.shift();
+    playAnimation(next.htmlContent, next.duration);
 }
 
 // "Ignoriert" (Social-Media-Crash) laeuft an der ECHTEN Uhr, nicht in aktiven Sekunden:
@@ -683,12 +726,19 @@ function handleGameInput(btn) {
 }
 
 // === INDIVIDUALITÄT: Farbton + Verzerrungshülle ===
-const DISTORT_TYPES = ['none','arc','arc_lower','arc_upper','bulge','fisheye','inflate','pinch','swirl'];
+// 'fisheye' wurde entfernt - die Verzerrung war zu heftig und liess das Tier
+// unkenntlich werden. Alte Speicherstaende werden unten abgefangen.
+const DISTORT_TYPES = ['none','arc','arc_lower','arc_upper','bulge','inflate','pinch','swirl'];
+const DISTORT_REMOVED = ['fisheye'];
+// Normalisiert den Verzerrungstyp: entfernte Typen gelten als "keine".
+function normalizeDistort(t) {
+    return (!t || DISTORT_REMOVED.includes(t)) ? 'none' : t;
+}
 const DISTORT_LABELS = {
     none: 'Keine', arc: 'Bogen', arc_lower: 'Bogen unten', arc_upper: 'Bogen oben',
-    bulge: 'Wulst', fisheye: 'Fischauge', inflate: 'Aufblasen', pinch: 'Stauchen', swirl: 'Wirbel'
+    bulge: 'Wulst', inflate: 'Aufblasen', pinch: 'Stauchen', swirl: 'Aufrauen'
 };
-// Radiale Displacement-Map (R = horizontale, G = vertikale Position) für Wulst/Fischauge/Aufblasen/Stauchen
+// Radiale Displacement-Map (R = horizontale, G = vertikale Position) für Wulst/Aufblasen/Stauchen
 const RADIAL_DISPLACE_MAP = "data:image/svg+xml;utf8," + encodeURIComponent(
     "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>" +
     "<defs>" +
@@ -704,7 +754,7 @@ let _lastDistortSig = '';
 function syncPetDistortFilter(p) {
     let disp = document.getElementById('pdDisp');
     if (!disp || !p) return;
-    let t = p.distortType || 'none';
+    let t = normalizeDistort(p.distortType);
     let amt = (typeof p.distortAmount === 'number') ? p.distortAmount : 0;
     let sig = t + ':' + amt;
     if (sig === _lastDistortSig) return;
@@ -715,11 +765,11 @@ function syncPetDistortFilter(p) {
     let strength = Math.abs(amt) / 30; // 0..1
     let dirSign = amt < 0 ? -1 : 1;
 
-    if (['bulge','fisheye','inflate','pinch'].includes(t)) {
+    if (['bulge','inflate','pinch'].includes(t)) {
         if (img) img.setAttribute('href', RADIAL_DISPLACE_MAP);
         disp.setAttribute('in2', 'pdmap');
         // Bruchteile der Objekt-Bounding-Box => Verzerrung skaliert proportional mit der Darstellungsgröße
-        let base = t === 'fisheye' ? 0.58 : (t === 'inflate' ? 0.46 : 0.35);
+        let base = (t === 'inflate') ? 0.46 : 0.35;
         let sign = (t === 'pinch' ? -1 : 1) * dirSign;
         disp.setAttribute('scale', (base * (0.35 + 0.65 * strength) * sign).toFixed(3));
     } else if (t === 'swirl') {
@@ -728,7 +778,11 @@ function syncPetDistortFilter(p) {
             turb.setAttribute('seed', String(Math.floor((amt + 30) * 4) + 1));
         }
         disp.setAttribute('in2', 'pdturb');
-        disp.setAttribute('scale', (0.33 * (0.4 + 0.6 * strength) * dirSign).toFixed(3));
+        // "Aufrauen": Der Filter rechnet in Bruchteilen der Bounding-Box, 0.33
+        // entsprach also 33 % Versatz - das zerlegte das Sprite regelrecht.
+        // Deckel bei 5 %, damit es eine feine Struktur bleibt statt Matsch.
+        const AUFRAUEN_MAX = 0.05;
+        disp.setAttribute('scale', (AUFRAUEN_MAX * (0.4 + 0.6 * strength) * dirSign).toFixed(4));
     } else {
         disp.setAttribute('scale', '0');
     }
@@ -740,11 +794,11 @@ function getPetIndividualityStyle(p) {
     let parts = [];
     let filters = [];
     if (p.hueShift) filters.push(`hue-rotate(${p.hueShift}deg)`);
-    let t = p.distortType || 'none';
+    let t = normalizeDistort(p.distortType);
     let amt = (typeof p.distortAmount === 'number') ? p.distortAmount : 0;
     let strength = Math.abs(amt) / 30;
     // SVG-Displacement nur für radiale/wirbelnde Typen; Bögen nutzen reinen CSS-Transform
-    if (['bulge','fisheye','inflate','pinch','swirl'].includes(t)) filters.push('url(#petDistort)');
+    if (['bulge','inflate','pinch','swirl'].includes(t)) filters.push('url(#petDistort)');
     // Bögen zusätzlich mit sanftem Perspektiv-Transform betonen
     let transform = '';
     if (t === 'arc')        transform = `perspective(160px) rotateY(${(dirSigned(amt) * (12 + 20 * strength)).toFixed(1)}deg)`;
@@ -752,7 +806,8 @@ function getPetIndividualityStyle(p) {
     else if (t === 'arc_lower') transform = `perspective(160px) rotateX(${((8 + 22 * strength)).toFixed(1)}deg)`;
     else if (t === 'inflate')   transform = `scale(${(1 + 0.12 * strength).toFixed(3)})`;
     else if (t === 'pinch')     transform = `scale(${(1 - 0.10 * strength).toFixed(3)}, ${(1 + 0.10 * strength).toFixed(3)})`;
-    else if (t === 'swirl')     transform = `rotate(${(dirSigned(amt) * 10 * strength).toFixed(1)}deg)`;
+    // Aufrauen soll strukturieren, nicht kippen: hoechstens 2 Grad.
+    else if (t === 'swirl')     transform = `rotate(${(dirSigned(amt) * 2 * strength).toFixed(1)}deg)`;
     if (filters.length) parts.push('filter:' + filters.join(' '));
     if (transform) parts.push('transform:' + transform);
     if (parts.length) parts.push('display:inline-block');

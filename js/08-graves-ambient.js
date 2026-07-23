@@ -189,7 +189,7 @@ function openGraveyardModal() {
         let gid = graveId(gPet, idx);
         let isCared = !isExample && !!graveCare[gid];
         let graveG = (typeof SPRITE_SPECIES !== 'undefined')
-            ? `<img src="${SPRITE_BASE}${SPRITE_SPECIES[gPet.speciesIndex] || SPRITE_SPECIES[0]}_engel.png" alt="" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:middle;">`
+            ? `<img src="${SPRITE_BASE}${SPRITE_SPECIES[gPet.speciesIndex] || SPRITE_SPECIES[0]}_engel.png" alt="" style="vertical-align:middle;">`
             : (speciesList[gPet.speciesIndex] || '👻');
         let style = getShellStyle(gPet.colorIndex, gPet.patternIndex, gPet.patternColorIndex, gPet.patternScale);
         let miniShellHtml = `<div class="mini-shell" style="${style}">${graveG}</div>`;

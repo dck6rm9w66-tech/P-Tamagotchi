@@ -696,7 +696,8 @@ function updateInstallHint() {
         el.innerText = '⚠️ Läuft im Browser-Tab – noch nicht installiert.';
     }
 }
-function closeModal(id) { playSound('cancel'); document.getElementById(id).style.display = 'none'; if (id === 'shopModal') stopCountdownUpdater(); }
+function closeModal(id) { playSound('cancel'); document.getElementById(id).style.display = 'none'; if (id === 'shopModal') stopCountdownUpdater(); // Aufgestaute Display-Einblendungen jetzt nachholen
+    try { flushAnimationQueue(); } catch (e) {} }
 
 // ================================================================
 // === AHNENGALERIE: mehrere Graeber + Grabpflege ==================
