@@ -564,27 +564,27 @@ function executeMenuAction(index) {
                 pet.sickCount--;
                 if(pet.sickCount > 0) {
                     playSound('select');
-                    playAnimation(`<div style="position:relative;">${getPetGraphicMood('_wuetend')}<br><span style="font-size:11px;">Noch ${pet.sickCount}x!</span></div>`, 2000);
+                    playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}<br><span style="font-size:11px;">Noch ${pet.sickCount}x!</span></div>`, 2000);
                 } else {
-                    pet.isSick = false; pet.countDoctor++; updateQuestProgress('healed', 1); playSound('win'); playAnimation(`<div style="position:relative;">${getPetGraphicMood('_wuetend')}</div>`, 2500); 
+                    pet.isSick = false; pet.countDoctor++; updateQuestProgress('healed', 1); playSound('win'); playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}</div>`, 2500); 
                 }
             } else { 
                 pet.happiness = Math.max(0, pet.happiness - 10);
                 playSound('lose');
                 // Kein Explosions-Emoji, kein Text - das wuetende Sprite spricht
                 // fuer sich: das Tier war gar nicht krank.
-                playAnimation(getPetGraphicMood('_wuetend'), 2000); 
+                playAnimation(petAnimGraphic('_wuetend'), 2000); 
             } 
             break;
         case 6: state.view = 'info'; state.infoScreenIndex = 0; return;
         case 7: 
             if(pet.misbehaving) { 
-                pet.misbehaving = false; pet.happiness = Math.max(0, pet.happiness - 5); pet.countDiscipline++; updateQuestProgress('disciplined', 1); pet.intelligence+=2; playSound('win'); playAnimation(`<div style="position:relative;">${getPetGraphicMood('_wuetend')}</div>`, 2500); 
+                pet.misbehaving = false; pet.happiness = Math.max(0, pet.happiness - 5); pet.countDiscipline++; updateQuestProgress('disciplined', 1); pet.intelligence+=2; playSound('win'); playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}</div>`, 2500); 
             } else { 
                 pet.happiness = Math.max(0, pet.happiness - 10);
                 playSound('lose');
                 // Kein Explosions-Emoji, kein Text - das wuetende Sprite genuegt.
-                playAnimation(getPetGraphicMood('_wuetend'), 2000); 
+                playAnimation(petAnimGraphic('_wuetend'), 2000); 
             } 
             break;
     }
@@ -595,7 +595,7 @@ function executeMenuAction(index) {
 
 function executeFeedAction(index) {
     let petG = getPetGraphicWithHat();
-    if(pet.hunger >= 100) { playSound('cancel'); playAnimation(`<div style="position:relative;">${petG} 😋<br>Schon satt!</div>`, 1800); } 
+    if(pet.hunger >= 100) { playSound('cancel'); playAnimation(`<div style="position:relative;">${petAnimGraphic()}<br>Schon satt!</div>`, 1800); } 
     else { 
         // Magenverstimmung 2.0 Chance
         if(pet.buffs && pet.buffs.stomachUpset2 && Math.random() < 0.3) {
@@ -609,10 +609,10 @@ function executeFeedAction(index) {
 
         if(index === 0) {
             let weightGain = (Math.random() < getVillageEffect('gym')) ? 0 : 1; // Fitnessstudio: weniger Gewichtszunahme
-            pet.hunger = Math.min(100, pet.hunger + 20 + getVillageEffect('bakery')); pet.weight += weightGain; pet.countFed++; pet.countFedBurger++; updateQuestProgress('fedBurger', 1); playSound('win'); playAnimation(`<div style="position:relative;">${petG} 🍔</div>`, 2000); 
+            pet.hunger = Math.min(100, pet.hunger + 20 + getVillageEffect('bakery')); pet.weight += weightGain; pet.countFed++; pet.countFedBurger++; updateQuestProgress('fedBurger', 1); playSound('win'); playAnimation(`<div style="position:relative;">${petAnimGraphic()} 🍔</div>`, 2000); 
         } else {
             let gain = (pet.buffs && pet.buffs.socialUntil && pet.activeSeconds < pet.buffs.socialUntil) ? 20 : 10;
-            pet.hunger = Math.min(100, pet.hunger + 10 + getVillageEffect('bakery')); pet.happiness = Math.min(100, pet.happiness + gain); pet.weight += 3; pet.countFed++; pet.countFedSnack++; updateQuestProgress('fedSnack', 1); playSound('win'); playAnimation(`<div style="position:relative;">${petG} 🍦</div>`, 2000); 
+            pet.hunger = Math.min(100, pet.hunger + 10 + getVillageEffect('bakery')); pet.happiness = Math.min(100, pet.happiness + gain); pet.weight += 3; pet.countFed++; pet.countFedSnack++; updateQuestProgress('fedSnack', 1); playSound('win'); playAnimation(`<div style="position:relative;">${petAnimGraphic()} 🍦</div>`, 2000); 
         }
     }
     state.iconIndex = -1;
@@ -841,6 +841,15 @@ function getPetGraphic() {
 // tatsaechlichen Zustand. Wird gebraucht, wenn der Pfleger belehrt oder zum
 // Arzt geht, das Tier aber gerade weder ungezogen noch krank ist - dann soll
 // trotzdem das wuetende Sprite erscheinen.
+// Pet-Darstellung fuer Display-Einblendungen. Der Animations-Container laeuft
+// mit font-size:20px, das Sprite (1.55em) waere darin nur ~31px gross - deutlich
+// kleiner als die ~54px im Hauptbildschirm. Die Klasse .anim-pet hebt die
+// Schriftgroesse an, sodass das Tier in Animationen leicht VERGROESSERT erscheint.
+function petAnimGraphic(mood) {
+    let inner = mood ? getPetGraphicMood(mood) : getPetGraphicWithHat();
+    return `<span class="anim-pet">${inner}</span>`;
+}
+
 function getPetGraphicMood(mood) {
     if (typeof spriteImg !== 'function') return getPetGraphicWithHat();
     let style = getPetIndividualityStyle(pet);

@@ -708,7 +708,8 @@ function drawVillageCity() {
     // Wenn der Wolken-Bus das Tamagotchi abgeholt hat: Bus parkt im Dorf und
     // das blanke Tier (ohne Haus/Huelle) tapst in Miniatur ueber die Wiese.
     if (typeof pet !== 'undefined' && pet && pet.isDeparted && !pet.isDead) {
-        let animal = speciesList[pet.speciesIndex] || '🐾';
+        // Aktuelles Sprite des Tieres statt eines Emojis
+        let animalSrc = (typeof spriteSrc === 'function') ? spriteSrc(pet) : '';
         // Bus parkt oben in der ERSTEN Reihe - selbes Emoji wie im Ei-Display (🚌)
         let topLaneY = skyH + 0 * rowH + buildingBottom + 4;
         let busX = 16;
@@ -723,12 +724,15 @@ function drawVillageCity() {
         let xL = 30, xR = W - 24;
         // Weg: startet neben dem Bus, schlaengelt sich Reihe fuer Reihe nach unten und wieder hoch
         let path = `M ${busX+20},${y1} L ${xR},${y1} L ${xR},${y2} L ${xL},${y2} L ${xL},${y3} L ${xR},${y3} L ${xR},${y2} L ${xL},${y2} L ${xL},${y1} L ${busX+20},${y1} Z`;
+        // Das Sprite haengt als <image> in der animierten Gruppe. Die Bewegung
+        // liegt jetzt auf dem <g>, damit sie fuer Bilder statt Text gilt.
+        let sz = 20;
         svg += `<g>
-            <text text-anchor="middle" font-size="15">
-                <animateMotion dur="52s" repeatCount="indefinite" rotate="0" path="${path}"/>
-                <animateTransform attributeName="transform" type="translate" values="0,0; 0,-1.5; 0,0" dur="0.7s" repeatCount="indefinite" additive="sum"/>
-                ${animal}
-            </text>
+            <animateMotion dur="52s" repeatCount="indefinite" rotate="0" path="${path}"/>
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-1.5; 0,0" dur="0.7s" repeatCount="indefinite" additive="sum"/>
+            ${animalSrc
+                ? `<image href="${animalSrc}" x="${-sz/2}" y="${-sz+4}" width="${sz}" height="${sz}" style="image-rendering:pixelated;"/>`
+                : `<text text-anchor="middle" font-size="15">${speciesList[pet.speciesIndex] || '🐾'}</text>`}
         </g>`;
     }
 

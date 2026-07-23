@@ -94,6 +94,39 @@ function spriteImg(p, opts) {
          + `object-fit:contain;image-rendering:auto;${extra}">`;
 }
 
+
+/**
+ * Sprite allein anhand des Spezies-Index - fuer Listen, in denen kein
+ * vollstaendiges Pet-Objekt vorliegt (Highscores, Pokedex, Ahnengalerie).
+ * `emojiFallback` erlaubt das Nachschlagen alter Eintraege, die nur ein
+ * Emoji gespeichert haben.
+ */
+function spriteSrcBySpecies(index, phase, mood) {
+    let i = (typeof index === 'number' && index >= 0) ? index : 0;
+    let slug = SPRITE_SPECIES[i] || SPRITE_SPECIES[0];
+    if (phase === 'engel') return SPRITE_BASE + slug + '_engel.png';
+    return SPRITE_BASE + slug + '_' + (phase || 'erwachsen') + (mood || '') + '.png';
+}
+
+/** Ermittelt den Spezies-Index eines Listeneintrags (auch aus Alt-Daten). */
+function speciesIndexOfEntry(entry) {
+    if (!entry) return 0;
+    if (typeof entry.speciesIndex === 'number') return entry.speciesIndex;
+    // Rueckfall fuer Eintraege vor der Sprite-Umstellung: nur das Emoji bekannt
+    if (entry.animal && typeof speciesList !== 'undefined') {
+        let i = speciesList.indexOf(entry.animal);
+        if (i >= 0) return i;
+    }
+    return 0;
+}
+
+/** Fertiges <img>-Tag fuer Listen. `size` in CSS-Einheiten, z.B. '28px'. */
+function spriteImgBySpecies(index, size, phase, mood) {
+    return `<img src="${spriteSrcBySpecies(index, phase, mood)}" alt="" draggable="false" `
+         + `style="width:${size};height:${size};object-fit:contain;image-rendering:pixelated;`
+         + `vertical-align:middle;">`;
+}
+
 // ------------------------------------------------------------
 //  Vorladen + Canvas-Cache (für Arcade-Minispiele)
 // ------------------------------------------------------------

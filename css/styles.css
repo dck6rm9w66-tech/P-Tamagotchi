@@ -981,3 +981,34 @@ body::before {
     border-color: #e8b64c;
     box-shadow: 0 0 8px rgba(232, 182, 76, 0.55);
 }
+
+/* Ahnengalerie: Das Sprite wird doppelt so gross dargestellt, die Ei-Huelle
+   dahinter behaelt ihre Groesse. Dafuer darf das Bild ueber den Rand der
+   Huelle hinausragen (overflow sichtbar) und liegt per z-index vor dem
+   Glanz-Overlay. Die zusaetzlichen Aussenabstaende fangen den Ueberstand
+   auf, damit nichts in den Text daneben ragt. */
+.mini-shell.grave-shell {
+    overflow: visible;
+    margin-right: 26px;
+    margin-left: 12px;
+}
+.mini-shell.grave-shell img {
+    width: 3em;
+    height: 3em;
+    position: relative;
+    z-index: 2;
+}
+.mini-shell.grave-shell::after { z-index: 1; }
+
+/* Pet in Display-Einblendungen (Füttern, Arzt, Belehren).
+   Der Animations-Container laeuft mit font-size:20px; das Sprite ist in em
+   bemessen und waere darin kleiner als im Hauptbildschirm (35px). Diese
+   Klasse hebt die Bezugsgroesse an, sodass das Tier leicht vergroessert
+   erscheint. line-height:0 verhindert zusaetzlichen Leerraum darunter. */
+.anim-pet {
+    display: inline-block;
+    position: relative;
+    font-size: 42px;
+    line-height: 0;
+    vertical-align: middle;
+}

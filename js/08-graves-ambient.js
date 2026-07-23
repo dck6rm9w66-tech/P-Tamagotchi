@@ -192,7 +192,7 @@ function openGraveyardModal() {
             ? `<img src="${SPRITE_BASE}${SPRITE_SPECIES[gPet.speciesIndex] || SPRITE_SPECIES[0]}_engel.png" alt="" style="vertical-align:middle;">`
             : (speciesList[gPet.speciesIndex] || '👻');
         let style = getShellStyle(gPet.colorIndex, gPet.patternIndex, gPet.patternColorIndex, gPet.patternScale);
-        let miniShellHtml = `<div class="mini-shell" style="${style}">${graveG}</div>`;
+        let miniShellHtml = `<div class="mini-shell grave-shell" style="${style}">${graveG}</div>`;
         let reportId = 'graveReport_' + revIdx;
 
         return `
@@ -280,6 +280,7 @@ function buildScoreEntry(p, kind) {
         name: (p && p.name) || 'Tamagotchi',
         ownerName: (p && p.ownerName) || 'Unbekannt',
         animal: speciesList[(p && p.speciesIndex) || 0] || '👻',
+        speciesIndex: (p && typeof p.speciesIndex === 'number') ? p.speciesIndex : 0,
         hours: Math.floor(secs / 3600),
         minutes: Math.floor(secs / 60),           // feinere Sortierung bei kurzen Leben
         timestamp: new Date().getTime(),
@@ -448,7 +449,12 @@ function renderLeaderboardTable(scoresArray) {
     topScores.forEach((entry, index) => {
         let medal = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index+1}.`));
         let style = getShellStyle(entry.colorIndex||0, entry.patternIndex||0, entry.patternColorIndex||0, entry.patternScale||1.0);
-        let miniShellHtml = `<div class="mini-shell" style="${style}">${entry.animal}</div>`;
+        // Sprite statt Emoji. Alte Eintraege ohne speciesIndex werden ueber
+        // das gespeicherte Emoji zurueckgerechnet.
+        let lbSprite = (typeof spriteImgBySpecies === 'function')
+            ? spriteImgBySpecies(speciesIndexOfEntry(entry), '1.5em')
+            : entry.animal;
+        let miniShellHtml = `<div class="mini-shell" style="${style}">${lbSprite}</div>`;
         let medalsCountHtml = entry.medals !== undefined ? `<span style="font-size:9px; color:#f39c12; margin-left:4px;">🏅 ${entry.medals}</span>` : '';
         // In den Spieler-Wertungen steht der Pfleger oben, sonst das Tamagotchi
         let title = cat.id === 'survival' ? entry.name : (entry.ownerName || 'Unbekannt');
