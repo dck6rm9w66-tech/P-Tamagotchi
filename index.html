@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+
+    <!-- ===== PWA: Installation auf dem Home-Bildschirm ===== -->
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#5b8def">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pausentama">
+    <title>Pausen-Tamagotchi</title>
+    <!-- FontAwesome für einheitliche, monochrome Icons -->
+    <!-- Font Awesome 6.4.0 (Free/Solid) - auf die 25 genutzten Icons zugeschnitten und
+         eingebettet, damit die App komplett ohne Internet funktioniert. -->
+    <link rel="stylesheet" href="./css/fonts.css">
+    <link rel="stylesheet" href="./css/styles.css">
+</head><body>
+    <!-- Gemeinsamer SVG-Verzerrungsfilter für die Individualität des Tamagotchis -->
+    <svg id="petFilters" width="0" height="0" style="position:absolute; pointer-events:none;" aria-hidden="true">
+        <defs>
+            <filter id="petDistort" x="-40%" y="-40%" width="180%" height="180%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+                <!-- Neutrales Grau (R=G=128 => keine Verschiebung) fuellt die GANZE Filterflaeche.
+                     Ohne das ist alles ausserhalb der Bounding-Box transparent (R=G=0) und wird
+                     maximal negativ verschoben - dabei werden Emoji-Pixel nach aussen gezogen.
+                     Genau das erzeugte die Artefakte rund ums Emoji. -->
+                <feFlood flood-color="rgb(128,128,0)" flood-opacity="1" result="pdneutral"></feFlood>
+                <feImage id="pdMap" result="pdimg" preserveAspectRatio="none" x="0" y="0" width="1" height="1"></feImage>
+                <feComposite in="pdimg" in2="pdneutral" operator="over" result="pdmap"></feComposite>
+                <feTurbulence id="pdTurb" type="turbulence" baseFrequency="0.9 2.2" numOctaves="2" seed="1" result="pdturb"></feTurbulence>
+                <feDisplacementMap id="pdDisp" in="SourceGraphic" in2="pdmap" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+            </filter>
+        </defs>
+    </svg>
+
+
+    <!-- Achievement Toast -->
+    <div class="achievement-banner" id="achBanner">
+        <div class="ach-icon" id="achIcon">🏆</div>
+        <div class="ach-text">
+            <h4 id="achHeader">Medaille freigeschaltet!</h4>
+            <p id="achTitle">Erfolgreich Ausgebrütet</p>
+        </div>
+        <span class="ach-close" onclick="closeAchievementBanner()">&times;</span>
+    </div>
+
+    <!-- ============ AUFGERÄUMTE HUD ============ -->
+    <!-- Top-Statusleiste: links Werkzeuge, rechts Ressourcen -->
+    <div class="hud-top">
+        <div class="hud-cluster">
+            <div class="hud-btn" onclick="toggleSound()" title="Ton an/aus"><i id="soundIcon" class="fa-solid fa-volume-high"></i></div>
+            <div class="hud-btn" onclick="openInfoModal()" title="Handbuch & Steuerung"><i class="fa-solid fa-circle-info"></i></div>
+            <div class="hud-btn" id="btn-save" onclick="openSaveModal()" title="Spielstand sichern & laden"><i class="fa-solid fa-floppy-disk"></i></div>
+            <div class="hud-title">Pausen-Tamagotchi</div>
+        </div>
+        <div class="hud-cluster">
+            <div class="stat-pill visit" id="visitDisplay" title="Verbleibende Besuchszeit heute">
+                <span>⏳</span>
+                <span class="pill-visit"><span class="pill-visit-fill" id="visitFill"></span></span>
+                <span class="pill-visit-text" id="visitText">30:00</span>
+            </div>
+            <div class="stat-pill coins" title="T-Coins"><i class="fa-solid fa-coins"></i> <span id="tCoinDisplay">0</span></div>
+            <div class="stat-pill tickets" id="ticketDisplay" title="Pausen-Tickets">🎫 <span id="ticketCount">0</span></div>
+            <div class="stat-pill level" id="levelDisplay" onclick="openLevelModal()" title="Pfleger-Level">
+                <span>🎓 <span id="levelBadge">1</span></span>
+                <span class="pill-xp"><span class="pill-xp-fill" id="pillXpFill"></span></span>
+                <span class="pill-xp-text" id="pillXpText">0/80</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom-Dock: alle Feature-Buttons gruppiert -->
+    <div class="hud-dock">
+        <div class="hud-btn accent" id="btn-shop" onclick="openShopModal()" title="Shop & Inventar"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div class="dock-sep"></div>
+        <!-- Reihenfolge = Freischalt-Level aufsteigend: 0,1,1,2,3,5,6,8,9,12 -->
+        <div class="hud-btn" id="btn-medals" onclick="openMedalModal()" title="Medaillen"><i class="fa-solid fa-medal"></i></div>
+        <div class="hud-btn" id="btn-pomodoro" onclick="openPomodoroModal()" title="Pomodoro-Fokus"><i class="fa-solid fa-stopwatch"></i></div>
+        <div class="hud-btn" id="btn-quests" onclick="openQuestModal()" title="Tages-Quests"><i class="fa-solid fa-list-check"></i></div>
+        <div class="hud-btn" id="btn-pokedex" onclick="openPokedexModal()" title="Wolkendorf-Tagebuch"><i class="fa-solid fa-book"></i></div>
+        <div class="hud-btn" id="btn-graveyard" onclick="openGraveyardModal()" title="Ahnengalerie / Friedhof"><i class="fa-solid fa-skull"></i></div>
+        <div class="hud-btn" id="btn-leaderboard" onclick="openLeaderboardModal()" title="Highscores"><i class="fa-solid fa-trophy"></i></div>
+        <div class="hud-btn" id="btn-village" onclick="openVillageModal()" title="Wolkendorf-Ausbau"><i class="fa-solid fa-city"></i></div>
+        <div class="hud-btn" id="btn-arena" onclick="openArenaModal()" title="Wolkendorf-Arena"><i class="fa-solid fa-hand-fist"></i></div>
+        <div class="hud-btn" id="btn-arcade" onclick="openArcadeMenu()" title="Arcade-Automaten"><i class="fa-solid fa-gamepad"></i></div>
+        <div class="hud-btn" id="btn-endgame" onclick="openEndgameModal()" title="Wolkendorf-Fernrohr"><i class="fa-solid fa-binoculars"></i></div>
+        <div class="hud-btn dock-steps" id="btn-steps" onclick="openStepsModal()" title="Schrittzähler" style="display:none;"><i class="fa-solid fa-shoe-prints"></i><span id="stepCount">0</span></div>
+        <div class="dock-sep"></div>
+        <div class="hud-btn" onclick="toggleFlip()" title="Gerät drehen"><i class="fa-solid fa-rotate"></i></div>
+    </div>
+
+    <input type="file" id="arenaOpponentInput" accept=".json" style="display:none" onchange="handlePvPImport(event)">
+    <input type="file" id="raidAllyInput" multiple accept=".json,application/json,text/plain" style="display:none" onchange="handleRaidImport(event)">
+    <input type="file" id="officeScoreInput" multiple accept=".json" style="display:none" onchange="handleOfficeScoresImport(event)">
+    <input type="file" id="backupFileInput" accept=".json,application/json,text/plain" style="display:none" onchange="handleBackupImport(event)">
+
+    <!-- Aktive Ergonomie-Erinnerung -->
+    <div class="ergo-reminder" id="ergoReminder" onclick="openQuestsFromReminder()"></div>
+
+    <!-- ====== ERSTSTART-GESCHICHTE ====== -->
+    <div class="story-overlay" id="storyOverlay">
+        <div class="cloud" style="top:12%; animation-duration:26s;">☁️</div>
+        <div class="cloud" style="top:34%; animation-duration:38s; animation-delay:-8s;">☁️</div>
+        <div class="cloud" style="top:68%; animation-duration:30s; animation-delay:-15s;">☁️</div>
+        <div class="cloud" style="top:82%; animation-duration:44s; animation-delay:-4s; font-size:34px;">☁️</div>
+        <div class="story-card">
+            <div class="story-skip" onclick="finishStory()">Überspringen ✕</div>
+            <div class="story-scene" id="storyScene"></div>
+            <div class="story-title" id="storyTitle"></div>
+            <div class="story-text" id="storyText"></div>
+            <div class="story-dots" id="storyDots"></div>
+            <button class="onboard-btn" id="storyBtn" style="width:auto; padding:9px 26px;" onclick="nextStoryChapter()">Weiter →</button>
+        </div>
+    </div>
+
+    <!-- ====== ARCADE-AUTOMATEN ====== -->
+    <div class="arcade-overlay" id="arcadeOverlay">
+        <div class="arcade-cabinet">
+            <div class="arcade-topbar">
+                <span class="arcade-title" id="arcadeTitle">ARCADE</span>
+                <span class="arcade-close" onclick="quitArcade()">✕</span>
+            </div>
+            <div class="arcade-hud">
+                <span>SCORE <b id="arcScore">0</b></span>
+                <span id="arcWave">WAVE 1</span>
+                <span>HI <b id="arcHi">0</b></span>
+                <span id="arcLives">❤️❤️❤️</span>
+            </div>
+            <div class="arcade-screen" id="arcadeScreen">
+                <canvas id="arcadeCanvas" width="480" height="360"></canvas>
+                <div class="arcade-message" id="arcadeMessage">
+                    <div class="am-title" id="amTitle"></div>
+                    <div class="am-sub" id="amSub"></div>
+                    <button class="am-btn" id="amBtn" onclick="arcadeMessageAction()"></button>
+                </div>
+            </div>
+            <div class="arcade-controls" id="arcadeControls"></div>
+            <div class="arcade-hint" id="arcadeHint"></div>
+        </div>
+    </div>
+
+    <!-- Onboarding Modal -->
+    <div class="modal-bg" id="onboardingModal">
+        <div class="modal-content" style="justify-content: center;">
+            <h2 data-i18n>Willkommen! ☁️🥚</h2>
+            <p style="font-size: 11px;">Dein neues Tamagotchi kommt aus dem magischen <b>Wolkendorf</b> zu dir herab!</p>
+            <p style="font-size: 11px;"><b>Wichtig:</b> Da die Erdenluft für es anstrengend ist, darf es dich pro Tag nur <b>maximal 30 Minuten aktive Bildschirmzeit</b> besuchen. Danach holt der Wolken-Bus es ab. Morgen früh kommt es pünktlich wieder! 🚌💨</p>
+            
+            <label for="ownerNameInput" class="onboard-label">Dein Name (Pfleger):</label>
+            <input type="text" id="ownerNameInput" placeholder="Z.B. Max" maxlength="12" class="onboard-input">
+            
+            <label for="tamaNameInput" class="onboard-label">Name des Tamagotchis:</label>
+            <input type="text" id="tamaNameInput" value="Tama" maxlength="10" class="onboard-input">
+            
+            <button onclick="submitOnboarding()" class="onboard-btn">Ei ausbrüten! 🥚</button>
+        </div>
+    </div>
+
+    <!-- KOMBINIERTES INFO & BENUTZERHANDBUCH MODAL -->
+    <div class="modal-bg" id="infoModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('infoModal')">&times;</span>
+            <h2 style="margin-bottom: 8px;" data-i18n>📖 Handbuch</h2>
+            <div style="margin-bottom: 12px;">
+                <button id="langToggleBtn" class="onboard-btn btn-gray" style="font-size:11px; padding:7px 10px;" onclick="toggleLanguage()"></button>
+            </div>
+            
+            <div class="scroll-container" style="text-align: left; padding-right: 5px;" data-i18n-block="manual">
+                <p style="font-size: 12px;">Dieses Tamagotchi soll dir helfen, spielerisch <b>Pausen</b> einzuhalten. Es wächst nur, wenn dieses Fenster aktiv geöffnet ist.</p>
+                
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🕹️ Steuerung</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Steuerung über die Buttons A, B und C oder die <b>Tastatur</b>: ⬅️ (Links) für A, ⬇️ (Unten) für B und ➡️ (Rechts) für C.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">📲 Als App installieren (wichtig!)</h3>
+                <div id="installState" class="install-state"></div>
+                <p style="font-size: 12px; margin-bottom: 8px;">Dein Fortschritt liegt <b>ausschliesslich in diesem Browser</b> – es gibt keinen Server und kein Konto. Das ist gut für deine Daten, hat aber einen Haken: Browser räumen Website-Daten irgendwann auf. <b>Safari löscht sie sogar automatisch nach 7 Tagen ohne Besuch.</b></p>
+                <p style="font-size: 12px; margin-bottom: 10px;">Legst du die App auf den Home-Bildschirm, gilt das nicht mehr – dann bleibt dein Tamagotchi erhalten. Ausserdem startet sie im Vollbild und läuft komplett offline.</p>
+
+                <div class="install-box">
+                    <div class="install-head">🍎 iPhone &amp; iPad</div>
+                    <ol class="install-steps">
+                        <li>Diese Seite in <b>Safari</b> öffnen (Chrome kann es nicht).</li>
+                        <li>Unten auf <b>Teilen</b> tippen <span class="ib-icon">⬆️</span></li>
+                        <li><b>„Zum Home-Bildschirm"</b> wählen → <b>Hinzufügen</b></li>
+                    </ol>
+                    <div class="install-note">Home-Bildschirm-Apps sind von Safaris 7-Tage-Löschung <b>ausgenommen</b>.</div>
+                </div>
+
+                <div class="install-box">
+                    <div class="install-head">🤖 Android</div>
+                    <ol class="install-steps">
+                        <li>Diese Seite in <b>Chrome</b> öffnen.</li>
+                        <li>Menü <b>⋮</b> oben rechts antippen.</li>
+                        <li><b>„App installieren"</b> bzw. <b>„Zum Startbildschirm zufügen"</b> wählen.</li>
+                    </ol>
+                    <div class="install-note">Oft schlägt Chrome die Installation auch von selbst vor. Danach sichert Android den Spielstand <b>dauerhaft</b> gegen automatisches Aufräumen.</div>
+                </div>
+
+                <p style="font-size: 11px; color: #747d8c; margin-bottom: 10px;">Hinweis: Installieren geht nur, wenn du die App über eine Web-Adresse (https) geöffnet hast – nicht als lokale Datei. Und egal auf welchem Gerät: Sichere deinen Spielstand ab und zu über den <b><i class="fa-solid fa-floppy-disk"></i>-Knopf oben links</b>. Das ist die einzige Sicherung, die kein Browser löschen kann.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">💬 Antippen & zuhoeren</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Tippe dein Tamagotchi einfach mal an – es hat <b>über 120 Sprüche</b> auf Lager: mal albern, mal nachdenklich, mal weiss es verdächtig genau, dass es in einem Browser lebt. Es wiederholt sich erst, wenn du wirklich alle gehört hast. Beim Schlafen, nach der Abfahrt oder wenn es dich gerade ignoriert, schweigt es allerdings.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">☁️ Das Wolkendorf (30-Min-Regel)</h3>
+                <p style="font-size: 12px; margin-bottom: 8px;">Dein Tamagotchi besucht dich jeden Tag für genau <b>30 Minuten aktiver Bildschirmzeit</b>. Ist die Zeit um, holt der Bus es ab. Am nächsten Tag ist es wieder da! Max Lebenszeit: <b>~8,5 Stunden aktiver Bildschirmzeit</b>.</p>
+                <div style="font-size: 11px; background:#eef4ff; border-left:4px solid #54a0ff; border-radius:6px; padding:8px 10px; margin-bottom: 12px; line-height:1.5;">
+                    <b>⏱️ Aktive Bildschirmzeit ≠ echte Zeit</b><br>
+                    Die Uhr deines Tamagotchis läuft <b>nur, während die App geöffnet und sichtbar ist</b>. Legst du das Handy weg, wechselst den Tab oder sperrst den Bildschirm, pausiert alles: Es altert nicht, wird nicht hungrig und die Besuchszeit läuft nicht weiter.<br><br>
+                    Was das bedeutet: Ein volles Leben von ~8,5 Stunden aktiver Zeit dauert bei 30 Minuten pro Tag rund <b>17 echte Tage</b>. Und wenn im Friedhof „16 Lebenstage“ steht, sind das <b>Lebenstage im Spiel</b> (je 30 Minuten aktive Zeit) – nicht 16 Kalendertage.<br><br>
+                    Einzige Ausnahme: Buff-Laufzeiten aus dem Shop (z.&nbsp;B. „1 Stunde feuerspuckend“) laufen in <b>echter Zeit</b> weiter, auch wenn die App geschlossen ist.
+                </div>
+                
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🧠 Intelligenz & T-Coins</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Durch erfolgreiches Spielen (🎮) und Belehren (💢) steigt die <b>Intelligenz</b>. Gewonnene Spiele bringen außerdem <b>T-Coins</b>, die du im Shop (🛒) für Buffs, Kosmetik und mehr ausgeben kannst. T-Coins und das Inventar bleiben auch nach dem Tod erhalten! Vergiss nicht, einmal täglich das <b>Glücksrad</b> im Shop zu drehen.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">❤️ Bedürfnisse & Pflege</h3>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 10px;">
+                    <li style="margin-bottom: 5px;"><b>🍔 Füttern:</b> Burger (+20 Hunger, +1g). Eis (+10 Laune, +3g).</li>
+                    <li style="margin-bottom: 5px;"><b>🎮 Spielen:</b> Zieht 1g Gewicht ab – dein Workout nach Snacks.</li>
+                    <li style="margin-bottom: 5px;"><b>💡 Schlafen:</b> Alle 16-20 Minuten wird es müde (🥱). Licht aus! Machst du das Licht aus, wenn es wach ist, bekommt es Angst (💡?)!</li>
+                    <li style="margin-bottom: 5px;"><b>🛁 Baden & 🩺 Arzt:</b> Manchmal wird es schmutzig (💩) oder krank (💊). Sofort kümmern! Kranke Tamagotchis müssen manchmal öfter zum Arzt! Grundloser Arztbesuch macht es wütend!</li>
+                    <li style="margin-bottom: 5px;"><b>💢 Belehren:</b> Wenn es unartig ist, schimpfen. Grundloses Schimpfen senkt die Laune massiv!</li>
+                </ul>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">⚠️ Todesursachen</h3>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 15px;">
+                    <li><b>Verhungern:</b> 10 Min bei 0% Hunger.</li>
+                    <li><b>Traurigkeit:</b> 10 Min bei 0% Happy.</li>
+                    <li><b>Übergewicht:</b> Sobald es 50g wiegt.</li>
+                    <li><b>Altersschwäche:</b> Natürliches Ende nach ca. 5,5 bis 8,5 Stunden <b>aktiver Bildschirmzeit</b>.</li>
+                </ul>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🕹️ Arcade</h3>
+                <p style="font-size: 12px; margin-bottom: 15px;">Die Automaten kaufst du einmalig — jede <b>Runde kostet dann 20 🪙</b> Eintritt. Dafür gibt es <b>38 bis 125 Pfleger-XP</b> pro Durchgang und je nach Punktzahl Münzen zurück (bis 140 🪙). Ein guter Lauf lohnt sich also doppelt. Praktisch, wenn dein Tamagotchi altert: Beim Tod verfallen alle Münzen — vorher in XP umgewandelt sind sie besser aufgehoben.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #6c5b7b;">🪦 Grabpflege & die Ahnen</h3>
+                <p style="font-size: 12px; margin-bottom: 8px;">Jedes verstorbene Tamagotchi bekommt einen Grabstein in der <b>Ahnengalerie</b> (💀). Für <b>5 🪙 pro Tag und Grab</b> kannst du ein Grab pflegen lassen – das Abo wird täglich automatisch abgebucht.</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 8px;">
+                    <li><b>Ab 50% gepflegter Gräber</b> ist alles in Ordnung – die Ahnen ruhen in Frieden.</li>
+                    <li><b>Unter 50%</b> suchen sie dich heim: Dein Tamagotchi fürchtet sich und wird nur noch <b>maximal 25% glücklich</b>, egal wie sehr du dich bemühst. Im Hintergrund schweben dann Geister umher.</li>
+                </ul>
+                <p style="font-size: 12px; margin-bottom: 15px;">Reicht dein Guthaben beim täglichen Einzug nicht, werden so viele Abos wie möglich behalten – der Rest wird eingestellt. Je mehr Ahnen du sammelst, desto teurer wird die Ruhe: Plane dein Budget entsprechend!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #c0392b;">💸 Was der Tod kostet</h3>
+                <p style="font-size: 12px; margin-bottom: 6px;">Stirbt dein Tamagotchi, beginnt der nächste Schützling bei null. <b>Verloren gehen:</b></p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 8px;">
+                    <li><b>Alle T-Coins</b> 🪙 und <b>alle Pausen-Tickets</b> 🎫 – dein Konto wird auf 0 zurückgesetzt.</li>
+                    <li>Alle gekauften Gegenstände, Hüte, Lacke und aktiven Buffs.</li>
+                </ul>
+                <p style="font-size: 12px; margin-bottom: 6px;"><b>Dir bleiben</b> – das gehört dem Pfleger, nicht dem Tamagotchi:</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 10px;">
+                    <li>Dein <b>Pfleger-Level</b> samt XP und alle <b>Medaillen</b>.</li>
+                    <li>Der komplette <b>Wolkendorf-Ausbau</b> mit allen Stufen-Boni.</li>
+                    <li>Gekaufte <b>Arcade-Automaten</b> und deren Bestenliste.</li>
+                    <li>Dein eigenes <b>Bild/Skin</b> und <b>Hintergrundbild</b>.</li>
+                    <li>Friedhof, Highscores und dein Lebenswerk.</li>
+                </ul>
+                <p style="font-size: 11px; color: #576574; margin-bottom: 15px;">Tipp: Investiere Tickets rechtzeitig ins Wolkendorf – dort sind sie dauerhaft sicher. Was auf dem Konto liegt, ist beim Tod weg.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #6c5ce7;">🧠 Clevere Zusammenhänge</h3>
+                <p style="font-size: 12px; margin-bottom: 6px;">Ein paar Dinge greifen im Hintergrund ineinander – wer sie kennt, pflegt effizienter und sammelt mehr Pfleger-XP:</p>
+                <ul style="font-size: 12px; padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 6px;"><b>🏘️ Ruhigere Pflege lohnt sich:</b> Je weiter du Klinik, Therme, Wachturm und Kantine ausbaust, desto seltener wird dein Tamagotchi krank, schmutzig, unartig oder hungrig. Als Ausgleich für den ruhigeren Alltag gibt es <b>deutlich mehr Tages-XP</b> – bei voll ausgebautem Komfort-Dorf bis zu <b>+40 XP</b> zusätzlich pro Lebenstag.</li>
+                    <li style="margin-bottom: 6px;"><b>🎓 Höherer IQ = mehr XP:</b> Die Intelligenz steigt mit jeder Wachstumsphase und wird <b>nie zurückgesetzt</b>. Jeder IQ-Punkt bringt dir <b>+1% Pfleger-XP</b> (bis +100% bei IQ 100). Beschäftige dein Tamagotchi mit Büchern, Spielen & Co. und vermeide Vernachlässigung, damit es nicht verlernt.</li>
+                    <li style="margin-bottom: 6px;"><b>⚖️ Gewicht beeinflusst Energie:</b> Ein gesundes Mittelfeld (~10–20g) ist am effizientesten. <b>Übergewicht</b> ermüdet und erhöht den Energieverbrauch – aber auch <b>Untergewicht</b> kostet extra, weil die Reserven fehlen.</li>
+                    <li style="margin-bottom: 6px;"><b>🎮 Spielen macht hungrig:</b> Jede Spielrunde kostet <b>8 Hunger</b> und lässt dein Tamagotchi etwas abspecken. Danach entscheidest du: <b>Mahlzeit 🍔</b> (+20 Hunger, nur +1g) füllt effizient auf, der <b>Snack 🍦</b> (+10 Hunger, +3g) macht dafür glücklich. So steuerst du das Gewicht ganz bewusst – und bei fast leerem Magen verweigert dein Tamagotchi das Spielen.</li>
+                    <li style="margin-bottom: 6px;"><b>😄 Laune beeinflusst Energie:</b> Ein glückliches Tamagotchi (über 70 Laune) ist spritziger und verbraucht <b>bis zu 50% langsamer</b> Energie. Unter 30 Laune wird es lustlos und ermüdet schneller.</li>
+                </ul>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🎫 Tickets & Wolkendorf-Ausbau</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Erfülle Tages-Quests (📋) und Pomodoro-Sessions (🍅), um 🎫 <b>Pausen-Tickets</b> zu verdienen. Darunter sind täglich auch <b>Ergonomie-Quests</b> (🌿) – reale Büro-Pausentipps wie Sitzwechsel, Steh-Phasen oder die 20-20-20-Regel, die du nach dem Erledigen einfach selbst per Klick bestätigst. Im Wolkendorf-Ausbau (🏘️) investierst du Tickets in 10 verschiedene Gebäude mit je 12 Ausbaustufen. Die Boni gelten dauerhaft für alle aktuellen und zukünftigen Tamagotchis – auch nach dem Tod!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🏆 Büro-Highscores</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Die Bestenliste (🏆) hat <b>vier Wertungen</b>: <b>🕐 Überleben</b> (wie lange deine Tamagotchis durchgehalten haben), <b>⚔️ PvP</b> (gewonnene Duelle), <b>👹 Bosse</b> (besiegte Mini-Bosse) und <b>🕹️ Arcade</b> (bester Automaten-Score). Dein eigener Stand wird beim Öffnen automatisch eingemischt und markiert – du siehst dich also sofort im Vergleich.</p>
+                <p style="font-size: 12px; margin-bottom: 15px;">Zum Vergleich mit anderen tauscht ihr <b>JSON-Dateien</b> aus: Mit „<b>Meinen Steckbrief teilen</b>“ exportierst du deinen aktuellen Stand (auch ohne dass ein Tamagotchi sterben muss), beim Tod entsteht zusätzlich automatisch eine Datei. Legt die Dateien in einen gemeinsamen Ordner und ladet sie über „Scores laden“. Alle Werte sind mit einer <b>Prüfsumme signiert</b> – manipulierte Dateien werden beim Import abgewiesen.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🎓 Pfleger-Level</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Für jeden überlebten Tamagotchi-Tag, jede verdiente Medaille und jedes gewonnene Minispiel sammelst du Pfleger-XP. Steigst du im Level (🎓) auf, schaltest du exklusive Shop-Kategorien und seltene Ei-Farben frei. Gesperrte Inhalte siehst du bereits im Shop – inklusive des Levels, ab dem du sie freischalten kannst!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">⚔️ Wolkendorf-Arena</h3>
+                <p style="font-size: 12px; margin-bottom: 8px;"><b>🌩️ Raid — der Wolken-Titan:</b> Der grösste Gegner der Arena ist allein nicht zu schaffen. Für ihn braucht ihr <b>mindestens 2 Tamagotchis</b>: dein eigenes plus wenigstens einen <b>tagesaktuellen</b> Spielstand (JSON) einer anderen Person – ältere Dateien lehnt der Titan ab. Lade ruhig mehrere auf einmal: Je grösser der Verbund, desto höher eure Kampfkraft <b>und</b> die Beute. Es gibt deutlich mehr Coins, Tickets und XP als bei jedem Mini-Boss – plus <b>3 zufällige Gegenstände</b> aus dem Laden (ab 4 Teilnehmenden sogar 4). Einmal pro Woche.</p>
+                <p style="font-size: 12px; margin-bottom: 10px;">In der Arena lässt du dein Tamagotchi gegen andere Tamagotchis oder Minibosse kämpfen! Für <b>PvP-Duelle</b> lädst du die Spielstand-JSON eines Mitspielers. Für <b>Minibosse</b> (5 Stufen) brauchst du ein aktives Tamagotchi. Jeder Kampf ist 1× pro Woche möglich. Gewinne: Coins, Tickets, XP und bei Glück seltene <b>Boss-Trophäen</b>! Verlierst du, leidet dein Tama an Laune/Energie. Die Kampfstärke hängt von Glück, Alter und Stats ab.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🧠 Intelligenz & Vernachlässigung</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Dein Tamagotchi lernt durch Pflege und Minispiele – aber es <b>verlernt auch wieder</b>. Kümmerst du dich länger als 5 Minuten nicht um es (keine Pflege-Aktion, kein Spiel), sinkt seine Intelligenz alle 5 Minuten um 1 Punkt. Bleib also am Ball!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🔭 Endgame: Fernrohr & Vermächtnis (ab Level 32)</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Als Meister-Pfleger schaltest du das <b>Wolkendorf-Fernrohr</b> frei. Für <b>10 🎫</b> beobachtest du einen Tag lang, was dein Tamagotchi oben im Wolkendorf treibt. Anschließend kannst du ihm <b>bis zu 3x täglich</b> für je <b>250 🪙</b> ein Geschenk schicken. Jedes Geschenk hebt einen zufälligen Stat <b>dauerhaft um 0,5%</b> – und dieses Vermächtnis gilt für alle deine zukünftigen Tamagotchis! Verbesserbar sind u.&nbsp;a. Start-Intelligenz, Lebensdauer, Coin- und XP-Gewinn, Kampfkraft, Glück, Krankheits- und Schmutzresistenz.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">⏰ Schlaf & Wecker</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Wenn dein Tamagotchi müde ist (🥱), schalte das Licht aus. Während es schläft, erscheint über der Hülle ein <b>Wecker-Symbol mit der Uhrzeit</b>, zu der es aufwacht. Ist es so weit, klingelt der Wecker und die Ei-Hülle vibriert kurz – Zeit zum Licht anmachen!</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">✖️ Multiplikatoren (Booster)</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Ab Pfleger-Level 17 schaltest du im Shop die Kategorie <b>Multiplikatoren</b> frei. Jede Effektart gibt es in <b>5 Stärkestufen</b> (Einstieg bis extrem): <b>💰 Coins</b> (×2 bis ×15), <b>🎫 Tickets</b> (×2 bis ×12), <b>🎓 XP</b> (×2 bis ×12), <b>🍀 Glück</b> (33% bis 100% Rettungs-Chance in Minispielen) und <b>💪 Kraft</b> (×1,5 bis ×6 in Bosskämpfen & PvP). Stärkere Booster wirken kürzer, aber heftiger. Elite-Pfleger (Level 30) erhalten zusätzlich den <b>🌈 Mega-/🌌 Omni-Booster</b>, der Coins, Tickets und XP gleichzeitig vervielfacht! Weil sie so wertvoll sind, kosten alle Multiplikatoren zusätzlich zu den T-Coins auch ein paar 🎫 Tickets. Aktive Booster erscheinen als Symbole über deinem Tamagotchi.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">💾 Spielstand sichern & laden</h3>
+                <p style="font-size: 12px; margin-bottom: 15px;">Über den <b><i class="fa-solid fa-floppy-disk"></i>-Knopf oben links</b> sicherst du deinen <b>kompletten</b> Fortschritt als Datei: Tamagotchi, Coins, Tickets, Pfleger-Level, Medaillen, Inventar, Wolkendorf, Arena, Arcade-Highscores und Friedhof. Genau damit ziehst du auch auf ein neues Gerät um – Datei sichern, dort laden, fertig. Der Import <b>ersetzt</b> den dortigen Spielstand komplett.</p>
+
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #d63031; margin-top: 5px;">⚠️ Account zurücksetzen</h3>
+                <p style="font-size: 12px; margin-bottom: 10px;">Löscht deinen Account, alle Medaillen, T-Coins, Inventar, Friedhof und Fortschritt permanent!</p>
+                <button onclick="fullAccountReset()" class="onboard-btn btn-red">Account komplett löschen</button>
+
+                <div class="credit-line">© Basti</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schrittzähler -->
+    <div class="modal-bg" id="stepsModal">
+        <div class="modal-content" style="max-width: 330px;">
+            <span class="modal-close" onclick="closeModal('stepsModal')">&times;</span>
+            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-shoe-prints"></i> <span data-i18n>Schrittzähler</span></h2>
+            <p data-i18n-block="stepsIntro" style="font-size: 11px; color: #747d8c; margin: 0 0 12px;">
+                Je <b>100 Schritte</b> gibt es <b>50 T-Coins</b>. Steh auf, dein Wolkenwesen kommt mit.
+            </p>
+            <div id="stepsBody"></div>
+        </div>
+    </div>
+
+    <!-- Spielstand-Modal: Sichern & Laden -->
+    <div class="modal-bg" id="saveModal">
+        <div class="modal-content" style="max-width: 330px;">
+            <span class="modal-close" onclick="closeModal('saveModal')">&times;</span>
+            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n>Spielstand</span></h2>
+            <div id="saveRank" style="margin-bottom: 8px;"></div>
+            <p data-i18n-block="saveIntro" style="font-size: 11px; color: #747d8c; margin: 0 0 14px;">
+                Sichert <b>alles</b>: Tamagotchi, Coins, Tickets, Level, Medaillen, Inventar,
+                Wolkendorf und Highscores. Damit ziehst du auch auf ein anderes Gerät um.
+            </p>
+            <div class="save-actions">
+                <button class="save-action" onclick="exportBackup()">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span class="sa-text">
+                        <span class="sa-title" data-i18n>Sichern</span>
+                        <span class="sa-sub" data-i18n>Kompletten Fortschritt als Datei speichern</span>
+                    </span>
+                </button>
+                <button class="save-action" onclick="triggerBackupImport()">
+                    <i class="fa-solid fa-file-arrow-up"></i>
+                    <span class="sa-text">
+                        <span class="sa-title" data-i18n>Laden</span>
+                        <span class="sa-sub" data-i18n>Aus Datei wiederherstellen (ersetzt alles)</span>
+                    </span>
+                </button>
+            </div>
+            <div class="save-status" id="saveStatus"></div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div class="modal-bg" id="shopModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('shopModal')">&times;</span>
+            <div style="font-size: 18px; font-weight: bold; color: #f39c12; margin-bottom: 10px;" id="shopCoinDisplay">0 <i class="fa-solid fa-coins"></i></div>
+            
+            <div class="shop-tabs">
+                <div class="shop-tab active" id="tabShop" onclick="switchShopTab('shop')">Laden</div>
+                <div class="shop-tab" id="tabInventory" onclick="switchShopTab('inventory')">Inventar</div>
+                <div class="shop-tab" id="tabWheel" onclick="switchShopTab('wheel')" data-i18n>Glücksrad</div>
+            </div>
+
+            <div class="scroll-container" id="shopContentContainer">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Skin Input Modal (Child of Shop) -->
+    <div class="modal-bg" id="customSkinModal" style="z-index: 105;">
+        <div class="modal-content" style="width: 260px; justify-content: center; height: auto;">
+            <span class="modal-close" onclick="closeModal('customSkinModal')">&times;</span>
+            <h3 style="margin-top:0;">Eigener Skin</h3>
+            <p style="font-size:12px;">Füge die URL zu einem Bild ein (z.B. .jpg oder .png), um dein Gehäuse damit zu bekleben.</p>
+            <input type="text" id="customSkinInput" placeholder="https://bild.de/textur.jpg" class="onboard-input">
+            <button class="onboard-btn btn-blue" onclick="saveCustomSkinUrl()">Speichern & Anwenden</button>
+        </div>
+    </div>
+
+    <!-- Custom Background Modal (Child of Shop) -->
+    <div class="modal-bg" id="customBgModal" style="z-index: 105;">
+        <div class="modal-content" style="width: 260px; justify-content: center; height: auto;">
+            <span class="modal-close" onclick="closeModal('customBgModal')">&times;</span>
+            <h3 style="margin-top:0;">Eigener Hintergrund</h3>
+            <p style="font-size:12px;">Füge die URL zu einem Bild ein, um es als Display-Hintergrund zu setzen.</p>
+            <input type="text" id="customBgInput" placeholder="https://bild.de/hintergrund.jpg" class="onboard-input">
+            <button class="onboard-btn btn-blue" onclick="saveCustomBgUrl()">Speichern & Anwenden</button>
+        </div>
+    </div>
+
+    <!-- Medaillen-Modal -->
+    <div class="modal-bg" id="medalModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('medalModal')">&times;</span>
+            <h2 data-i18n style="margin-bottom: 5px;">Deine Medaillen 🏅</h2>
+            <p style="font-size: 11px; margin-bottom: 10px; margin-top: 0;" id="medalProgressText">0 / 40 freigeschaltet</p>
+            
+            <div class="scroll-container">
+                <div class="medal-grid" id="medalGrid"></div>
+            </div>
+
+            <div class="medal-detail" id="medalDetail">
+                <b id="mdTitle" style="font-size: 14px; display:block; margin-bottom:5px;">Titel</b>
+                <span id="mdDesc">Beschreibung</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Friedhof-Modal -->
+    <div class="modal-bg" id="graveyardModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('graveyardModal')">&times;</span>
+            <h2 data-i18n style="margin-bottom: 15px;">Ahnengalerie 🪦</h2>
+            <div class="scroll-container" id="graveyardContent"></div>
+        </div>
+    </div>
+
+    <!-- Leaderboard-Modal -->
+    <div class="modal-bg" id="leaderboardModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('leaderboardModal')">&times;</span>
+            <h2 data-i18n style="margin-bottom: 0;">Highscores 🏆</h2>
+            <p data-i18n-block="lbIntro" style="font-size: 11px; margin-bottom: 8px; margin-top: 5px;">Überleben, PvP, Mini-Bosse und Arcade – vergleiche dich mit deinen Kolleginnen und Kollegen.</p>
+
+            <div class="scroll-container" id="leaderboardContent"></div>
+
+            <div style="flex-shrink: 0; margin-top: 10px;">
+                <p data-i18n-block="lbHint" style="font-size: 10px; margin-bottom:5px; color:#576574;">Lade die .json-Dateien der anderen aus eurem Netzwerkordner – oder teile deinen eigenen Steckbrief.</p>
+                <button onclick="document.getElementById('officeScoreInput').click()" class="onboard-btn btn-blue"><i class="fa-solid fa-folder-open"></i> Scores laden</button>
+                <button onclick="exportMyScoreFile()" class="onboard-btn btn-gray" style="margin-top:6px;"><i class="fa-solid fa-share-nodes"></i> <span data-i18n>Meinen Steckbrief teilen</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Todes-Modal -->
+    <div class="modal-bg" id="deathModal">
+        <div class="modal-content" style="justify-content: center; height: auto;">
+            <h2 data-i18n>Ein friedlicher Abschied 🌈</h2>
+            <p id="deathModalText" style="text-align: left;"></p>
+            <button onclick="closeModal('deathModal')" class="onboard-btn btn-blue">Alles Gute, kleiner Freund</button>
+        </div>
+    </div>
+
+    <!-- ====== QUEST MODAL ====== -->
+    <div class="modal-bg" id="questModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('questModal')">&times;</span>
+            <h2 data-i18n>📋 Tages-Quests</h2>
+            <p style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:12px;">3 tägliche Aufgaben · Belohnung: 🎫 Pausen-Tickets</p>
+            <div id="questContent"></div>
+        </div>
+    </div>
+
+    <!-- ====== POKÉDEX MODAL ====== -->
+    <div class="modal-bg" id="pokedexModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('pokedexModal')">&times;</span>
+            <h2 data-i18n>📖 Wolkendorf-Tagebuch</h2>
+            <p style="font-size:11px; color:#576574; margin-top:-8px;" data-i18n>Erziehe jede Spezies bis zum Erwachsenenalter!</p>
+            <p id="pokedexProgress" style="font-weight:bold; font-size:13px; margin:6px 0;"></p>
+            <div class="scroll-container"><div class="pokedex-grid" id="pokedexGrid"></div></div>
+            <div id="pokedexLore" style="font-size:11px; color:#576574; margin-top:8px; min-height:28px; font-style:italic; text-align:center;"></div>
+        </div>
+    </div>
+
+    <!-- ====== VILLAGE MODAL ====== -->
+    <div class="modal-bg" id="villageModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('villageModal')">&times;</span>
+            <h2 data-i18n>🏘️ Wolkendorf-Ausbau</h2>
+            <p data-i18n-block="villageIntro" style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:8px;">Investiere 🎫 Tickets in mehrstufige Gebäude – dein Wolkendorf wächst mit jeder Stufe sichtbar mit!</p>
+            <div class="scroll-container" id="villageContent"></div>
+        </div>
+    </div>
+
+    <!-- ====== PFLEGER-LEVEL MODAL ====== -->
+    <div class="modal-bg" id="levelModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('levelModal')">&times;</span>
+            <h2 data-i18n>🎓 Pfleger-Level</h2>
+            <p data-i18n-block="levelIntro" style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:10px;">Sammle XP, indem dein Tamagotchi älter wird, Medaillen verdient und Minispiele löst.</p>
+            <div id="levelProgressText" style="font-weight:bold; font-size:13px; margin-bottom:6px;"></div>
+            <div class="quest-bar-bg" style="height:10px; margin-bottom:14px;"><div class="quest-bar-fill" id="levelProgressBar" style="background:#a29bfe; width:0%;"></div></div>
+            <h3 style="font-size:13px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50; text-align:left; margin-bottom:4px;">🔓 Freischaltungen</h3>
+            <div class="scroll-container" id="levelUnlocksContent" style="text-align:left;"></div>
+        </div>
+    </div>
+
+    <!-- ====== ARENA MODAL ====== -->
+    <div class="modal-bg" id="arenaModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('arenaModal')">&times;</span>
+            <h2 data-i18n>⚔️ Wolkendorf-Arena</h2>
+            <div class="scroll-container" id="arenaContent"></div>
+        </div>
+    </div>
+
+    <!-- ====== ENDGAME: WOLKENDORF-FERNROHR ====== -->
+    <div class="modal-bg" id="endgameModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('endgameModal')">&times;</span>
+            <h2 data-i18n>🔭 Wolkendorf-Fernrohr</h2>
+            <p data-i18n-block="endgameIntro" style="font-size:11px; color:#576574; margin-top:-8px; margin-bottom:12px;">Endgame ab Pfleger-Level 32</p>
+            <div class="scroll-container" id="endgameContent" style="text-align:center;"></div>
+        </div>
+    </div>
+
+    <!-- ====== ARENA ANIMATION OVERLAY ====== -->
+    <div class="arena-overlay" id="arenaOverlay">
+        <div class="arena-anim-box" id="arenaAnimBox">
+            <div style="font-size:32px;">⚔️</div>
+            <p style="font-size:12px; color:#576574;">Kampf lädt...</p>
+        </div>
+    </div>
+
+
+    <!-- ====== FEATURE-UNLOCK POPUP ====== -->
+    <div class="feature-unlock-overlay" id="featureUnlockOverlay" onclick="closeFeatureUnlockModal()">
+        <div class="feature-unlock-box" onclick="event.stopPropagation()">
+            <span class="feature-unlock-icon" id="fuIcon">🎉</span>
+            <div class="feature-unlock-level-badge" id="fuLevelBadge">Level X freigeschaltet</div>
+            <h2 style="font-size:18px; margin:4px 0 8px; color:#2d3436;" id="fuName">Feature</h2>
+            <p style="font-size:12px; color:#636e72; line-height:1.6; margin-bottom:16px;" id="fuDesc">Beschreibung</p>
+            <button class="onboard-btn" onclick="closeFeatureUnlockModal()" style="width:auto; padding:8px 28px;">✅ Jetzt ausprobieren!</button>
+        </div>
+    </div>
+
+
+    <!-- ====== POMODORO OVERLAY ====== -->
+    <div class="pomodoro-overlay" id="pomodoroOverlay">
+        <div style="font-size:56px; line-height:1;">🍅</div>
+        <div style="font-size:16px; font-weight:bold; margin-top:12px; letter-spacing:1px;">FOKUS-MODUS AKTIV</div>
+        <div class="pomodoro-timer" id="pomodoroTimerDisplay">25:00</div>
+        <div class="pomodoro-msg" id="pomodoroMsg">Ich schlafe und warte auf dich...<br>Arbeite 25 Minuten ohne mich anzuklicken! 💤</div>
+        <div style="margin-top:20px; display:flex; gap:10px;" id="pomodoroBtnRow">
+            <button class="onboard-btn btn-red" style="width:auto; padding:8px 20px;" onclick="interruptPomodoro()">❌ Abbrechen</button>
+        </div>
+    </div>
+
+    <!-- Ambiente hinter der Hülle: Geister bei Ahnen-Heimsuchung, Effekte aktiver Shop-Items -->
+    <div class="ambient-layer" id="ambientLayer" aria-hidden="true"></div>
+
+    <div class="stage">
+        <div class="active-buffs-bar" id="activeBuffsBar"></div>
+        <div class="scene">
+            <div class="device" id="device">
+            <!-- VORDERSEITE -->
+            <div class="device-face device-front" id="deviceFront">
+                <div class="screen" id="screen">
+                    <div class="dark-overlay" id="sleepOverlay"></div>
+                    <div class="icon-row top">
+                        <span class="menu-icon" id="icon0" onclick="clickMenuIcon(0)" title="Füttern"><i class="fa-solid fa-utensils"></i></span>
+                        <span class="menu-icon" id="icon1" onclick="clickMenuIcon(1)" title="Licht an/aus"><i class="fa-solid fa-lightbulb"></i></span>
+                        <span class="menu-icon" id="icon2" onclick="clickMenuIcon(2)" title="Baden"><i class="fa-solid fa-bath"></i></span>
+                        <span class="menu-icon" id="icon3" onclick="clickMenuIcon(3)" title="Streicheln"><i class="fa-solid fa-heart"></i></span>
+                    </div>
+                    <span class="alert-icon" id="alertIcon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                    <div class="status-icons" id="statusIcons"></div>
+                    <div class="pet-speech" id="petSpeech"></div>
+                    <div class="screen-content" id="screenContent"></div>
+                    <div class="icon-row bottom">
+                        <span class="menu-icon" id="icon4" onclick="clickMenuIcon(4)" title="Spielen"><i class="fa-solid fa-gamepad"></i></span>
+                        <span class="menu-icon" id="icon5" onclick="clickMenuIcon(5)" title="Arzt"><i class="fa-solid fa-syringe"></i></span>
+                        <span class="menu-icon" id="icon6" onclick="clickMenuIcon(6)" title="Status / Info"><i class="fa-solid fa-scale-balanced"></i></span>
+                        <span class="menu-icon" id="icon7" onclick="clickMenuIcon(7)" title="Belehren"><i class="fa-solid fa-bullhorn"></i></span>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button class="hardware-btn" onclick="btnA()">A<br>Next</button>
+                    <button class="hardware-btn" onclick="btnB()">B<br>Sel</button>
+                    <button class="hardware-btn" onclick="btnC()">C<br>Back</button>
+                </div>
+            </div>
+
+            <!-- RÜCKSEITE -->
+            <div class="device-face device-back" id="deviceBack">
+                <button class="reset-btn" onclick="fullReset()"></button>
+                <div class="reset-label">RESET</div>
+                <div class="credits">Made with Herz</div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="./js/00-sprites.js"></script>
+    <script src="./js/01-storage-core.js"></script>
+    <script src="./js/02-data-shop.js"></script>
+    <script src="./js/03-backup.js"></script>
+    <script src="./js/04-i18n.js"></script>
+    <script src="./js/05-shop-logic.js"></script>
+    <script src="./js/06-gamefeel-level.js"></script>
+    <script src="./js/07-arena-endgame.js"></script>
+    <script src="./js/08-graves-ambient.js"></script>
+    <script src="./js/09-quests-village.js"></script>
+    <script src="./js/10-core-loop.js"></script>
+    <script src="./js/11-arcade.js"></script>
+    <script src="./js/12-extras.js"></script>
+    <script src="./js/13-boot.js"></script>
+</body>
+</html>
