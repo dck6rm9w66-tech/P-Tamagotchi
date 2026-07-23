@@ -277,9 +277,14 @@ function openQuestModal() {
 // ================================================================
 // === FEATURE: WOLKENDORF-TAGEBUCH (POKÉDEX) =====================
 // ================================================================
-let pokedex = JSON.parse(safeGetItem('tama_pokedex') || 'null') || new Array(19).fill(false);
-// Migration: aeltere Speicherstaende kennen nur 16 Spezies.
-while (pokedex.length < 19) pokedex.push(false);
+// Das Tagebuch speichert pro Spezies die HOECHSTE bisher erreichte
+// Lebensphase (0 = noch nicht entdeckt, 2 = Kind ... 5 = Senior).
+// Frueher stand hier nur true/false.
+let pokedex = JSON.parse(safeGetItem('tama_pokedex') || 'null') || new Array(19).fill(0);
+// Migration 1: alte Boolean-Eintraege - entdeckt hiess damals "erwachsen".
+pokedex = pokedex.map(v => (v === true ? 4 : (v === false || v == null ? 0 : v)));
+// Migration 2: aeltere Speicherstaende kennen nur 16 Spezies.
+while (pokedex.length < 19) pokedex.push(0);
 
 const SPECIES_LORE = [
     { name: 'Wuffi',   lore: 'Treu bis in den Tod. Folgt dir überall hin, auch in Meetings.' },
@@ -304,12 +309,32 @@ const SPECIES_LORE = [
     { name: 'Stella',  lore: 'Trägt eine kleine Galaxie im Fell. Riecht nach kalter Nachtluft.', secret: true },
 ];
 
+// Ab der Kind-Phase (Stufe 2) ist die Art erkennbar - ab da wird sie im
+// Tagebuch aufgedeckt. Bei jeder weiteren Phase wird der gespeicherte
+// Lebensabschnitt hochgezogen, das Banner erscheint aber nur einmal.
+const POKEDEX_MIN_STAGE = 2;
+
 function checkPokedexDiscovery() {
-    if (!pet || pet.stage < 4 || pokedex[pet.speciesIndex]) return;
-    pokedex[pet.speciesIndex] = true;
+    if (!pet || pet.stage < POKEDEX_MIN_STAGE) return;
+    let alt = pokedex[pet.speciesIndex] || 0;
+    if (pet.stage <= alt) return;                 // nichts Neues zu vermerken
+    pokedex[pet.speciesIndex] = pet.stage;
     safeSetItem('tama_pokedex', JSON.stringify(pokedex));
-    let name = SPECIES_LORE[pet.speciesIndex]?.name || speciesList[pet.speciesIndex];
-    showAchievementBanner('📖', `Neu entdeckt: ${name}!`, 'discover');
+    if (alt === 0) {                              // Banner nur beim Erstfund
+        let name = SPECIES_LORE[pet.speciesIndex]?.name || speciesList[pet.speciesIndex];
+        showAchievementBanner('📖', `Neu entdeckt: ${name}!`, 'discover');
+    }
+}
+
+// Welche Lebensphase soll im Tagebuch abgebildet werden?
+// Fuer die Art des aktuellen Tamagotchis der LIVE-Stand, sonst die hoechste
+// jemals erreichte Phase.
+function pokedexPhaseFor(i) {
+    if (typeof pet !== 'undefined' && pet && !pet.isDead
+        && pet.speciesIndex === i && pet.stage >= POKEDEX_MIN_STAGE) {
+        return pet.stage;
+    }
+    return pokedex[i] || 4;
 }
 
 function openPokedexModal() {
@@ -322,7 +347,7 @@ function openPokedexModal() {
         let lore = SPECIES_LORE[i];
         let geheim = lore && lore.secret;
         html += `<div class="pokedex-entry ${found ? 'discovered' : ''}${geheim && found ? ' secret-found' : ''}" onclick="showPokedexLore(${i})">
-            <div style="font-size:26px; ${found ? '' : 'color:#c8ccd4;'}">${found ? (typeof SPRITE_SPECIES !== 'undefined' ? `<img src="${SPRITE_BASE}${SPRITE_SPECIES[i]}_erwachsen.png" alt="${t(lore.name)}" style="width:44px;height:44px;object-fit:contain;display:block;margin:0 auto;image-rendering:pixelated;">` : sp) : '?'}</div>
+            <div style="font-size:26px; ${found ? '' : 'color:#c8ccd4;'}">${found ? (typeof spriteSrcBySpecies === 'function' ? `<img src="${spriteSrcBySpecies(i, SPRITE_PHASES[pokedexPhaseFor(i)] || 'erwachsen')}" alt="${t(lore.name)}" style="width:44px;height:44px;object-fit:contain;display:block;margin:0 auto;image-rendering:pixelated;">` : sp) : '?'}</div>
             <div style="font-size:9px; margin-top:3px; font-weight:bold; color:${found ? '#2f3542' : '#bbb'};">${found ? (geheim ? '✨ ' : '') + t(lore.name) : '???'}</div>
         </div>`;
     });
@@ -709,7 +734,10 @@ function drawVillageCity() {
     // das blanke Tier (ohne Haus/Huelle) tapst in Miniatur ueber die Wiese.
     if (typeof pet !== 'undefined' && pet && pet.isDeparted && !pet.isDead) {
         // Aktuelles Sprite des Tieres statt eines Emojis
-        let animalSrc = (typeof spriteSrc === 'function') ? spriteSrc(pet) : '';
+        // Aktuelles Sprite des Tieres (Lebensphase + Zustand)
+        let animalSrc = (typeof spriteSrc === 'function')
+            ? spriteSrc(pet)
+            : './assets/sprites/wuffi_erwachsen.png';
         // Bus parkt oben in der ERSTEN Reihe - selbes Emoji wie im Ei-Display (🚌)
         let topLaneY = skyH + 0 * rowH + buildingBottom + 4;
         let busX = 16;
@@ -726,13 +754,15 @@ function drawVillageCity() {
         let path = `M ${busX+20},${y1} L ${xR},${y1} L ${xR},${y2} L ${xL},${y2} L ${xL},${y3} L ${xR},${y3} L ${xR},${y2} L ${xL},${y2} L ${xL},${y1} L ${busX+20},${y1} Z`;
         // Das Sprite haengt als <image> in der animierten Gruppe. Die Bewegung
         // liegt jetzt auf dem <g>, damit sie fuer Bilder statt Text gilt.
-        let sz = 20;
+        let sz = 22;
+        // href UND xlink:href: aeltere WebKit-Versionen (iOS-Safari) rendern
+        // <image> nur mit dem xlink-Attribut. Beide zu setzen ist unschaedlich.
+        // Bewusst OHNE Emoji-Rueckfall - hier soll ausschliesslich das Sprite
+        // laufen; laedt es nicht, bleibt die Stelle lieber leer.
         svg += `<g>
             <animateMotion dur="52s" repeatCount="indefinite" rotate="0" path="${path}"/>
             <animateTransform attributeName="transform" type="translate" values="0,0; 0,-1.5; 0,0" dur="0.7s" repeatCount="indefinite" additive="sum"/>
-            ${animalSrc
-                ? `<image href="${animalSrc}" x="${-sz/2}" y="${-sz+4}" width="${sz}" height="${sz}" style="image-rendering:pixelated;"/>`
-                : `<text text-anchor="middle" font-size="15">${speciesList[pet.speciesIndex] || '🐾'}</text>`}
+            <image href="${animalSrc}" xlink:href="${animalSrc}" x="${-sz/2}" y="${-sz+5}" width="${sz}" height="${sz}" preserveAspectRatio="xMidYMid meet" style="image-rendering:pixelated;"/>
         </g>`;
     }
 

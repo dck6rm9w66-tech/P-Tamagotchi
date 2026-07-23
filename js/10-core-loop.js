@@ -238,8 +238,9 @@ function startLoop() {
 
         // Stage growth - verlangsamte Intervalle
         if(pet.stage === 0 && pet.activeSeconds >= 15) { pet.stage = 1; pet.weight = 2; pet.intelligence+=2;} 
-        else if(pet.stage === 1 && pet.activeSeconds >= 3600) { pet.stage = 2; pet.weight += 2; pet.intelligence+=5;}
-        else if(pet.stage === 2 && pet.activeSeconds >= 14400) { pet.stage = 3; pet.weight += 3; pet.intelligence+=10;}
+        // Ab der Kind-Phase ist die Art erkennbar -> Tagebuch aufdecken.
+        else if(pet.stage === 1 && pet.activeSeconds >= 3600) { pet.stage = 2; pet.weight += 2; pet.intelligence+=5; checkPokedexDiscovery(); }
+        else if(pet.stage === 2 && pet.activeSeconds >= 14400) { pet.stage = 3; pet.weight += 3; pet.intelligence+=10; checkPokedexDiscovery(); }
         else if(pet.stage === 3 && pet.activeSeconds >= 28800) { pet.stage = 4; pet.weight += 5; pet.intelligence+=15; checkPokedexDiscovery(); }
 
         // NEU: Senior - letzte Lebensphase. Greift ab 85% der individuellen

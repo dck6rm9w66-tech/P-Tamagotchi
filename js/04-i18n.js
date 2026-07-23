@@ -528,7 +528,7 @@ Object.assign(I18N, {
     "🥚 Seltene Ei-Farbe: Aurora": "🥚 Rare egg colour: Aurora",
     // Medaillen / Tagebuch
     "freigeschaltet": "unlocked",
-    "Erziehe jede Spezies bis zum Erwachsenenalter!": "Raise every species to adulthood!",
+    "Entdecke neue Spezies auf deiner Reise": "Discover new species on your journey",
     "Grauhaarig und weise:<br>Senior erreicht!": "Grey-haired and wise:<br>Senior reached!",
     "Senior": "Senior",
     "Teenager": "Teenager",

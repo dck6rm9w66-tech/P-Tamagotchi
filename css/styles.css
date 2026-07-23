@@ -1004,13 +1004,12 @@ body::before {
    auf, damit nichts in den Text daneben ragt. */
 .mini-shell.grave-shell {
     overflow: visible;
-    margin-right: 14px;
-    margin-left: 4px;
+    margin-right: 20px;
+    margin-left: 8px;
 }
 .mini-shell.grave-shell img {
-    /* 2em von 28px Basis = 56px */
-    width: 2em;
-    height: 2em;
+    width: 68px;
+    height: 68px;
     position: relative;
     z-index: 2;
 }
