@@ -564,24 +564,27 @@ function executeMenuAction(index) {
                 pet.sickCount--;
                 if(pet.sickCount > 0) {
                     playSound('select');
-                    playAnimation(`<div style="position:relative;">🩺<br>Noch ${pet.sickCount}x!</div>`, 2000);
+                    playAnimation(`<div style="position:relative;">${getPetGraphicMood('_wuetend')}<br><span style="font-size:11px;">Noch ${pet.sickCount}x!</span></div>`, 2000);
                 } else {
-                    pet.isSick = false; pet.countDoctor++; updateQuestProgress('healed', 1); playSound('win'); playAnimation(`<div style="position:relative;">🩺<br>${petG}</div>`, 2500); 
+                    pet.isSick = false; pet.countDoctor++; updateQuestProgress('healed', 1); playSound('win'); playAnimation(`<div style="position:relative;">${getPetGraphicMood('_wuetend')}</div>`, 2500); 
                 }
             } else { 
                 pet.happiness = Math.max(0, pet.happiness - 10);
-                playSound('lose'); 
-                playAnimation(petG+' 💥<br>Mir gehts gut!', 2000); 
+                playSound('lose');
+                // Kein Explosions-Emoji, kein Text - das wuetende Sprite spricht
+                // fuer sich: das Tier war gar nicht krank.
+                playAnimation(getPetGraphicMood('_wuetend'), 2000); 
             } 
             break;
         case 6: state.view = 'info'; state.infoScreenIndex = 0; return;
         case 7: 
             if(pet.misbehaving) { 
-                pet.misbehaving = false; pet.happiness = Math.max(0, pet.happiness - 5); pet.countDiscipline++; updateQuestProgress('disciplined', 1); pet.intelligence+=2; playSound('win'); playAnimation(`<div style="position:relative;">💢<br>${petG} 💦</div>`, 2500); 
+                pet.misbehaving = false; pet.happiness = Math.max(0, pet.happiness - 5); pet.countDiscipline++; updateQuestProgress('disciplined', 1); pet.intelligence+=2; playSound('win'); playAnimation(`<div style="position:relative;">${getPetGraphicMood('_wuetend')}</div>`, 2500); 
             } else { 
                 pet.happiness = Math.max(0, pet.happiness - 10);
-                playSound('lose'); 
-                playAnimation(petG+' 💥<br>Wofür?!', 2000); 
+                playSound('lose');
+                // Kein Explosions-Emoji, kein Text - das wuetende Sprite genuegt.
+                playAnimation(getPetGraphicMood('_wuetend'), 2000); 
             } 
             break;
     }
@@ -834,22 +837,33 @@ function getPetGraphic() {
     return style ? `<span class="pet-body" style="${style}">${inner}</span>` : inner;
 }
 
-function getPetGraphicWithHat() {
-    let base = getPetGraphic();
+// Liefert das Pet-Sprite mit einer ERZWUNGENEN Stimmung, unabhaengig vom
+// tatsaechlichen Zustand. Wird gebraucht, wenn der Pfleger belehrt oder zum
+// Arzt geht, das Tier aber gerade weder ungezogen noch krank ist - dann soll
+// trotzdem das wuetende Sprite erscheinen.
+function getPetGraphicMood(mood) {
+    if (typeof spriteImg !== 'function') return getPetGraphicWithHat();
+    let style = getPetIndividualityStyle(pet);
+    let img = spriteImg(pet, { mood: mood, alt: pet.name || 'Tamagotchi' });
+    let base = style ? `<span class="pet-body" style="${style}">${img}</span>` : img;
+    return wrapWithHat(base);
+}
+
+// Huelle fuer Hut/Handheld - von getPetGraphicWithHat() und getPetGraphicMood()
+// gemeinsam genutzt, damit die Zubehoer-Logik nur an einer Stelle steht.
+function wrapWithHat(base) {
     if(pet.stage > 1 && !pet.isDead && inventory.equippedHat) {
         let hatObj = SHOP_ITEMS.find(i=>i.id === inventory.equippedHat);
         let fxClass = hatObj && hatObj.fx ? hatObj.fx : '';
-
-        // Tragesystem-Aufsplittung: Kopf vs. Neben dem Pet
         let isHandheld = ['hat_bottle', 'hat_palette', 'hat_bat', 'hat_mic', 'hat_knife', 'hat_controller'].includes(inventory.equippedHat);
-
-        if(isHandheld) {
-            return `${base}<div class="pet-handheld ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
-        } else {
-            return `${base}<div class="pet-hat ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
-        }
+        if(isHandheld) return `${base}<div class="pet-handheld ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
+        return `${base}<div class="pet-hat ${fxClass}">${hatObj ? hatObj.val : ''}</div>`;
     }
     return base;
+}
+
+function getPetGraphicWithHat() {
+    return wrapWithHat(getPetGraphic());
 }
 
 // Hilfsfunktion zum Generieren von Text-Balken für LCD
