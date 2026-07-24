@@ -237,29 +237,61 @@ function toggleGraveReport(id, btn) {
 }
 
 // --- ACCOUNT RESET ---
-function fullAccountReset() {
-    playSound('cancel');
-    if(confirm("ACHTUNG! Willst du wirklich deinen gesamten Account, alle Medaillen, T-Coins und den Friedhof unwiderruflich löschen?")) {
-        if(confirm("Bist du GANZ sicher? Dies kann nicht rückgängig gemacht werden!")) {
-            safeSetItem('tama_save_v6', '');
-            safeSetItem('tama_medals', '[]');
-            safeSetItem('tama_graveyard_v6', '');
-            safeSetItem('tama_leaderboard_v6', '[]');
-            safeSetItem('tama_tcoins', '0');
-            safeSetItem('tama_inventory', '');
-            safeSetItem('tama_buff_expiries', '{}');
-            safeSetItem('tama_quests', '{}');
-            safeSetItem('tama_tickets', '0');
-            safeSetItem('tama_pokedex', 'null');
-            safeSetItem('tama_village', '{}');
-            safeSetItem('tama_acc_level', '1');
-            safeSetItem('tama_acc_xp', '0');
-            safeSetItem('tama_legacy', '{}');
-            safeSetItem('tama_lifetime', '{}');
-            try { localStorage.removeItem('tama_pomodoro'); } catch(e) {}
-            location.reload(); 
+// Loescht saemtliche Spuren der App auf diesem Geraet:
+//   1. Spielstand im localStorage (ALLE Schluessel mit Praefix tama_ -
+//      die frueher fest verdrahtete Liste hatte u.a. Arcade-Highscores,
+//      Arena, Stummschaltung und gesehene Story-Schnipsel uebersehen)
+//   2. sessionStorage
+//   3. Cache Storage - die vom Service Worker offline abgelegten Dateien
+//   4. die Service-Worker-Registrierung selbst
+//   5. IndexedDB (derzeit ungenutzt, der Vollstaendigkeit halber)
+async function wipeAppStorage() {
+    try {
+        let keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            let k = localStorage.key(i);
+            if (k && k.indexOf('tama_') === 0) keys.push(k);
         }
-    }
+        keys.forEach(k => localStorage.removeItem(k));
+    } catch (e) {}
+
+    try { sessionStorage.clear(); } catch (e) {}
+
+    try {
+        if (window.caches && caches.keys) {
+            let namen = await caches.keys();
+            await Promise.all(namen.map(n => caches.delete(n)));
+        }
+    } catch (e) {}
+
+    try {
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            let regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+        }
+    } catch (e) {}
+
+    try {
+        if (window.indexedDB && indexedDB.databases) {
+            let dbs = await indexedDB.databases();
+            await Promise.all(dbs.map(d => d && d.name ? indexedDB.deleteDatabase(d.name) : null));
+        }
+    } catch (e) {}
+}
+
+async function fullAccountReset() {
+    playSound('cancel');
+    if (!confirm("ACHTUNG! Willst du wirklich deinen gesamten Account, alle Medaillen, T-Coins und den Friedhof unwiderruflich löschen?")) return;
+    if (!confirm("Bist du GANZ sicher? Dies kann nicht rückgängig gemacht werden!\n\nAuch die offline gespeicherten App-Dateien werden entfernt. Zum Neustart brauchst du deshalb einmal eine Internetverbindung.")) return;
+
+    // Sollte eine der Loeschungen haengen bleiben, wird nach 5 Sekunden
+    // trotzdem neu geladen - der localStorage ist dann bereits leer.
+    await Promise.race([
+        wipeAppStorage(),
+        new Promise(r => setTimeout(r, 5000))
+    ]);
+
+    location.reload();
 }
 
 // ================================================================
