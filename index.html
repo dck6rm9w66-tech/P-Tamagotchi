@@ -87,7 +87,7 @@
         <div class="hud-btn" id="btn-arena" onclick="openArenaModal()" title="Wolkendorf-Arena"><i class="fa-solid fa-hand-fist"></i></div>
         <div class="hud-btn" id="btn-arcade" onclick="openArcadeMenu()" title="Arcade-Automaten"><i class="fa-solid fa-gamepad"></i></div>
         <div class="hud-btn" id="btn-endgame" onclick="openEndgameModal()" title="Wolkendorf-Fernrohr"><i class="fa-solid fa-binoculars"></i></div>
-        <div class="hud-btn dock-steps" id="btn-steps" onclick="openStepsModal()" title="Schrittzähler" style="display:none;"><i class="fa-solid fa-shoe-prints"></i><span id="stepCount">0</span></div>
+        <div class="hud-btn dock-steps" id="btn-steps" onclick="openStepsModal()" title="Schritte in der Natur" style="display:none;"><i class="fa-solid fa-shoe-prints"></i><span id="stepCount">0</span></div>
         <div class="dock-sep"></div>
         <div class="hud-btn" onclick="toggleFlip()" title="Gerät drehen"><i class="fa-solid fa-rotate"></i></div>
     </div>
@@ -282,7 +282,7 @@
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">⚔️ Wolkendorf-Arena</h3>
                 <p style="font-size: 12px; margin-bottom: 8px;"><b>🌩️ Raid — der Wolken-Titan:</b> Der grösste Gegner der Arena ist allein nicht zu schaffen. Für ihn braucht ihr <b>mindestens 2 Tamagotchis</b>: dein eigenes plus wenigstens einen <b>tagesaktuellen</b> Spielstand (JSON) einer anderen Person – ältere Dateien lehnt der Titan ab. Lade ruhig mehrere auf einmal: Je grösser der Verbund, desto höher eure Kampfkraft <b>und</b> die Beute. Es gibt deutlich mehr Coins, Tickets und XP als bei jedem Mini-Boss – plus <b>3 zufällige Gegenstände</b> aus dem Laden (ab 4 Teilnehmenden sogar 4). Einmal pro Woche.</p>
-                <p style="font-size: 12px; margin-bottom: 10px;">In der Arena lässt du dein Tamagotchi gegen andere Tamagotchis oder Minibosse kämpfen! Für <b>PvP-Duelle</b> lädst du die Spielstand-JSON eines Mitspielers. Für <b>Minibosse</b> (5 Stufen) brauchst du ein aktives Tamagotchi. Jeder Kampf ist 1× pro Woche möglich. Gewinne: Coins, Tickets, XP und bei Glück seltene <b>Boss-Trophäen</b>! Verlierst du, leidet dein Tama an Laune/Energie. Die Kampfstärke hängt von Glück, Alter und Stats ab.</p>
+                <p style="font-size: 12px; margin-bottom: 10px;">In der Arena lässt du dein Tamagotchi gegen andere Tamagotchis oder Minibosse kämpfen! Für einen <b>Aura Push</b> lädst du die Spielstand-JSON eines Mitspielers. Für <b>Minibosse</b> (5 Stufen) brauchst du ein aktives Tamagotchi. Jeder Kampf ist 1× pro Woche möglich. Gewinne: Coins, Tickets, XP und bei Glück seltene <b>Boss-Trophäen</b>! Verlierst du, leidet dein Tama an Laune/Energie. Die Kampfstärke hängt von Glück, Alter und Stats ab.</p>
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🧠 Intelligenz & Vernachlässigung</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Dein Tamagotchi lernt durch Pflege und Minispiele – aber es <b>verlernt auch wieder</b>. Kümmerst du dich länger als 5 Minuten nicht um es (keine Pflege-Aktion, kein Spiel), sinkt seine Intelligenz alle 5 Minuten um 1 Punkt. Bleib also am Ball!</p>
@@ -308,13 +308,13 @@
         </div>
     </div>
 
-    <!-- Schrittzähler -->
+    <!-- Schritte in der Natur -->
     <div class="modal-bg" id="stepsModal">
         <div class="modal-content" style="max-width: 330px;">
             <span class="modal-close" onclick="closeModal('stepsModal')">&times;</span>
-            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-shoe-prints"></i> <span data-i18n>Schrittzähler</span></h2>
+            <h2 style="margin-bottom: 4px;"><i class="fa-solid fa-shoe-prints"></i> <span data-i18n>Schritte in der Natur</span></h2>
             <p data-i18n-block="stepsIntro" style="font-size: 11px; color: #747d8c; margin: 0 0 12px;">
-                Je <b>100 Schritte</b> gibt es <b>50 T-Coins</b>. Steh auf, dein Wolkenwesen kommt mit.
+                Je <b>100 Schritte</b> in der Natur gibt es <b>50 T-Coins</b>. Raus ins Grüne – Wald, Wiese oder Feld – dein Wolkenwesen kommt mit! 🌳
             </p>
             <div id="stepsBody"></div>
         </div>

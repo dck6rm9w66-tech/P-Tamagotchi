@@ -28,7 +28,7 @@ const I18N = {};        // wird weiter unten befuellt: deutsch -> englisch
 // Schluessel - die bekommen einen Kurzschluessel und hier den DE-Wortlaut.
 const I18N_DE = {
     'giftNote': 'Jedes Geschenk hebt einen <b>zufälligen Stat dauerhaft um 0,5%</b> – auch für alle zukünftigen Tamagotchis.',
-    'stepsNote': '<b>Wichtig:</b> Gezählt wird nur, solange die App offen und sichtbar ist – Browser bekommen im Hintergrund keine Sensordaten. Nimm dein Handy also mit auf die Runde. Die Erkennung läuft über den Beschleunigungssensor und ist ein Schätzwert.',
+    'stepsNote': '<b>Wichtig:</b> Gezählt wird nur, solange die App offen und sichtbar ist – Browser bekommen im Hintergrund keine Sensordaten. Nimm dein Handy also mit auf deine Runde durch die Natur. Die Erkennung läuft über den Beschleunigungssensor und ist ein Schätzwert.',
     'villageFootnote': 'Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Fokuszeiten (🍅).'
 };
 
@@ -125,7 +125,7 @@ const I18N_BLOCKS = {};   // ganze HTML-Abschnitte (weiter unten befuellt)
 // --- Englische Fassung des Handbuchs (wird als ganzer Block getauscht) ---
 I18N_BLOCKS['saveIntro'] = 'Backs up your <b>complete</b> progress as a file: Tamagotchi, coins, tickets, caretaker level, medals, inventory, Cloud Village and high scores. This is also how you move to another device.';
 I18N_BLOCKS['levelIntro'] = 'Earn XP as your Tamagotchi grows older, wins medals and solves mini-games.';
-I18N_BLOCKS['stepsIntro'] = 'Every <b>100 steps</b> earns you <b>50 T-Coins</b>. Get up – your cloud creature is coming along.';
+I18N_BLOCKS['stepsIntro'] = 'Every <b>100 steps</b> in nature earns you <b>50 T-Coins</b>. Head outside – woods, meadow or field – your cloud creature is coming along! 🌳';
 I18N_BLOCKS['endgameIntro'] = 'Endgame from caretaker level 32';
 I18N_BLOCKS['lbIntro'] = 'Survival, PvP, mini-bosses and arcade – see how you compare with your colleagues.';
 I18N_BLOCKS['lbHint'] = 'Load the .json files of the others from your shared folder – or share your own profile.';
@@ -219,7 +219,10 @@ I18N_BLOCKS['manual'] = `
 Object.assign(I18N, {
     // Kopfzeile & Leiste
     'Spielstand': 'Save Game', 'Handbuch & Steuerung': 'Manual & Controls',
-    'Schrittzähler': 'Step Counter', 'Highscores': 'High Scores',
+    'Schritte in der Natur': 'Steps in Nature',
+    // Arena: PvP-Duell -> Aura Push (Eigenname, in beiden Sprachen gleich)
+    'Aura Push': 'Aura Push',
+    'Ohne Zugriff auf den Bewegungssensor kann ich deine Schritte in der Natur nicht zählen.': 'Without access to the motion sensor I cannot count your steps in nature.', 'Highscores': 'High Scores',
     'Wolkendorf-Ausbau': 'Cloud Village', 'Wolkendorf-Arena': 'Cloud Village Arena',
     'Wolkendorf-Fernrohr': 'Cloud Village Telescope', 'Laden': 'Shop',
     'Medaillen': 'Medals', 'Tages-Quests': 'Daily Quests', 'Ahnengalerie': 'Hall of Ancestors',
@@ -291,7 +294,7 @@ Object.assign(I18N, {
     'Überleben': 'Survival', 'PvP': 'PvP', 'Bosse': 'Bosses', 'Rang': 'Rank',
     'Tamagotchi': 'Tamagotchi', 'Pfleger': 'Caretaker', 'Siege': 'Wins', 'Punkte': 'Points',
     'Zeit': 'Time', 'Noch kein Tamagotchi ist von uns gegangen.': 'No Tamagotchi has passed away yet.',
-    'Noch keine PvP-Duelle gewonnen.': 'No PvP duels won yet.',
+    'Noch keinen Aura Push gewonnen.': 'No Aura Push won yet.',
     'Noch kein Mini-Boss besiegt.': 'No mini-boss defeated yet.',
     'Noch keine Arcade-Punkte erspielt.': 'No arcade points scored yet.',
     // Medaillen-Stufen
@@ -599,7 +602,7 @@ Object.assign(I18N, {
     "Noch keine Boni. Verschicke dein erstes Geschenk!": "No bonuses yet. Send your first gift!",
     // Schrittzaehler
     "Schritte": "steps", "Bis zu den nächsten 50 🪙": "Until the next 50 🪙",
-    "stepsNote": "<b>Important:</b> steps are only counted while the app is open and visible – browsers receive no sensor data in the background. So take your phone with you on the walk. Detection uses the accelerometer and is an estimate.",
+    "stepsNote": "<b>Important:</b> steps are only counted while the app is open and visible – browsers receive no sensor data in the background. So take your phone with you on your walk through nature. Detection uses the accelerometer and is an estimate.",
     // Bus / Besuchszeit / Fokuszeit
     "morgen": "tomorrow", "Bis morgen! 👋": "See you tomorrow! 👋",
     "Der Wolken-Bus hat mich abgeholt.": "The cloud bus has picked me up.",
@@ -655,7 +658,7 @@ Object.assign(I18N, {
     "Frohes Gemüt": "Cheerful Spirit", "Mehr Laune beim Spielen.": "More mood when playing.",
     "Tiefschlaf": "Deep Sleep", "Schnellere Energie-Regeneration.": "Faster energy regeneration.",
     // Restliche Titel
-    "Wolkendorf-Arena": "Cloud Village Arena", "Schrittzähler": "Step Counter", "Spielstand": "Save Game",
+    "Wolkendorf-Arena": "Cloud Village Arena", "Schritte in der Natur": "Steps in Nature", "Spielstand": "Save Game",
     "Glücksrad": "Wheel of Fortune",
     "besiegt!": "defeated!", "hat gewonnen! Nächste Woche Revanche!": "won! Rematch next week!",
     // Restliche Multiplikatoren

@@ -242,7 +242,7 @@ function openArenaModal() {
             <div style="margin-top:5px;">${medalRankBadgeHtml(dominantMedalTier(medalTiers), getUnlockedMedalCount(), true)}</div>
             <div style="font-size:10px; opacity:0.7; margin-top:3px;">${t('Kämpfe können je 1× pro Woche gestartet werden')}</div>
         </div>
-        <div style="font-size:13px; font-weight:bold; color:#2d3436; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🤝 PvP — Tamagotchi-Duell</div>
+        <div style="font-size:13px; font-weight:bold; color:#2d3436; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #dfe6e9;">🤝 Aura Push</div>
         <p style="font-size:11px; color:#576574; margin-bottom:8px;">${t('Lade die Spielstand-JSON eines anderen Nutzers und lasst eure Tamagotchis gegeneinander antreten!')}</p>
         ${pvpUsed
             ? `<button class="onboard-btn btn-gray" disabled style="font-size:11px;">⏳ ${t('Dieses Woche schon gespielt')}</button>`
@@ -348,7 +348,7 @@ async function startPvPFight(enemy) {
         spawnFloatText('ticketDisplay', `+${gotT} 🎫`, '#1dd1a1');
         addAccountXP(50);
         lifetime.pvpWins = (lifetime.pvpWins || 0) + 1; saveLifetime();  // fuer die Highscores
-        showAchievementBanner('🤝', `PvP-Sieg! +400🪙 +${gotT}🎫 +50XP`, 'building');
+        showAchievementBanner('🤝', `${t('Aura Push')} gewonnen! +400🪙 +${gotT}🎫 +50XP`, 'building');
     } else {
         pet.happiness = Math.max(0, pet.happiness - 10);
         showAchievementBanner('😞', `Verloren gegen ${enemy.name}... Trainiere weiter!`, 'generic');
@@ -442,7 +442,7 @@ function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName,
             box.innerHTML = `
                 <div style="font-size:10px;color:${cSub};margin-bottom:10px;letter-spacing:1px;text-transform:uppercase;">
                     ${isRaid ? `<span style="color:#ffd166;font-weight:bold;">🌩️ RAID · VERBUND-KAMPF 🌩️</span>`
-                      : (isBoss ? `<span style="color:#ff3b5c;font-weight:bold;">☠️ Mini-Boss-Kampf ☠️</span>` : 'Tamagotchi-Duell')}
+                      : (isBoss ? `<span style="color:#ff3b5c;font-weight:bold;">☠️ Mini-Boss-Kampf ☠️</span>` : t('Aura Push'))}
                 </div>
                 <div style="display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:14px;">
                     <div style="text-align:center;position:relative;" class="${myHurt}">

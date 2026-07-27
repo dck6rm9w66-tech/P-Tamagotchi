@@ -194,7 +194,7 @@ function registerStep() {
         stepData.rewarded = due;
         let got = addCoins(delta);
         playSound('coin');
-        showAchievementBanner('👣', `${stepData.steps} Schritte! +${got} T-Coins`, 'coin');
+        showAchievementBanner('🌳', `${stepData.steps} ${t('Schritte in der Natur')}! +${got} T-Coins`, 'coin');
     }
     saveSteps();
     updateStepDisplay();
@@ -206,7 +206,7 @@ async function enableStepCounter() {
         // iOS 13+ verlangt eine ausdrueckliche Erlaubnis aus einer Nutzer-Geste heraus
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
             let res = await DeviceMotionEvent.requestPermission();
-            if (res !== 'granted') { alert('Ohne Zugriff auf den Bewegungssensor kann ich keine Schritte zählen.'); return false; }
+            if (res !== 'granted') { alert(t('Ohne Zugriff auf den Bewegungssensor kann ich deine Schritte in der Natur nicht zählen.')); return false; }
         }
     } catch(e) { return false; }
     if (!stepMotion.active) {

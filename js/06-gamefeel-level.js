@@ -233,7 +233,7 @@ const FEATURE_LOCK_CONFIG = [
       desc: 'Baue und verbessere 10 Gebäude mit je 12 Stufen! Jedes Gebäude bringt dauerhafte Boni für alle zukünftigen Tamagotchis – bezahlt mit 🎫 Tickets.',
       onclick: "openVillageModal()", title: "Wolkendorf-Ausbau" },
     { btnId: 'btn-arena',       minLevel: 8, icon: '⚔️', name: 'Wolkendorf-Arena',
-      desc: 'Die härteste Herausforderung! Kämpfe gegen 5 Minibosse oder importiere die JSON eines Mitspielers für ein episches Tamagotchi-Duell. Seltene Boss-Trophäen warten!',
+      desc: 'Die härteste Herausforderung! Kämpfe gegen 5 Minibosse oder importiere die JSON eines Mitspielers für einen epischen Aura Push. Seltene Boss-Trophäen warten!',
       onclick: "openArenaModal()", title: "Wolkendorf-Arena" },
     { btnId: 'btn-endgame',     minLevel: 12, icon: '🔭', name: 'Wolkendorf-Fernrohr',
       desc: 'Das Endgame! Beobachte dein Tamagotchi im Wolkendorf und schicke ihm täglich bis zu 3 Geschenke. Jedes Geschenk hebt einen zufälligen Stat DAUERHAFT um 0,5% – für alle zukünftigen Tamagotchis.',

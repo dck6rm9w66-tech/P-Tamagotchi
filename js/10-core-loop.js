@@ -124,7 +124,7 @@ function resetPetState() {
         colorIndex: pickEggColorIndex(),
         patternIndex: Math.floor(Math.random() * patternGenerators.length),
         patternColorIndex: Math.floor(Math.patternColorIndex || Math.floor(Math.random() * patternColors.length)),
-        patternScale: scale, x: 60, y: 20, targetX: 60, targetY: 20, facingRight: true,
+        patternScale: scale, x: 60, y: 11, targetX: 60, targetY: 11, facingRight: true,
         overrideColor: null, overridePatColor: null, overridePatIdx: null,
         hueShift: Math.round(Math.random() * 180),                                   // 0%..50% Farbton-Verschiebung (0-180°)
         distortType: DISTORT_TYPES[Math.floor(Math.random() * DISTORT_TYPES.length)], // zufällige Verzerrungshülle
@@ -390,7 +390,11 @@ function startLoop() {
         // Frueher 10..40 - dabei lief das Tier so tief, dass es die untere
         // Icon-Reihe teilweise verdeckte (das Pet liegt auf z-index 15, die
         // Icons auf 5). Der Bereich ist deshalb um 10px angehoben.
-        const WALK_Y_MIN = 0, WALK_Y_MAX = 30;
+        // Laufbereich innerhalb von .screen-content. Um 8px angehoben (Maximum
+        // von 30 auf 22), damit das Tier nicht mehr in die untere Icon-Reihe
+        // laeuft. Das Minimum bleibt bei 0, damit es oben nicht ueber die
+        // Flaeche in die obere Icon-Reihe hinausragt.
+        const WALK_Y_MIN = 0, WALK_Y_MAX = 22;
 
         // Walking animation
         if(state.view === 'main' && pet.stage > 0 && !isActuallySleeping && !pet.isSick && !pet.misbehaving && !isDoomscrolling) {

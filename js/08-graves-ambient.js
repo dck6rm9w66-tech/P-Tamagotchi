@@ -429,7 +429,7 @@ const LB_CATEGORIES = [
       empty: 'Noch kein Tamagotchi ist von uns gegangen.' },
     { id: 'pvp', icon: '⚔️', name: 'PvP', head: 'Siege',
       val: e => e.pvpWins || 0, fmt: e => `${e.pvpWins || 0}`,
-      empty: 'Noch keine PvP-Duelle gewonnen.' },
+      empty: 'Noch keinen Aura Push gewonnen.' },
     { id: 'boss', icon: '👹', name: 'Bosse', head: 'Siege',
       val: e => e.bossWins || 0, fmt: e => `${e.bossWins || 0}`,
       empty: 'Noch kein Mini-Boss besiegt.' },
