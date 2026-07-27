@@ -644,8 +644,16 @@ async function startRaidFight() {
 
     arenaState.usedRaid = true; saveArenaState();
 
-    let teamEmoji = [speciesList[pet.speciesIndex] || '🐾']
-        .concat(raidAllies.map(a => speciesList[a.speciesIndex] || '🐾')).join('');
+    // Eigenes Tama als Sprite, Verbuendete als kleine Sprites daneben.
+    // Der Marker "sprite:" waere fuer eine Reihe unpraktisch, darum hier
+    // direkt fertiges HTML - arenaFighterHtml() gibt echtes HTML unveraendert
+    // durch (nur reine Emoji-Strings wuerden als Text behandelt).
+    let teamEmoji = (typeof spriteImgBySpecies === 'function')
+        ? `<div style="display:flex;gap:2px;justify-content:center;align-items:flex-end;flex-wrap:wrap;">`
+          + spriteImgBySpecies(pet.speciesIndex, '46px', SPRITE_PHASES ? SPRITE_PHASES[pet.stage] : 'erwachsen')
+          + raidAllies.map(a => spriteImgBySpecies(a.speciesIndex, '30px')).join('')
+          + `</div>`
+        : [speciesList[pet.speciesIndex] || '🐾'].concat(raidAllies.map(a => speciesList[a.speciesIndex] || '🐾')).join('');
     let teamName = participants === 2 ? `${pet.name} & ${raidAllies[0].name}` : `${pet.name} + ${raidAllies.length} Verbündete`;
 
     await showArenaAnimation('raid', teamEmoji, teamName, teamPow, RAID_BOSS.icon, RAID_BOSS.name, RAID_BOSS.hp, myWin);

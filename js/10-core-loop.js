@@ -563,7 +563,7 @@ function executeMenuAction(index) {
         case 0: state.view = 'feedSelect'; state.feedIndex = 0; return;
         case 1: pet.lightOff = !pet.lightOff; playSound('select'); break;
         case 2: 
-            if(pet.isDirty) { pet.isDirty = false; pet.countBathed++; updateQuestProgress('bathed', 1); playSound('win'); }
+            if(pet.isDirty) { pet.isDirty = false; pet.countBathed++; updateQuestProgress('bathed', 1); playSound('win'); addAccountXP(5 + villageComfortXpBonus()); /* XP fuers erfolgreiche Saubermachen */ }
             else { playSound('select'); }
             playAnimation(`<div class="wave-container"><div style="font-size:35px; position:relative;">${petG}</div><div class="wave-anim">🌊🌊</div></div>`, 2000); 
             break;
@@ -578,7 +578,7 @@ function executeMenuAction(index) {
                     playSound('select');
                     playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}<br><span style="font-size:11px;">Noch ${pet.sickCount}x!</span></div>`, 2000);
                 } else {
-                    pet.isSick = false; pet.countDoctor++; updateQuestProgress('healed', 1); playSound('win'); playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}</div>`, 2500); 
+                    pet.isSick = false; pet.countDoctor++; updateQuestProgress('healed', 1); playSound('win'); addAccountXP(5 + villageComfortXpBonus()); /* XP fuer erfolgreiche Heilung */ playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}</div>`, 2500); 
                 }
             } else { 
                 pet.happiness = Math.max(0, pet.happiness - 10);
@@ -591,7 +591,7 @@ function executeMenuAction(index) {
         case 6: state.view = 'info'; state.infoScreenIndex = 0; return;
         case 7: 
             if(pet.misbehaving) { 
-                pet.misbehaving = false; pet.happiness = Math.max(0, pet.happiness - 5); pet.countDiscipline++; updateQuestProgress('disciplined', 1); pet.intelligence+=2; playSound('win'); playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}</div>`, 2500); 
+                pet.misbehaving = false; pet.happiness = Math.max(0, pet.happiness - 5); pet.countDiscipline++; updateQuestProgress('disciplined', 1); pet.intelligence+=2; playSound('win'); addAccountXP(5 + villageComfortXpBonus()); /* XP fuers erfolgreiche Belehren */ playAnimation(`<div style="position:relative;">${petAnimGraphic('_wuetend')}</div>`, 2500); 
             } else { 
                 pet.happiness = Math.max(0, pet.happiness - 10);
                 playSound('lose');

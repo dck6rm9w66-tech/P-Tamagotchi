@@ -200,7 +200,7 @@ function raidSectionHtml() {
 
     let allyList = raidAllies.length
         ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin:6px 0;">`
-          + raidAllies.map(a => `<span style="background:#eef4ff; border:1px solid #cfe0ff; border-radius:999px; padding:2px 8px; font-size:10px;">${speciesList[a.speciesIndex]||'🐾'} ${a.name}</span>`).join('')
+          + raidAllies.map(a => `<span style="background:#eef4ff; border:1px solid #cfe0ff; border-radius:999px; padding:2px 8px; font-size:10px;">${(typeof spriteImgBySpecies==='function' ? spriteImgBySpecies(a.speciesIndex,'1.1em') : (speciesList[a.speciesIndex]||'🐾'))} ${a.name}</span>`).join('')
           + `</div>`
         : '';
 
@@ -336,7 +336,7 @@ async function startPvPFight(enemy) {
     closeModal('arenaModal');
     let myPow = calcPetPower(pet), enemyPow = calcPetPower(enemy);
     let myWin = myPow > enemyPow;
-    let myAnimal = speciesList[pet.speciesIndex] || '🐾';
+    let myAnimal = (typeof spriteSrc === 'function') ? 'sprite:' + spriteSrc(pet) : (speciesList[pet.speciesIndex] || '🐾');
     let enemyAnimal = speciesList[enemy.speciesIndex] || '🐾';
     arenaState.usedPvP = true; saveArenaState();
     await showArenaAnimation('pvp', myAnimal, pet.name || 'Mein Tama', myPow, enemyAnimal, enemy.name || 'Gegner', enemyPow, myWin, dominantMedalTier(medalTiers), enemy._rankTier || 0);
@@ -363,7 +363,7 @@ async function startBossFight(bossId) {
     let petPow = calcPetPower(pet);
     let winChance = Math.min(0.85, Math.max(0.10, petPow / (petPow + boss.hp * 0.6)));
     let myWin = Math.random() < winChance;
-    let myAnimal = speciesList[pet.speciesIndex] || '🐾';
+    let myAnimal = (typeof spriteSrc === 'function') ? 'sprite:' + spriteSrc(pet) : (speciesList[pet.speciesIndex] || '🐾');
     arenaState.usedBosses.push(bossId); saveArenaState();
     await showArenaAnimation('boss', myAnimal, pet.name || 'Mein Tama', petPow, boss.icon, boss.name, boss.hp, myWin);
     if (myWin) {
@@ -384,6 +384,20 @@ async function startBossFight(bossId) {
         showAchievementBanner('💀', `${t(boss.name)} ${t('hat gewonnen! Nächste Woche Revanche!')}`, 'generic');
         playSound('lose');
     }
+}
+
+// In der Arena kaempft immer das eigene Tamagotchi (myEmoji) - dafuer soll das
+// Sprite-PNG erscheinen, nicht ein Emoji. Gegner und Bosse bleiben Emojis.
+// Der Marker "sprite:<src>" wird von startPvP/startBoss/startRaid gesetzt und
+// hier zu einem <img> aufgeloest; alles andere wird unveraendert (als Emoji)
+// ausgegeben.
+function arenaFighterHtml(val, px) {
+    if (typeof val === 'string' && val.indexOf('sprite:') === 0) {
+        let src = val.slice(7);
+        return `<img src="${src}" alt="" style="width:${px}px;height:${px}px;`
+             + `object-fit:contain;image-rendering:pixelated;vertical-align:middle;">`;
+    }
+    return val;
 }
 
 function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName, enemyPow, myWin, myRank, enemyRank) {
@@ -431,7 +445,7 @@ function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName,
                 <div style="display:flex;align-items:flex-end;justify-content:center;gap:16px;margin-bottom:14px;">
                     <div style="text-align:center;position:relative;" class="${myHurt}">
                         ${(dmg != null && !hitEnemy) ? dmgHtml : ''}
-                        <div style="font-size:${isRaid && myEmoji.length > 4 ? '26px' : '46px'};filter:drop-shadow(0 0 8px rgba(255,200,0,0.5));line-height:1.1;max-width:110px;">${myEmoji}</div>
+                        <div style="font-size:${isRaid && myEmoji.length > 4 ? '26px' : '46px'};filter:drop-shadow(0 0 8px rgba(255,200,0,0.5));line-height:1.1;max-width:110px;">${arenaFighterHtml(myEmoji, 54)}</div>
                         <div style="font-size:11px;font-weight:bold;color:${cMain};margin-top:3px;">${myName}</div>
                         ${mode==='pvp' ? `<div style="margin-top:2px;">${medalRankBadgeHtml(myRank||0, undefined, true)}</div>` : ''}
                         <div style="width:76px;background:${isBoss?'#3b3054':'#dfe6e9'};border-radius:4px;margin:3px auto 0;overflow:hidden;">${myBar}</div>
@@ -440,7 +454,7 @@ function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName,
                     <div style="font-size:${isCrit?'42px':'30px'};padding-bottom:18px;transition:font-size 0.15s;">${atkEmoji||'⚔️'}</div>
                     <div style="text-align:center;position:relative;" class="${enHurt}">
                         ${(dmg != null && hitEnemy) ? dmgHtml : ''}
-                        <div style="font-size:${isBoss?'54px':'46px'};filter:drop-shadow(0 0 ${isBoss?'14px rgba(255,59,92,0.8)':'8px rgba(150,0,255,0.4)'});">${enemyEmoji}</div>
+                        <div style="font-size:${isBoss?'54px':'46px'};filter:drop-shadow(0 0 ${isBoss?'14px rgba(255,59,92,0.8)':'8px rgba(150,0,255,0.4)'});">${arenaFighterHtml(enemyEmoji, isBoss?62:54)}</div>
                         <div style="font-size:11px;font-weight:bold;color:${cMain};margin-top:3px;">${enemyName}</div>
                         ${mode==='pvp' ? `<div style="margin-top:2px;">${medalRankBadgeHtml(enemyRank||0, undefined, true)}</div>` : ''}
                         <div style="width:76px;background:${isBoss?'#3b3054':'#dfe6e9'};border-radius:4px;margin:3px auto 0;overflow:hidden;">${enBar}</div>
@@ -528,7 +542,7 @@ function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName,
                 <div style="font-size:12px;color:#9aa4c4;margin-top:10px;">${isRaid ? 'Der Himmel verdunkelt sich...' : 'Ein Mini-Boss betritt die Arena...'}</div>`;
             playSound('alarm');
             setTimeout(() => {
-                box.innerHTML = `<div class="boss-entry">${enemyEmoji}</div>
+                box.innerHTML = `<div class="boss-entry">${arenaFighterHtml(enemyEmoji, 60)}</div>
                     <div style="font-size:19px;font-weight:bold;color:#ff3b5c;margin-top:8px;letter-spacing:1px;">${enemyName}</div>
                     <div style="font-size:11px;color:#9aa4c4;margin-top:4px;">Kampfkraft ${enemyPow}</div>`;
                 playSound('gacha');
@@ -536,9 +550,9 @@ function showArenaAnimation(mode, myEmoji, myName, myPow, enemyEmoji, enemyName,
             }, 1200);
             setTimeout(() => {
                 box.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:14px;">
-                        <div style="font-size:46px;">${myEmoji}</div>
+                        <div style="font-size:46px;">${arenaFighterHtml(myEmoji, 54)}</div>
                         <div class="boss-vs">VS</div>
-                        <div style="font-size:52px;filter:drop-shadow(0 0 14px rgba(255,59,92,0.8));">${enemyEmoji}</div>
+                        <div style="font-size:52px;filter:drop-shadow(0 0 14px rgba(255,59,92,0.8));">${arenaFighterHtml(enemyEmoji, 60)}</div>
                     </div>
                     <div style="font-size:12px;color:#f5f6fa;margin-top:12px;font-weight:bold;">${myName} &nbsp;·&nbsp; ${enemyName}</div>`;
                 playSound('achievement');
