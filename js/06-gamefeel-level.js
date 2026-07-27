@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Belohnungs-Animationen, Toene, Pfleger-Level, Freischaltungen */
+/* Achtsamkeits-Tamagotchi - Belohnungs-Animationen, Toene, Pfleger-Level, Freischaltungen */
 const CONFETTI_SETS = {
     medal:    ['🏅', '✨', '🎉', '⭐'],
     level:    ['🎓', '⭐', '✨', '🌟'],

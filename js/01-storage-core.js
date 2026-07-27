@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Speicher-Helfer, IDs, Grundkonstanten, Tastatursteuerung */
+/* Achtsamkeits-Tamagotchi - Speicher-Helfer, IDs, Grundkonstanten, Tastatursteuerung */
 let memoryStorage = {};
 function safeGetItem(key) { try { return localStorage.getItem(key); } catch(e) { return memoryStorage[key] || null; } }
 function safeSetItem(key, val) { try { localStorage.setItem(key, val); } catch(e) { memoryStorage[key] = val; } }

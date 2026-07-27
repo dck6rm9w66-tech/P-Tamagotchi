@@ -1,5 +1,5 @@
 // ============================================================
-//  Pausentamagotchi - Sprite-System
+//  Achtsamkeits-Tamagotchi - Sprite-System
 //  Ersetzt die bisherigen Emoji-Darstellungen durch handgezeichnete
 //  64x64-PNGs (Pixel-Look, via image-rendering: pixelated skaliert). Muss VOR allen anderen Skripten geladen werden.
 //

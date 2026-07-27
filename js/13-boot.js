@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Start der App, Speicher-Anforderung, Service Worker */
+/* Achtsamkeits-Tamagotchi - Start der App, Speicher-Anforderung, Service Worker */
 init();
 
 // --- Startdiagnose: passen alle Dateien zusammen? ---
@@ -8,7 +8,7 @@ init();
 // Emojis statt Sprites. Diese Meldung sagt genau, was zu tun ist.
 if (typeof spriteImg !== 'function') {
     console.error(
-        '[Pausentamagotchi] js/00-sprites.js wurde NICHT geladen.\n' +
+        '[Achtsamkeits-Tamagotchi] js/00-sprites.js wurde NICHT geladen.\n' +
         'Die index.html auf dem Server ist veraltet - ihr fehlt die Zeile:\n' +
         '  <script src="./js/00-sprites.js"><\/script>\n' +
         'Bitte ALLE Dateien der Version 2.46.0 hochladen, nicht nur einzelne.'

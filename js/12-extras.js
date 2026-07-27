@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Dock-Hinweise, Schrittzaehler, 8-Ball, Sprueche */
+/* Achtsamkeits-Tamagotchi - Dock-Hinweise, Schrittzaehler, 8-Ball, Sprueche */
 let notifSeen = {};
 try { notifSeen = JSON.parse(safeGetItem('tama_notif_seen') || '{}') || {}; } catch(e) { notifSeen = {}; }
 function saveNotifSeen() { safeSetItem('tama_notif_seen', JSON.stringify(notifSeen)); }

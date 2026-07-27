@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Ahnengalerie, Grabpflege, Hintergrund-Ambiente, Raid, Bewertung */
+/* Achtsamkeits-Tamagotchi - Ahnengalerie, Grabpflege, Hintergrund-Ambiente, Raid, Bewertung */
 const GRAVE_CARE_KEY = 'tama_graves_care';
 const GRAVE_CARE_COST = 5;        // T-Coins pro Grab und Tag
 const HAUNT_HAPPY_CAP = 25;       // Laune-Deckel, wenn die Ahnen heimsuchen
@@ -335,7 +335,7 @@ function downloadScoreObj(entry, filename, fromUserGesture) {
     // Kein data:-Link mehr - iOS ignoriert dort das download-Attribut,
     // dadurch passierte beim Antippen schlicht nichts.
     if (fromUserGesture) {
-        saveOrShareFile(text, filename, 'Pausentamagotchi Highscore', false);
+        saveOrShareFile(text, filename, 'Achtsamkeits-Tamagotchi Highscore', false);
     } else {
         // Automatischer Export (beim Tod): ohne Nutzer-Geste lehnt iOS das
         // Teilen ab - hier bleibt nur der reguläre Download.

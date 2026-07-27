@@ -1,7 +1,7 @@
 {
-  "name": "Pausentamagotchi",
-  "short_name": "Pausentama",
-  "description": "Dein Wolkenwesen besucht dich 30 Minuten pro Arbeitstag - und erinnert dich nebenbei an gesunde Buero-Pausen.",
+  "name": "Achtsamkeits-Tamagotchi",
+  "short_name": "Achtsamkeits-Tama",
+  "description": "Dein Wolkenwesen besucht dich jeden Tag - und erinnert dich nebenbei daran, achtsam auf dich und dein Umfeld zu achten.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

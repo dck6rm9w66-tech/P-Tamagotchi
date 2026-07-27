@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Ei-Farben, Arten, Shop-Artikel, Multiplikatoren, Buff-Dauern */
+/* Achtsamkeits-Tamagotchi - Ei-Farben, Arten, Shop-Artikel, Multiplikatoren, Buff-Dauern */
 const RARE_EGG_COLORS = [
     { color: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)', name: 'Sonnenuntergang', minLevel: 5 },
     { color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)', name: 'Galaxie',          minLevel: 10 },

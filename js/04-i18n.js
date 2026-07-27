@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Sprachumschaltung und Woerterbuecher (DE/EN) */
+/* Achtsamkeits-Tamagotchi - Sprachumschaltung und Woerterbuecher (DE/EN) */
 const LANG_KEY = 'tama_lang';
 // Beim allerersten Start die Systemsprache uebernehmen: Deutsch (inkl.
 // Schweizer und oesterreichischem Deutsch) bleibt Deutsch, alles andere
@@ -132,7 +132,7 @@ I18N_BLOCKS['lbHint'] = 'Load the .json files of the others from your shared fol
 I18N_BLOCKS['villageIntro'] = 'Invest 🎫 tickets into multi-level buildings – your Cloud Village visibly grows with every level!';
 
 I18N_BLOCKS['manual'] = `
-        <p style="font-size: 12px;">This Tamagotchi is here to help you take real <b>breaks</b>. It only grows while this window is actively open.</p>
+        <p style="font-size: 12px;">This Tamagotchi is here to help you playfully pay more attention to <b>yourself and those around you</b>. It only grows while this window is actively open.</p>
 
         <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">☁️ The Idea</h3>
         <p style="font-size: 12px; margin-bottom: 8px;">Your Tamagotchi visits you every day for exactly <b>30 minutes of active screen time</b>. When the time is up, the bus picks it up. It will be back the next day! Maximum lifetime: <b>~8.5 hours of active screen time</b>.</p>
@@ -433,6 +433,32 @@ Object.assign(I18N, {
     "Los geht's! 🥚": "Let's go! 🥚",
     'Weiter →': 'Next →',
     // Achtsamkeits-Quests (Titel + Beschreibungen)
+    // --- Neue Achtsamkeits-Quests ---
+    '🧎 Körperreise': '🧎 Body Journey',
+    'Wander 1x in Gedanken langsam durch deinen Körper – von den Füßen bis zum Kopf – und spüre jeden Teil.': 'Travel 1x in your mind slowly through your body – from your feet to your head – and feel each part.',
+    '🌿 Naturmoment': '🌿 Nature Moment',
+    'Betrachte 2x etwas aus der Natur ganz genau: ein Blatt, eine Wolke, einen Vogel – und staune kurz.': 'Look closely 2x at something in nature: a leaf, a cloud, a bird – and marvel for a moment.',
+    '💬 Freundliches Wort': '💬 Kind Word',
+    'Sag 2x etwas Nettes – zu einem anderen Menschen oder liebevoll zu dir selbst.': 'Say something kind 2x – to another person or lovingly to yourself.',
+    '🍃 Loslassen': '🍃 Letting Go',
+    'Bemerke 3x einen anstrengenden Gedanken, atme aus und lass ihn wie ein Blatt im Wind ziehen.': 'Notice a stressful thought 3x, breathe out and let it drift away like a leaf in the wind.',
+    '☕ Genussmoment': '☕ Savour the Moment',
+    'Genieße 1x etwas ganz bewusst mit allen Sinnen – einen Schluck Tee, einen Bissen, einen Sonnenstrahl.': 'Savour 1x something with all your senses – a sip of tea, a bite, a ray of sunshine.',
+    '😊 Sanftes Lächeln': '😊 Gentle Smile',
+    'Schenk dir 3x ein kleines, absichtliches Lächeln – auch ohne Grund. Es entspannt dein ganzes Gesicht.': 'Give yourself a small, deliberate smile 3x – even for no reason. It relaxes your whole face.',
+    '👂 Achtsam zuhören': '👂 Mindful Listening',
+    'Hör 1x jemandem wirklich zu – ohne zu unterbrechen, nur ganz da mit deiner Aufmerksamkeit.': 'Truly listen to someone 1x – without interrupting, fully present with your attention.',
+    '🧹 Kleine Ordnung': '🧹 A Little Tidying',
+    'Räum 1x einen kleinen Platz auf – ein Regal, deinen Schreibtisch. Ein klarer Raum, ein klarer Kopf.': 'Tidy 1x a small spot – a shelf, your desk. A clear space, a clear mind.',
+    '🙆 Sanft dehnen': '🙆 Gentle Stretch',
+    'Reck und streck dich 2x ganz bewusst und spüre, wie sich dein Körper danach anfühlt.': 'Stretch mindfully 2x and feel how your body feels afterwards.',
+    '☁️ Himmel schauen': '☁️ Sky Gazing',
+    'Schau 1x für einen Moment einfach in den Himmel und lass deinen Blick in der Weite ruhen.': 'Look up at the sky 1x for a moment and let your gaze rest in the openness.',
+    '📵 Handypause': '📵 Phone Break',
+    'Leg 1x dein Handy für ein paar Minuten bewusst weg und sei einfach nur da, wo du gerade bist.': 'Put your phone away 1x for a few minutes and simply be where you are.',
+    '🫂 Selbstmitgefühl': '🫂 Self-Compassion',
+    'Leg 1x eine Hand aufs Herz und sag dir innerlich: „Ich bin gut, so wie ich bin." Halt kurz inne.': 'Place a hand on your heart 1x and tell yourself: "I am good just as I am." Pause for a moment.',
+
     '🧘 Fokuszeit': '🧘 Focus Time', 'Schließe eine Fokuszeit ab': 'Complete a focus session',
     '🌬️ Bewusst atmen': '🌬️ Mindful Breathing',
     'Halte 3x kurz inne und nimm 5 tiefe, ruhige Atemzüge (max. 1x alle 30 Min), um bei dir anzukommen.': 'Pause 3x and take 5 deep, calm breaths (max. once every 30 min) to arrive within yourself.',

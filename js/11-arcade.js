@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Arcade-Automaten: Space Invaders, Pong, Defender */
+/* Achtsamkeits-Tamagotchi - Arcade-Automaten: Space Invaders, Pong, Defender */
 const ARCADE_META = {
     invaders: { name: 'SPACE INVADERS', owned: 'arcade_invaders', controls: 'lrf', hint: '◀ ▶ BEWEGEN · ● FEUER' },
     pong:     { name: 'PONG',           owned: 'arcade_pong',     controls: 'ud',  hint: '▲ ▼ SCHLÄGER BEWEGEN' },

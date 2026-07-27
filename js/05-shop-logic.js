@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Kaufen, Benutzen, Inventar, Gluecksrad */
+/* Achtsamkeits-Tamagotchi - Kaufen, Benutzen, Inventar, Gluecksrad */
 const BACKUP_FORMAT = 'pausentamagotchi-backup';
 
 // --- Medaillen-Rang: welcher Stufe gehoert die Mehrheit der Medaillen an? ---
@@ -131,10 +131,10 @@ function exportBackup() {
     if (!safeGetItem('tama_save_v6')) { alert("Kein aktiver Spielstand zum Sichern vorhanden!"); return; }
     let stamp = new Date().toISOString().slice(0, 10);
     let who = (typeof pet !== 'undefined' && pet && pet.name) ? pet.name : 'spielstand';
-    let name = `pausentamagotchi_${who}_${stamp}.json`;
+    let name = `achtsamkeits-tamagotchi_${who}_${stamp}.json`;
     // Windows/Edge, macOS, Linux und Android laden regulaer herunter;
     // nur iOS bekommt den Teilen-Dialog (siehe saveOrShareFile).
-    saveOrShareFile(buildBackup(), name, 'Pausentamagotchi Backup', true);
+    saveOrShareFile(buildBackup(), name, 'Achtsamkeits-Tamagotchi Backup', true);
 }
 
 function triggerBackupImport() {

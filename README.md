@@ -1,4 +1,4 @@
-# Pausentamagotchi
+# Achtsamkeits-Tamagotchi
 
 Ein Tamagotchi für die Arbeitspause. Dein Wolkenwesen besucht dich jeden Tag
 für 30 Minuten aktiver Bildschirmzeit — und erinnert dich nebenbei daran,
@@ -144,7 +144,7 @@ GitHub Pages ausliefert.
 ```bash
 git init
 git add .
-git commit -m "Pausentamagotchi 2.46.0"
+git commit -m "Achtsamkeits-Tamagotchi 2.46.0"
 git branch -M main
 git remote add origin https://github.com/DEIN-NAME/pausentamagotchi.git
 git push -u origin main

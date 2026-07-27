@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Spiel-Logik, Zustand, Rendern, Individualitaet */
+/* Achtsamkeits-Tamagotchi - Spiel-Logik, Zustand, Rendern, Individualitaet */
 let state = { view: 'main', iconIndex: -1, gameIndex: 0, feedIndex: 0, tempGameData: null, animFrame: '', isStarted: false, infoScreenIndex: 0 };
 let pet = {};
 let gameLoop;

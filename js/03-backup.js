@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Backup-Format, Pruefsumme, Sichern & Laden */
+/* Achtsamkeits-Tamagotchi - Backup-Format, Pruefsumme, Sichern & Laden */
 const BACKUP_KEYS = [
     'tama_save_v6',                          // das Tamagotchi selbst
     'tama_tcoins', 'tama_tickets',           // Waehrungen

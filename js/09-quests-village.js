@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Geschichte, Tages-Quests, Achtsamkeit, Tagebuch, Wolkendorf, Fokuszeit */
+/* Achtsamkeits-Tamagotchi - Geschichte, Tages-Quests, Achtsamkeit, Tagebuch, Wolkendorf, Fokuszeit */
 const STORY_CHAPTERS = [
     {
         scene: '☁️🥚', minis: [{e:'✨',x:'18%',y:'20%',d:'0s'},{e:'⭐',x:'78%',y:'28%',d:'0.6s'},{e:'✨',x:'70%',y:'72%',d:'1.1s'}],
@@ -123,6 +123,21 @@ const QUEST_POOL = [
     { id: 'ergo_2020',     title: '👀 Weicher Blick',      desc: 'Ruh 4x für 20 Sek. deinen Blick in der Ferne aus und lass die Gedanken los – einfach nur schauen.',         goal: 4, track: 'ergo2020',     reward: 2, manual: true, cooldownSec: 1200 },
     { id: 'ergo_airing',   title: '🌸 Innehalten',         desc: 'Halte 2x für einen Moment ganz inne und spüre bewusst, wie es dir gerade geht – ohne zu bewerten.',        goal: 2, track: 'ergoAiring',   reward: 2, manual: true, cooldownSec: 1800 },
     { id: 'ergo_water',    title: '💧 Achtsam trinken',    desc: 'Trink über den Tag verteilt achtsam Wasser. Bestätige 4x, dass du ein Glas ganz bewusst genossen hast.',    goal: 4, track: 'ergoWater',    reward: 2, manual: true, cooldownSec: 1800 },
+
+    // --- Weitere Achtsamkeits-Quests (eigene mind*-Tracks, werden nur manuell
+    //     bestätigt und von keiner automatischen Aktion getriggert) ---
+    { id: 'mind_bodyscan',  title: '🧎 Körperreise',       desc: 'Wander 1x in Gedanken langsam durch deinen Körper – von den Füßen bis zum Kopf – und spüre jeden Teil.',        goal: 1, track: 'mindBodyscan',  reward: 2, manual: true, cooldownSec: 0 },
+    { id: 'mind_nature',    title: '🌿 Naturmoment',       desc: 'Betrachte 2x etwas aus der Natur ganz genau: ein Blatt, eine Wolke, einen Vogel – und staune kurz.',          goal: 2, track: 'mindNature',    reward: 2, manual: true, cooldownSec: 1200 },
+    { id: 'mind_kindword',  title: '💬 Freundliches Wort',  desc: 'Sag 2x etwas Nettes – zu einem anderen Menschen oder liebevoll zu dir selbst.',                               goal: 2, track: 'mindKindword',  reward: 2, manual: true, cooldownSec: 900 },
+    { id: 'mind_letgo',     title: '🍃 Loslassen',          desc: 'Bemerke 3x einen anstrengenden Gedanken, atme aus und lass ihn wie ein Blatt im Wind ziehen.',                goal: 3, track: 'mindLetgo',     reward: 2, manual: true, cooldownSec: 1200 },
+    { id: 'mind_savor',     title: '☕ Genussmoment',       desc: 'Genieße 1x etwas ganz bewusst mit allen Sinnen – einen Schluck Tee, einen Bissen, einen Sonnenstrahl.',        goal: 1, track: 'mindSavor',     reward: 2, manual: true, cooldownSec: 0 },
+    { id: 'mind_smile',     title: '😊 Sanftes Lächeln',    desc: 'Schenk dir 3x ein kleines, absichtliches Lächeln – auch ohne Grund. Es entspannt dein ganzes Gesicht.',       goal: 3, track: 'mindSmile',     reward: 2, manual: true, cooldownSec: 900 },
+    { id: 'mind_listen',    title: '👂 Achtsam zuhören',    desc: 'Hör 1x jemandem wirklich zu – ohne zu unterbrechen, nur ganz da mit deiner Aufmerksamkeit.',                  goal: 1, track: 'mindListen',    reward: 2, manual: true, cooldownSec: 600 },
+    { id: 'mind_declutter', title: '🧹 Kleine Ordnung',     desc: 'Räum 1x einen kleinen Platz auf – ein Regal, deinen Schreibtisch. Ein klarer Raum, ein klarer Kopf.',         goal: 1, track: 'mindDeclutter', reward: 2, manual: true, cooldownSec: 0 },
+    { id: 'mind_stretch',   title: '🙆 Sanft dehnen',       desc: 'Reck und streck dich 2x ganz bewusst und spüre, wie sich dein Körper danach anfühlt.',                        goal: 2, track: 'mindStretch',   reward: 2, manual: true, cooldownSec: 900 },
+    { id: 'mind_sky',       title: '☁️ Himmel schauen',     desc: 'Schau 1x für einen Moment einfach in den Himmel und lass deinen Blick in der Weite ruhen.',                   goal: 1, track: 'mindSky',       reward: 2, manual: true, cooldownSec: 0 },
+    { id: 'mind_phonebreak',title: '📵 Handypause',         desc: 'Leg 1x dein Handy für ein paar Minuten bewusst weg und sei einfach nur da, wo du gerade bist.',               goal: 1, track: 'mindPhonebreak',reward: 2, manual: true, cooldownSec: 1800 },
+    { id: 'mind_selfhug',   title: '🫂 Selbstmitgefühl',    desc: 'Leg 1x eine Hand aufs Herz und sag dir innerlich: „Ich bin gut, so wie ich bin." Halt kurz inne.',            goal: 1, track: 'mindSelfhug',   reward: 2, manual: true, cooldownSec: 0 },
 ];
 
 let dailyQuests = {};

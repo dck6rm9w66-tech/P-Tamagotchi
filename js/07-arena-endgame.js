@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Arena, PvP, Mini-Bosse, Fernrohr & Vermaechtnis */
+/* Achtsamkeits-Tamagotchi - Arena, PvP, Mini-Bosse, Fernrohr & Vermaechtnis */
 // Die Mini-Bosse verkoerpern innere Unruhezustaende, die Achtsamkeit
 // ueberwindet. id-Felder bleiben unveraendert (Speicherstand-Kompatibilitaet).
 const ARENA_BOSSES = [
