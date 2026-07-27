@@ -854,7 +854,7 @@ function openDeathModal() {
                 <b>💸 ${t('Mit ins Grab gegangen')}:</b> ${t('Alle T-Coins 🪙 und Pausen-Tickets 🎫 sowie gekaufte Gegenstände sind verloren.')}<br>
                 <b>✅ ${t('Dir bleiben')}:</b> ${t('Pfleger-Level, Medaillen, Wolkendorf, Arcade-Automaten und dein eigenes Bild.')}
              </div>`;
-    text += `<br><b style="color:#d63031;">${t('Highscore gesichert')}:</b> ${t('Deine fälschungssichere Datei wurde heruntergeladen – verschiebe sie in euren Büro-Ordner fürs Leaderboard!')}`;
+    text += `<br><b style="color:#d63031;">${t('Highscore gesichert')}:</b> ${t('Deine fälschungssichere Datei wurde heruntergeladen – teilt sie miteinander fürs Leaderboard!')}`;
 
     document.getElementById('deathModalText').innerHTML = text;
     document.getElementById('deathModal').style.display = 'flex';

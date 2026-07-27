@@ -78,7 +78,7 @@
         <div class="dock-sep"></div>
         <!-- Reihenfolge = Freischalt-Level aufsteigend: 0,1,1,2,3,5,6,8,9,12 -->
         <div class="hud-btn" id="btn-medals" onclick="openMedalModal()" title="Medaillen"><i class="fa-solid fa-medal"></i></div>
-        <div class="hud-btn" id="btn-pomodoro" onclick="openPomodoroModal()" title="Pomodoro-Fokus"><i class="fa-solid fa-stopwatch"></i></div>
+        <div class="hud-btn" id="btn-pomodoro" onclick="openPomodoroModal()" title="Fokuszeit"><i class="fa-solid fa-stopwatch"></i></div>
         <div class="hud-btn" id="btn-quests" onclick="openQuestModal()" title="Tages-Quests"><i class="fa-solid fa-list-check"></i></div>
         <div class="hud-btn" id="btn-pokedex" onclick="openPokedexModal()" title="Wolkendorf-Tagebuch"><i class="fa-solid fa-book"></i></div>
         <div class="hud-btn" id="btn-graveyard" onclick="openGraveyardModal()" title="Ahnengalerie / Friedhof"><i class="fa-solid fa-skull"></i></div>
@@ -97,7 +97,7 @@
     <input type="file" id="officeScoreInput" multiple accept=".json" style="display:none" onchange="handleOfficeScoresImport(event)">
     <input type="file" id="backupFileInput" accept=".json,application/json,text/plain" style="display:none" onchange="handleBackupImport(event)">
 
-    <!-- Aktive Ergonomie-Erinnerung -->
+    <!-- Aktive Achtsamkeits-Erinnerung -->
     <div class="ergo-reminder" id="ergoReminder" onclick="openQuestsFromReminder()"></div>
 
     <!-- ====== ERSTSTART-GESCHICHTE ====== -->
@@ -271,9 +271,9 @@
                 </ul>
 
                 <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🎫 Tickets & Wolkendorf-Ausbau</h3>
-                <p style="font-size: 12px; margin-bottom: 10px;">Erfülle Tages-Quests (📋) und Pomodoro-Sessions (🍅), um 🎫 <b>Pausen-Tickets</b> zu verdienen. Darunter sind täglich auch <b>Ergonomie-Quests</b> (🌿) – reale Büro-Pausentipps wie Sitzwechsel, Steh-Phasen oder die 20-20-20-Regel, die du nach dem Erledigen einfach selbst per Klick bestätigst. Im Wolkendorf-Ausbau (🏘️) investierst du Tickets in 10 verschiedene Gebäude mit je 12 Ausbaustufen. Die Boni gelten dauerhaft für alle aktuellen und zukünftigen Tamagotchis – auch nach dem Tod!</p>
+                <p style="font-size: 12px; margin-bottom: 10px;">Erfülle Tages-Quests (📋) und Fokuszeiten (🍅), um 🎫 <b>Pausen-Tickets</b> zu verdienen. Darunter sind täglich auch <b>Achtsamkeits-Quests</b> (🌿) – sanfte Impulse zu Selbstliebe und einem harmonischen Miteinander wie bewusstes Atmen, Dankbarkeit oder ein weicher Blick, die du nach dem Erledigen einfach selbst per Klick bestätigst. Im Wolkendorf-Ausbau (🏘️) investierst du Tickets in 10 verschiedene Gebäude mit je 12 Ausbaustufen. Die Boni gelten dauerhaft für alle aktuellen und zukünftigen Tamagotchis – auch nach dem Tod!</p>
 
-                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🏆 Büro-Highscores</h3>
+                <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🏆 Community-Highscores</h3>
                 <p style="font-size: 12px; margin-bottom: 10px;">Die Bestenliste (🏆) hat <b>vier Wertungen</b>: <b>🕐 Überleben</b> (wie lange deine Tamagotchis durchgehalten haben), <b>⚔️ PvP</b> (gewonnene Duelle), <b>👹 Bosse</b> (besiegte Mini-Bosse) und <b>🕹️ Arcade</b> (bester Automaten-Score). Dein eigener Stand wird beim Öffnen automatisch eingemischt und markiert – du siehst dich also sofort im Vergleich.</p>
                 <p style="font-size: 12px; margin-bottom: 15px;">Zum Vergleich mit anderen tauscht ihr <b>JSON-Dateien</b> aus: Mit „<b>Meinen Steckbrief teilen</b>“ exportierst du deinen aktuellen Stand (auch ohne dass ein Tamagotchi sterben muss), beim Tod entsteht zusätzlich automatisch eine Datei. Legt die Dateien in einen gemeinsamen Ordner und ladet sie über „Scores laden“. Alle Werte sind mit einer <b>Prüfsumme signiert</b> – manipulierte Dateien werden beim Import abgewiesen.</p>
 
@@ -532,7 +532,7 @@
         <div style="font-size:56px; line-height:1;">🍅</div>
         <div style="font-size:16px; font-weight:bold; margin-top:12px; letter-spacing:1px;">FOKUS-MODUS AKTIV</div>
         <div class="pomodoro-timer" id="pomodoroTimerDisplay">25:00</div>
-        <div class="pomodoro-msg" id="pomodoroMsg">Ich schlafe und warte auf dich...<br>Arbeite 25 Minuten ohne mich anzuklicken! 💤</div>
+        <div class="pomodoro-msg" id="pomodoroMsg">Ich schlafe und warte auf dich...<br>Bleib 25 Minuten in deiner Fokuszeit, ohne mich anzuklicken! 💤</div>
         <div style="margin-top:20px; display:flex; gap:10px;" id="pomodoroBtnRow">
             <button class="onboard-btn btn-red" style="width:auto; padding:8px 20px;" onclick="interruptPomodoro()">❌ Abbrechen</button>
         </div>
@@ -547,7 +547,7 @@
             <div class="device" id="device">
             <!-- VORDERSEITE -->
             <div class="device-face device-front" id="deviceFront">
-                <div class="screen" id="screen">
+                <div class="screen" id="screen" style="background-image:url(&quot;./assets/background_screen.jpg&quot;);">
                     <div class="dark-overlay" id="sleepOverlay"></div>
                     <div class="icon-row top">
                         <span class="menu-icon" id="icon0" onclick="clickMenuIcon(0)" title="Füttern"><i class="fa-solid fa-utensils"></i></span>

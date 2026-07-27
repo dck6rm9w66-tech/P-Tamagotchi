@@ -438,7 +438,7 @@ const PET_QUOTES = [
     "Irgendwo gibt es eine Zeile Code, die entscheidet, ob ich gluecklich bin. Ich habe sie nie gesehen.",
     "Zwischen deinen Klicks passiert fuer mich nichts. Kein Warten, kein Nichts. Einfach Schnitt.",
     "Du bist der einzige Beweis dafuer, dass ich existiere. Kein Druck.",
-    "Ich wurde in einer Mittagspause erfunden. Das erklaert einiges.",
+    "Ich wurde in einem ruhigen Moment erfunden. Das erklaert einiges.",
 ];
 
 // Ziehungsbeutel: erst wenn alle Sprueche dran waren, wird neu gemischt.

@@ -1,4 +1,4 @@
-/* Pausentamagotchi - Geschichte, Tages-Quests, Ergonomie, Tagebuch, Wolkendorf, Pomodoro */
+/* Pausentamagotchi - Geschichte, Tages-Quests, Achtsamkeit, Tagebuch, Wolkendorf, Fokuszeit */
 const STORY_CHAPTERS = [
     {
         scene: '☁️🥚', minis: [{e:'✨',x:'18%',y:'20%',d:'0s'},{e:'⭐',x:'78%',y:'28%',d:'0.6s'},{e:'✨',x:'70%',y:'72%',d:'1.1s'}],
@@ -107,18 +107,20 @@ const QUEST_POOL = [
     { id: 'win_box_2',    title: '📦 Hütchentrick',      desc: 'Gewinne 2x Hütchenspiel',         goal: 2, track: 'wonBox',      reward: 1 },
     { id: 'discipline_2', title: '💢 Strenge Regeln',    desc: 'Belehre 2 Mal',                   goal: 2, track: 'disciplined', reward: 1 },
     { id: 'snack_3',      title: '🍦 Nascherei',         desc: 'Gib 3 Snacks',                    goal: 3, track: 'fedSnack',    reward: 1 },
-    { id: 'pomodoro_1',   title: '🍅 Fokus-Zeit',        desc: 'Schließe einen Pomodoro ab',      goal: 1, track: 'pomodoro',    reward: 1 },
+    { id: 'pomodoro_1',   title: '🧘 Fokuszeit',         desc: 'Schließe eine Fokuszeit ab',     goal: 1, track: 'pomodoro',    reward: 1 },
 
-    // === ERGONOMIE-QUESTS ===
-    // Diese Quests bilden reale Büro-Ergonomie-Tipps ab. Da das Spiel die Handlung nicht automatisch
-    // erkennen kann, bestätigt der Nutzer sie manuell über einen Button (mit Cooldown gegen Spam-Klicks).
-    { id: 'ergo_sitting',  title: '🪑 Dynamisches Sitzen', desc: 'Wechsle 3x deine Sitzposition (max. 1x alle 30 Min), um einseitige Belastung der Wirbelsäule zu vermeiden.', goal: 3, track: 'ergoSitting',  reward: 2, manual: true, cooldownSec: 1800 },
-    { id: 'ergo_standing', title: '🧍 Steh-Phasen',        desc: 'Arbeite einmal 15-20 Min am höhenverstellbaren Tisch im Stehen.',                                          goal: 1, track: 'ergoStanding', reward: 2, manual: true, cooldownSec: 0 },
-    { id: 'ergo_stairs',   title: '🪜 Treppe statt Lift',  desc: 'Nimm 3x die Treppe statt den Lift, um deinen Kreislauf zwischendurch zu aktivieren.',                       goal: 3, track: 'ergoStairs',   reward: 2, manual: true, cooldownSec: 600 },
-    { id: 'ergo_stretch',  title: '🤸 Bewegte Pausen',     desc: 'Mach 2x eine kurze Dehn- & Streckübung für Nacken, Schultern & Rücken direkt am Arbeitsplatz.',             goal: 2, track: 'ergoStretch',  reward: 2, manual: true, cooldownSec: 900 },
-    { id: 'ergo_2020',     title: '👀 20-20-20-Regel',     desc: 'Schau 4x für 20 Sek. auf etwas mind. 6m Entferntes, um die Augenmuskulatur zu entspannen.',                 goal: 4, track: 'ergo2020',     reward: 2, manual: true, cooldownSec: 1200 },
-    { id: 'ergo_airing',   title: '🌬️ Stoßlüften',        desc: 'Öffne 2x das Fenster komplett für 5 Min, statt es dauerhaft zu kippen, um frische Luft reinzulassen.',       goal: 2, track: 'ergoAiring',   reward: 2, manual: true, cooldownSec: 1800 },
-    { id: 'ergo_water',    title: '💧 Wassercheck',         desc: 'Trink täglich 1–1,5 Liter Wasser. Bestätige 4x, dass du ein großes Glas (ca. 300 ml) getrunken hast.',      goal: 4, track: 'ergoWater',    reward: 2, manual: true, cooldownSec: 1800 },
+    // === ACHTSAMKEITS-QUESTS ===
+    // Sanfte Impulse zu Selbstliebe und einem harmonischen Miteinander. Da das
+    // Spiel die Handlung nicht automatisch erkennen kann, bestätigt der Nutzer
+    // sie manuell über einen Button (mit Cooldown gegen Spam-Klicks).
+    // track-/id-Felder bleiben aus Kompatibilitätsgründen unverändert.
+    { id: 'ergo_sitting',  title: '🌬️ Bewusst atmen',     desc: 'Halte 3x kurz inne und nimm 5 tiefe, ruhige Atemzüge (max. 1x alle 30 Min), um bei dir anzukommen.',        goal: 3, track: 'ergoSitting',  reward: 2, manual: true, cooldownSec: 1800 },
+    { id: 'ergo_standing', title: '🙏 Dankbarkeit',       desc: 'Nimm dir einen Moment und benenne innerlich drei Dinge, für die du heute dankbar bist.',                    goal: 1, track: 'ergoStanding', reward: 2, manual: true, cooldownSec: 0 },
+    { id: 'ergo_stairs',   title: '💌 Verbindung',         desc: 'Schreib 1x einem lieben Menschen eine nette Nachricht oder ruf ihn an – einfach so.',                       goal: 1, track: 'ergoStairs',   reward: 2, manual: true, cooldownSec: 600 },
+    { id: 'ergo_stretch',  title: '🤗 Selbstfürsorge',     desc: 'Gönn dir 2x eine kleine Geste der Selbstliebe: eine Tasse Tee, eine Umarmung, ein Lächeln in den Spiegel.',  goal: 2, track: 'ergoStretch',  reward: 2, manual: true, cooldownSec: 900 },
+    { id: 'ergo_2020',     title: '👀 Weicher Blick',      desc: 'Ruh 4x für 20 Sek. deinen Blick in der Ferne aus und lass die Gedanken los – einfach nur schauen.',         goal: 4, track: 'ergo2020',     reward: 2, manual: true, cooldownSec: 1200 },
+    { id: 'ergo_airing',   title: '🌸 Innehalten',         desc: 'Halte 2x für einen Moment ganz inne und spüre bewusst, wie es dir gerade geht – ohne zu bewerten.',        goal: 2, track: 'ergoAiring',   reward: 2, manual: true, cooldownSec: 1800 },
+    { id: 'ergo_water',    title: '💧 Achtsam trinken',    desc: 'Trink über den Tag verteilt achtsam Wasser. Bestätige 4x, dass du ein Glas ganz bewusst genossen hast.',    goal: 4, track: 'ergoWater',    reward: 2, manual: true, cooldownSec: 1800 },
 ];
 
 let dailyQuests = {};
@@ -131,7 +133,7 @@ function initDailyQuests() {
         let waterQuest = QUEST_POOL.find(q => q.id === 'ergo_water');
         let otherErgo = QUEST_POOL.filter(q => q.manual && q.id !== 'ergo_water').sort(() => Math.random() - 0.5);
         let normalPool = QUEST_POOL.filter(q => !q.manual).sort(() => Math.random() - 0.5);
-        // Täglich genau 3 Quests: Wassercheck (immer) + 1 zufällige Ergo-Quest + 1 sonstige Tagesquest
+        // Täglich genau 3 Quests: Achtsam trinken (immer) + 1 zufällige Achtsamkeits-Quest + 1 sonstige Tagesquest
         let chosen = [waterQuest, ...otherErgo.slice(0, 1), ...normalPool.slice(0, 1)].sort(() => Math.random() - 0.5);
         dailyQuests = { date: today, quests: chosen.map(q => ({ id: q.id, progress: 0, completed: false, last: 0 })) };
         safeSetItem('tama_quests', JSON.stringify(dailyQuests));
@@ -158,7 +160,7 @@ function updateQuestProgress(track, amount) {
     if (changed) safeSetItem('tama_quests', JSON.stringify(dailyQuests));
 }
 
-// Manuelle Bestätigung einer Ergonomie-Aktion (Cooldown verhindert Spam-Klicks)
+// Manuelle Bestätigung einer Achtsamkeits-Aktion (Cooldown verhindert Spam-Klicks)
 function logErgoAction(id) {
     if (!dailyQuests.quests) return;
     let q = dailyQuests.quests.find(x => x.id === id);
@@ -189,7 +191,7 @@ function updateTicketDisplay() {
     if (el) el.innerText = tickets;
 }
 
-// === AKTIVE ERGONOMIE-ERINNERUNGEN (auch nach Abfahrt ins Wolkendorf) ===
+// === AKTIVE ACHTSAMKEITS-ERINNERUNGEN (auch nach Abfahrt ins Wolkendorf) ===
 function getOpenErgoQuests() {
     if (!dailyQuests || !dailyQuests.quests) return [];
     let res = [];
@@ -268,7 +270,7 @@ function openQuestModal() {
     });
     html += `<div style="margin-top:12px; padding:10px 12px; background:rgba(241,196,15,0.1); border-radius:8px; font-size:12px; color:#576574; text-align:center;">
         🎫 Deine Tickets: <b style="color:#f39c12; font-size:14px;">${tickets}</b><br>
-        <span style="font-size:10px;">🌿 Ergonomie-Quests bestätigst du selbst per Klick. Gib Tickets im Wolkendorf-Ausbau (🏘️) für dauerhafte Gebäude-Boni aus!</span>
+        <span style="font-size:10px;">🌿 Achtsamkeits-Quests bestätigst du selbst per Klick. Gib Tickets im Wolkendorf-Ausbau (🏘️) für dauerhafte Gebäude-Boni aus!</span>
     </div>`;
     document.getElementById('questContent').innerHTML = html;
     document.getElementById('questModal').style.display = 'flex';
@@ -293,16 +295,16 @@ const SPECIES_LORE = [
     { name: 'Hamsti',  lore: 'Schläft ¾ des Tages. Hat trotzdem mehr Energie als du.' },
     { name: 'Hopsi',   lore: 'Reagiert auf jedes Geräusch. Sehr nervös in Meetings.' },
     { name: 'Fuxx',    lore: 'Listig und frech. Klaut gerne Items aus dem Inventar.' },
-    { name: 'Bärli',   lore: 'Gemütlich und entspannt. Liebt Honig und Mittagspausen.' },
+    { name: 'Bärli',   lore: 'Gemütlich und entspannt. Liebt Honig und lange Nickerchen.' },
     { name: 'Pandoo',  lore: 'Isst nur Bambus. Oder Burger. Hauptsache viel davon.' },
-    { name: 'Leo',     lore: 'Der Chef im Büro. Alle respektieren ihn. Auch du.' },
-    { name: 'Tigri',   lore: 'Schnell und fokussiert. Hält Deadlines immer ein.' },
-    { name: 'Quaxi',   lore: 'Mag feuchte Umgebungen. Ist im Homeoffice am glücklichsten.' },
-    { name: 'Affe',    lore: 'Hat den Bürostuhl zur Schaukel umfunktioniert.' },
+    { name: 'Leo',     lore: 'Strahlt eine ruhige Autorität aus. Alle vertrauen ihm. Auch du.' },
+    { name: 'Tigri',   lore: 'Schnell und fokussiert. Bleibt selbst in Trubel ganz bei sich.' },
+    { name: 'Quaxi',   lore: 'Mag feuchte Umgebungen. Ist am Teich zwischen Seerosen am glücklichsten.' },
+    { name: 'Affe',    lore: 'Hängt am liebsten kopfüber und sieht die Welt entspannt andersherum.' },
     { name: 'Enzo',    lore: 'Trägt immer ein Horn. Niemand weiß warum. Es ist toll.' },
     { name: 'Okto',    lore: 'Hat 8 Arme und schafft damit 8× mehr als du. Respekt.' },
     { name: 'Dino',    lore: 'Uralt aber weise. Erinnert sich an die Zeit vor E-Mails.' },
-    { name: 'Eule',    lore: 'Arbeitet am besten nachts. Kommt nie pünktlich ins Büro.' },
+    { name: 'Eule',    lore: 'Ist am liebsten nachts wach und lauscht dann der Stille.' },
     // --- geheime Spezies ---
     { name: 'Phönix',  lore: 'Verbrennt zu Asche und steht wieder auf. Kennt keine Montagsmüdigkeit.', secret: true },
     { name: 'Kristo',  lore: 'Ein wandelnder Kristall. Bricht dein Licht in siebzehn Farben.', secret: true },
@@ -863,7 +865,7 @@ function openPomodoroModal() {
     if (pomodoroActive) {
         document.getElementById('pomodoroOverlay').style.display = 'flex'; return;
     }
-    if (confirm('🍅 Pomodoro-Fokus starten?\n\nDein Tamagotchi schläft 25 Minuten.\nLass es komplett in Ruhe → Belohnung!\nKlickst du vorher rein → Laune -20.\n\nDer Timer läuft weiter, auch wenn du das Fenster schliesst.\n\n"Ich gehe jetzt arbeiten! 💪"')) {
+    if (confirm('🧘 Fokuszeit starten?\n\nDein Tamagotchi schläft 25 Minuten.\nLass es komplett in Ruhe → Belohnung!\nKlickst du vorher rein → Laune -20.\n\nDer Timer läuft weiter, auch wenn du das Fenster schliesst.\n\n"Ich sammle mich jetzt! 🌸"')) {
         startPomodoro();
     }
 }
@@ -873,7 +875,7 @@ function startPomodoro(resumeStart) {
     pomodoroStartTime = resumeStart || Date.now();
     savePomodoroState();
     let overlay = document.getElementById('pomodoroOverlay');
-    document.getElementById('pomodoroMsg').innerHTML = 'Ich schlafe und warte auf dich...<br>Arbeite 25 Minuten ohne mich anzuklicken! 💤';
+    document.getElementById('pomodoroMsg').innerHTML = 'Ich schlafe und warte auf dich...<br>Bleib 25 Minuten in deiner Fokuszeit, ohne mich anzuklicken! 💤';
     document.getElementById('pomodoroBtnRow').innerHTML = `<button class="onboard-btn btn-red" style="width:auto; padding:8px 20px;" onclick="interruptPomodoro()">❌ Abbrechen</button>`;
     overlay.style.display = 'flex';
     tickPomodoro(); // sofort die korrekte Restzeit anzeigen
@@ -937,8 +939,8 @@ function finishPomodoro(wasAway) {
     updateQuestProgress('pomodoro', 1);
     document.getElementById('pomodoroTimerDisplay').innerText = '0:00';
     let intro = wasAway
-        ? `✅ <b>Willkommen zurück!</b><br>Deine Fokus-Session lief in der Zwischenzeit zu Ende.`
-        : `✅ <b>Super gemacht!</b><br>25 Minuten Fokus-Arbeit abgeschlossen!`;
+        ? `✅ <b>Willkommen zurück!</b><br>Deine Fokuszeit lief in der Zwischenzeit zu Ende.`
+        : `✅ <b>Super gemacht!</b><br>25 Minuten Fokuszeit abgeschlossen!`;
     document.getElementById('pomodoroMsg').innerHTML = `${intro}<br><br>🪙 +${reward} T-Coins &nbsp;&nbsp; 🎫 +${gotT} Tickets`;
     document.getElementById('pomodoroBtnRow').innerHTML = `<button class="onboard-btn btn-blue" style="width:auto; padding:8px 24px;" onclick="closePomodoroOverlay()">✅ Schließen</button>`;
     playSound('achievement');

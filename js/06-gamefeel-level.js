@@ -187,7 +187,7 @@ const LEVEL_UNLOCKS = [
     { level: 5,  name: '🕹️ Shop-Kategorie: Arcade-Automaten' },
     { level: 5,  name: '🥚 Seltene Ei-Farbe: Sonnenuntergang' },
     { level: 8,  name: '🏕️ Shop-Kategorie: Hobbys & Abenteuer' },
-    { level: 9,  name: '🏆 Büro-Highscores' },
+    { level: 9,  name: '🏆 Community-Highscores' },
     { level: 10, name: '🥚 Seltene Ei-Farbe: Galaxie' },
     { level: 11, name: '🧪 Shop-Kategorie: Buffs & Substanzen' },
     { level: 12, name: '🔭 Endgame: Wolkendorf-Fernrohr & Vermächtnis' },
@@ -214,11 +214,11 @@ function xpNeededForLevel(lvl) { return 60 + (lvl - 1) * 22; }
 // Bei der Freischaltung erscheint ein Popup-Modal mit kurzer Feature-Erklärung.
 
 const FEATURE_LOCK_CONFIG = [
-    { btnId: 'btn-pomodoro',    minLevel: 1, icon: '🍅', name: 'Pomodoro-Fokus',
+    { btnId: 'btn-pomodoro',    minLevel: 1, icon: '🍅', name: 'Fokuszeit',
       desc: 'Arbeite 25 Minuten fokussiert, während dein Tamagotchi schläft. Der Timer läuft sogar weiter, wenn du das Fenster schliesst. Nach erfolgreicher Session gibt\'s Coins, Tickets & Pfleger-XP.',
       onclick: "openPomodoroModal()", title: "Pomodoro-Fokus" },
     { btnId: 'btn-quests',      minLevel: 1, icon: '📋', name: 'Tages-Quests',
-      desc: 'Erfülle täglich 3 Aufgaben: den Wassercheck, eine Ergonomie-Quest und eine sonstige Tagesquest. Dein Lohn: 🎫 Tickets für den Wolkendorf-Ausbau.',
+      desc: 'Erfülle täglich 3 Aufgaben: das achtsame Trinken, eine Achtsamkeits-Quest und eine sonstige Tagesquest. Dein Lohn: 🎫 Tickets für den Wolkendorf-Ausbau.',
       onclick: "openQuestModal()", title: "Tages-Quests" },
     { btnId: 'btn-pokedex',     minLevel: 2, icon: '📖', name: 'Wolkendorf-Tagebuch',
       desc: 'Entdecke alle 16 Tier-Spezies des Wolkendorfs. Jede Spezies bekommt einen eigenen Eintrag, sobald dein Tamagotchi zum Erwachsenen herangewachsen ist.',
@@ -226,8 +226,8 @@ const FEATURE_LOCK_CONFIG = [
     { btnId: 'btn-graveyard',   minLevel: 3, icon: '💀', name: 'Ahnengalerie',
       desc: 'Alle deine vergangenen Tamagotchis ruhen hier. Ihre Leistungen, ihr Alter und ihre Geschichten bleiben für immer festgehalten.',
       onclick: "openGraveyardModal()", title: "Ahnengalerie / Friedhof" },
-    { btnId: 'btn-leaderboard', minLevel: 9, icon: '🏆', name: 'Büro-Highscores',
-      desc: 'Vier Bestenlisten in einem: längstes Überleben, PvP-Siege, Mini-Boss-Siege und Arcade-Punkte. Tauscht eure Steckbrief-JSONs aus und vergleicht euch im Büro!',
+    { btnId: 'btn-leaderboard', minLevel: 9, icon: '🏆', name: 'Community-Highscores',
+      desc: 'Vier Bestenlisten in einem: längstes Überleben, PvP-Siege, Mini-Boss-Siege und Arcade-Punkte. Tauscht eure Steckbrief-JSONs aus und vergleicht euch mit Freunden!',
       onclick: "openLeaderboardModal()", title: "Highscores" },
     { btnId: 'btn-village',     minLevel: 6, icon: '🏘️', name: 'Wolkendorf-Ausbau',
       desc: 'Baue und verbessere 10 Gebäude mit je 12 Stufen! Jedes Gebäude bringt dauerhafte Boni für alle zukünftigen Tamagotchis – bezahlt mit 🎫 Tickets.',

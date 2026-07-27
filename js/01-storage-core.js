@@ -145,7 +145,7 @@ function playSound(type) {
             return;
         }
         if (type === 'ergo') {
-            // Sanfter, beruhigender Zwei-Ton-Klang als Belohnung für gesunde Büro-Gewohnheiten
+            // Sanfter, beruhigender Zwei-Ton-Klang als Belohnung für achtsame Gewohnheiten
             [660, 880].forEach((freq, i) => {
                 const osc = audioCtx.createOscillator();
                 const gn = audioCtx.createGain();

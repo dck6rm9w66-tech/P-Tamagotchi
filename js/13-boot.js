@@ -41,5 +41,5 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
         });
     });
 }
-// Aktive Ergonomie-Erinnerungen alle ~12 Minuten (Echtzeit) – funktioniert auch nach Abfahrt ins Wolkendorf
+// Aktive Achtsamkeits-Erinnerungen alle ~12 Minuten (Echtzeit) – funktioniert auch nach Abfahrt ins Wolkendorf
 setInterval(() => { try { showErgoReminder(); } catch(e){} }, 1000 * 60 * 12);

@@ -179,7 +179,7 @@ function startLoop() {
             saveGame(); 
             if(state.view !== 'info') state.view = 'main';
             render(); 
-            // Beim Abschied direkt an offene Ergonomie-Quests erinnern
+            // Beim Abschied direkt an offene Achtsamkeits-Quests erinnern
             if (justDeparted) setTimeout(() => { try { showErgoReminder(); } catch(e){} }, 2500);
             return; 
         }

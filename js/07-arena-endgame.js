@@ -1,10 +1,12 @@
 /* Pausentamagotchi - Arena, PvP, Mini-Bosse, Fernrohr & Vermaechtnis */
+// Die Mini-Bosse verkoerpern innere Unruhezustaende, die Achtsamkeit
+// ueberwindet. id-Felder bleiben unveraendert (Speicherstand-Kompatibilitaet).
 const ARENA_BOSSES = [
-    { id: 'boss_moodkiller', icon: '😤', name: 'Büro-Miesepeter',  lvl: 1, desc: 'Verbreitet schlechte Laune. Schwache Angriffe, aber nervig.', hp: 120, reward: { coins: 200, tickets: 4, xp: 40, lootChance: 0.25, lootId: 'hat_boss_trophy' } },
-    { id: 'boss_hangry',     icon: '🍕', name: 'Hunger-Dämon',     lvl: 2, desc: 'Erscheint immer kurz vor der Mittagspause. Sehr aggressiv.', hp: 180, reward: { coins: 350, tickets: 6, xp: 60, lootChance: 0.20, lootId: 'hat_boss_trophy' } },
-    { id: 'boss_monday',     icon: '📅', name: 'Der Montag',       lvl: 3, desc: 'Alle fürchten ihn. Schwer zu schlagen, aber süß zu besiegen.', hp: 260, reward: { coins: 600, tickets: 10, xp: 100, lootChance: 0.15, lootId: 'col_boss_fire' } },
-    { id: 'boss_deadline',   icon: '⏰', name: 'Die Deadline',     lvl: 4, desc: 'Rückt unaufhaltsam näher. Jede Runde steigt ihr Angriff.',   hp: 350, reward: { coins: 900, tickets: 14, xp: 150, lootChance: 0.10, lootId: 'hat_champion_belt' } },
-    { id: 'boss_burnout',    icon: '🔥', name: 'Burnout-Titan',    lvl: 5, desc: 'Der härteste Gegner. Nur wer ausgeruht & glücklich ist, gewinnt.', hp: 500, reward: { coins: 1500, tickets: 20, xp: 250, lootChance: 0.08, lootId: 'hat_champion_belt' } },
+    { id: 'boss_moodkiller', icon: '😤', name: 'Der Grübelgeist',   lvl: 1, desc: 'Zieht dich in endlose Gedankenschleifen. Schwache Angriffe, aber zäh.', hp: 120, reward: { coins: 200, tickets: 4, xp: 40, lootChance: 0.25, lootId: 'hat_boss_trophy' } },
+    { id: 'boss_hangry',     icon: '🌪️', name: 'Die Rastlosigkeit', lvl: 2, desc: 'Treibt dich von einem zum nächsten, ohne Pause. Sehr aufgewühlt.',       hp: 180, reward: { coins: 350, tickets: 6, xp: 60, lootChance: 0.20, lootId: 'hat_boss_trophy' } },
+    { id: 'boss_monday',     icon: '🌫️', name: 'Der Selbstzweifel', lvl: 3, desc: 'Flüstert dir ein, nicht genug zu sein. Schwer zu greifen, süß zu lösen.', hp: 260, reward: { coins: 600, tickets: 10, xp: 100, lootChance: 0.15, lootId: 'col_boss_fire' } },
+    { id: 'boss_deadline',   icon: '⏳', name: 'Die Ungeduld',      lvl: 4, desc: 'Will alles sofort. Je länger du wartest, desto stärker drängt sie.',      hp: 350, reward: { coins: 900, tickets: 14, xp: 150, lootChance: 0.10, lootId: 'hat_champion_belt' } },
+    { id: 'boss_burnout',    icon: '🔥', name: 'Die Erschöpfung',    lvl: 5, desc: 'Der härteste Gegner. Nur wer gut für sich sorgt & ruht, gewinnt.',        hp: 500, reward: { coins: 1500, tickets: 20, xp: 250, lootChance: 0.08, lootId: 'hat_champion_belt' } },
 ];
 
 // ================================================================

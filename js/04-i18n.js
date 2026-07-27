@@ -29,7 +29,7 @@ const I18N = {};        // wird weiter unten befuellt: deutsch -> englisch
 const I18N_DE = {
     'giftNote': 'Jedes Geschenk hebt einen <b>zufälligen Stat dauerhaft um 0,5%</b> – auch für alle zukünftigen Tamagotchis.',
     'stepsNote': '<b>Wichtig:</b> Gezählt wird nur, solange die App offen und sichtbar ist – Browser bekommen im Hintergrund keine Sensordaten. Nimm dein Handy also mit auf die Runde. Die Erkennung läuft über den Beschleunigungssensor und ist ein Schätzwert.',
-    'villageFootnote': 'Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Pomodoro-Sessions (🍅).'
+    'villageFootnote': 'Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests (📋) und Fokuszeiten (🍅).'
 };
 
 function t(s) {
@@ -160,7 +160,7 @@ I18N_BLOCKS['manual'] = `
         </ul>
 
         <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🎫 Tickets & Cloud Village</h3>
-        <p style="font-size: 12px; margin-bottom: 10px;">Complete daily quests (📋) and Pomodoro sessions (🍅) to earn 🎫 <b>break tickets</b>. Among them are daily <b>ergonomics quests</b> (🌿) – real office break tips such as changing posture, standing phases or the 20-20-20 rule, which you simply confirm yourself once done. In the Cloud Village (🏘️) you invest tickets into 10 buildings with 12 upgrade levels each. The bonuses apply permanently to all current and future Tamagotchis – even after death!</p>
+        <p style="font-size: 12px; margin-bottom: 10px;">Complete daily quests (📋) and focus sessions (🍅) to earn 🎫 <b>break tickets</b>. Among them are daily <b>mindfulness quests</b> (🌿) – gentle nudges for self-love and harmony such as mindful breathing, gratitude or a soft gaze, which you simply confirm yourself once done. In the Cloud Village (🏘️) you invest tickets into 10 buildings with 12 upgrade levels each. The bonuses apply permanently to all current and future Tamagotchis – even after death!</p>
 
         <h3 style="font-size: 14px; border-bottom: 1px solid #a4b0be; padding-bottom: 3px; color: #2c3e50;">🏆 Office High Scores</h3>
         <p style="font-size: 12px; margin-bottom: 10px;">The leaderboard (🏆) has <b>four rankings</b>: <b>🕐 Survival</b> (how long your Tamagotchis lasted), <b>⚔️ PvP</b> (duels won), <b>👹 Bosses</b> (mini-bosses defeated) and <b>🕹️ Arcade</b> (best machine score). Your own standing is mixed in and highlighted automatically when you open it, so you see where you stand right away.</p>
@@ -224,7 +224,7 @@ Object.assign(I18N, {
     'Wolkendorf-Fernrohr': 'Cloud Village Telescope', 'Laden': 'Shop',
     'Medaillen': 'Medals', 'Tages-Quests': 'Daily Quests', 'Ahnengalerie': 'Hall of Ancestors',
     'Pfleger-Level': 'Caretaker Level', 'Wolkendorf-Tagebuch': 'Cloud Village Diary',
-    'Pomodoro-Timer': 'Pomodoro Timer', 'Arcade': 'Arcade', 'Arcade-Automaten': 'Arcade Machines',
+    'Fokuszeit': 'Focus Time', 'Arcade': 'Arcade', 'Arcade-Automaten': 'Arcade Machines',
     'Ton an/aus': 'Sound on/off', 'Glücksrad': 'Wheel of Fortune',
     // Geraete-Bildschirm
     'Essen:': 'Food:', 'Spielen:': 'Play:', 'Mahlzeit 🍔': 'Meal 🍔', 'Snack 🍦': 'Snack 🍦',
@@ -276,13 +276,13 @@ Object.assign(I18N, {
     'Du erhältst mehr T-Coins.': 'You receive more T-Coins.',
     'Dein Tamagotchi ist seltener unartig.': 'Your Tamagotchi misbehaves less often.',
     // Arena
-    'Büro-Miesepeter': 'Office Grump', 'Hunger-Dämon': 'Hunger Demon', 'Der Montag': 'The Monday',
-    'Die Deadline': 'The Deadline', 'Burnout-Titan': 'Burnout Titan', 'Wolken-Titan': 'Cloud Titan',
-    'Verbreitet schlechte Laune. Schwache Angriffe, aber nervig.': 'Spreads bad vibes. Weak attacks, but annoying.',
-    'Erscheint immer kurz vor der Mittagspause. Sehr aggressiv.': 'Always shows up right before lunch. Very aggressive.',
-    'Alle fürchten ihn. Schwer zu schlagen, aber süß zu besiegen.': 'Everyone dreads it. Hard to beat, sweet to defeat.',
-    'Rückt unaufhaltsam näher. Jede Runde steigt ihr Angriff.': 'Creeps ever closer. Its attack grows each round.',
-    'Der härteste Gegner. Nur wer ausgeruht & glücklich ist, gewinnt.': 'The toughest foe. Only the rested and happy prevail.',
+    'Der Grübelgeist': 'The Brooding Spirit', 'Die Rastlosigkeit': 'The Restlessness', 'Der Selbstzweifel': 'The Self-Doubt',
+    'Die Ungeduld': 'The Impatience', 'Die Erschöpfung': 'The Exhaustion', 'Wolken-Titan': 'Cloud Titan',
+    'Zieht dich in endlose Gedankenschleifen. Schwache Angriffe, aber zäh.': 'Pulls you into endless thought loops. Weak attacks, but stubborn.',
+    'Treibt dich von einem zum nächsten, ohne Pause. Sehr aufgewühlt.': 'Drives you from one thing to the next, never resting. Very agitated.',
+    'Flüstert dir ein, nicht genug zu sein. Schwer zu greifen, süß zu lösen.': 'Whispers that you are not enough. Hard to grasp, sweet to release.',
+    'Will alles sofort. Je länger du wartest, desto stärker drängt sie.': 'Wants everything now. The longer you wait, the harder it pushes.',
+    'Der härteste Gegner. Nur wer gut für sich sorgt & ruht, gewinnt.': 'The toughest foe. Only those who care for themselves and rest prevail.',
     'Ein gewaltiges Gewitterwesen. Allein chancenlos – nur ein Verbund aus mehreren Tamagotchis kann ihn stellen.': 'A colossal storm being. Hopeless alone – only a party of several Tamagotchis can face it.',
     // Todesursachen
     'Altersschwäche': 'Old age', 'Verhungern': 'Starvation', 'Übergewicht': 'Obesity',
@@ -416,6 +416,23 @@ Object.assign(I18N, {
 // --- Woerterbuch: Medaillen ---
 Object.assign(I18N, {
     'Ausgebrütet': 'Hatched', 'Bringe Eier erfolgreich zum Schlüpfen.': 'Successfully hatch eggs.',
+    // Achtsamkeits-Quests (Titel + Beschreibungen)
+    '🧘 Fokuszeit': '🧘 Focus Time', 'Schließe eine Fokuszeit ab': 'Complete a focus session',
+    '🌬️ Bewusst atmen': '🌬️ Mindful Breathing',
+    'Halte 3x kurz inne und nimm 5 tiefe, ruhige Atemzüge (max. 1x alle 30 Min), um bei dir anzukommen.': 'Pause 3x and take 5 deep, calm breaths (max. once every 30 min) to arrive within yourself.',
+    '🙏 Dankbarkeit': '🙏 Gratitude',
+    'Nimm dir einen Moment und benenne innerlich drei Dinge, für die du heute dankbar bist.': 'Take a moment and name three things you are grateful for today.',
+    '💌 Verbindung': '💌 Connection',
+    'Schreib 1x einem lieben Menschen eine nette Nachricht oder ruf ihn an – einfach so.': 'Send a kind message to someone you love, or give them a call – just because.',
+    '🤗 Selbstfürsorge': '🤗 Self-Care',
+    'Gönn dir 2x eine kleine Geste der Selbstliebe: eine Tasse Tee, eine Umarmung, ein Lächeln in den Spiegel.': 'Treat yourself 2x to a small act of self-love: a cup of tea, a hug, a smile in the mirror.',
+    '👀 Weicher Blick': '👀 Soft Gaze',
+    'Ruh 4x für 20 Sek. deinen Blick in der Ferne aus und lass die Gedanken los – einfach nur schauen.': 'Rest your gaze on the distance 4x for 20 sec and let your thoughts go – just looking.',
+    '🌸 Innehalten': '🌸 Pause & Feel',
+    'Halte 2x für einen Moment ganz inne und spüre bewusst, wie es dir gerade geht – ohne zu bewerten.': 'Pause completely 2x and feel how you are right now – without judging.',
+    '💧 Achtsam trinken': '💧 Mindful Sips',
+    'Trink über den Tag verteilt achtsam Wasser. Bestätige 4x, dass du ein Glas ganz bewusst genossen hast.': 'Drink water mindfully through the day. Confirm 4x that you truly savoured a glass.',
+
     'Kindergarten': 'Kindergarten', 'Bringe Tamagotchis in die Kindheitsphase.': 'Raise Tamagotchis to the child stage.',
     'Pubertät': 'Puberty', 'Bringe Tamagotchis ins Teenager-Alter.': 'Raise Tamagotchis to the teenage stage.',
     'Erwachsen': 'Grown Up', 'Bringe Tamagotchis ins Erwachsenenalter.': 'Raise Tamagotchis to adulthood.',
@@ -490,7 +507,7 @@ Object.assign(I18N, {
     "Ahnengalerie / Friedhof": "Hall of Ancestors / Graveyard",
     "Arzt": "Doctor", "Baden": "Bathe", "Belehren": "Discipline", "Füttern": "Feed",
     "Gerät drehen": "Rotate device", "Licht an/aus": "Light on/off",
-    "Pausen-Tickets": "Break tickets", "Pomodoro-Fokus": "Pomodoro focus",
+    "Pausen-Tickets": "Break tickets", "Fokuszeit": "Focus Time",
     "Shop & Inventar": "Shop & inventory", "Spielen": "Play",
     "Spielstand sichern & laden": "Back up & load save", "Status / Info": "Status / info",
     "Streicheln": "Pet", "T-Coins": "T-Coins",
@@ -517,7 +534,7 @@ Object.assign(I18N, {
     "👿 Shop-Kategorie: Debuffs & Trolle": "👿 Shop category: Debuffs & Trolls",
     "💳 Shop-Kategorie: Abos & Mikros": "💳 Shop category: Subscriptions & Micros",
     "🌟 Shop-Kategorie: Pfleger-Elite": "🌟 Shop category: Caretaker Elite",
-    "🏆 Büro-Highscores": "🏆 Office High Scores", "🏘️ Wolkendorf-Ausbau": "🏘️ Cloud Village",
+    "🏆 Community-Highscores": "🏆 Community High Scores", "🏘️ Wolkendorf-Ausbau": "🏘️ Cloud Village",
     "⚔️ Wolkendorf-Arena": "⚔️ Cloud Village Arena", "🕹️ Arcade-Automaten": "🕹️ Arcade Machines",
     "🔭 Endgame: Wolkendorf-Fernrohr & Vermächtnis": "🔭 Endgame: Cloud Village Telescope & Legacy",
     "🥚 Seltene Ei-Farbe: Sonnenuntergang": "🥚 Rare egg colour: Sunset",
@@ -553,7 +570,7 @@ Object.assign(I18N, {
     "Lade Steckbriefe deiner Kolleginnen und Kollegen, um zu vergleichen.": "Load your colleagues\' profiles to compare.",
     // Wolkendorf
     "Noch nicht gebaut": "Not built yet", "Stufen": "levels",
-    "Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests und Pomodoro-Sessions.": "Levels are kept permanently, even after your Tamagotchi dies! Earn 🎫 tickets through daily quests and Pomodoro sessions.",
+    "Stufen bleiben auch nach dem Tod deines Tamagotchis dauerhaft erhalten! Verdiene 🎫 Tickets über Tages-Quests und Fokuszeiten.": "Levels are kept permanently, even after your Tamagotchi dies! Earn 🎫 tickets through daily quests and focus sessions.",
     // Arena
     "Kämpfe können je 1× pro Woche gestartet werden": "Each fight can be started once per week",
     "Lade die Spielstand-JSON eines anderen Nutzers und lasst eure Tamagotchis gegeneinander antreten!": "Load another player\'s save JSON and let your Tamagotchis face off!",
@@ -570,12 +587,12 @@ Object.assign(I18N, {
     // Schrittzaehler
     "Schritte": "steps", "Bis zu den nächsten 50 🪙": "Until the next 50 🪙",
     "stepsNote": "<b>Important:</b> steps are only counted while the app is open and visible – browsers receive no sensor data in the background. So take your phone with you on the walk. Detection uses the accelerometer and is an estimate.",
-    // Bus / Besuchszeit / Pomodoro
+    // Bus / Besuchszeit / Fokuszeit
     "morgen": "tomorrow", "Bis morgen! 👋": "See you tomorrow! 👋",
     "Der Wolken-Bus hat mich abgeholt.": "The cloud bus has picked me up.",
     "Besuchszeit aufgebraucht — dein Wolkenwesen kommt morgen wieder.": "Visiting time used up — your cloud creature returns tomorrow.",
     "Kein aktives Tama!": "No active Tama!",
-    "villageFootnote": "Levels are kept permanently, even after your Tamagotchi dies! Earn 🎫 tickets through daily quests (📋) and Pomodoro sessions (🍅).",
+    "villageFootnote": "Levels are kept permanently, even after your Tamagotchi dies! Earn 🎫 tickets through daily quests (📋) and focus sessions (🍅).",
     "Freigeschaltet": "Unlocked",
     "Arena-Quests setzen sich jeden Montag zurück.": "Arena quests reset every Monday.",
     "Noch nie gesichert": "Never backed up",
@@ -692,7 +709,7 @@ Object.assign(I18N, {
     "Dir bleiben": "You keep",
     "Pfleger-Level, Medaillen, Wolkendorf, Arcade-Automaten und dein eigenes Bild.": "Caretaker level, medals, the Cloud Village, arcade machines and your own image.",
     "Highscore gesichert": "High score saved",
-    "Deine fälschungssichere Datei wurde heruntergeladen – verschiebe sie in euren Büro-Ordner fürs Leaderboard!": "Your tamper-proof file has been downloaded – move it into your office folder for the leaderboard!",
+    "Deine fälschungssichere Datei wurde heruntergeladen – teilt sie miteinander fürs Leaderboard!": "Your tamper-proof file has been downloaded – share it with each other for the leaderboard!",
     "Freigeschaltet!": "Unlocked!",
     "Geschenk senden": "Send gift", "Heute alle 3 verschickt": "All 3 sent today",
     "Heute noch": "Remaining today", "Geschenke": "gifts", "Du hast": "You have",
@@ -718,16 +735,16 @@ Object.assign(I18N, {
     'Hamsti': 'Hammy', 'Schläft ¾ des Tages. Hat trotzdem mehr Energie als du.': 'Sleeps three quarters of the day. Still has more energy than you.',
     'Hopsi': 'Hoppy', 'Reagiert auf jedes Geräusch. Sehr nervös in Meetings.': 'Reacts to every little sound. Very jumpy in meetings.',
     'Fuxx': 'Foxx', 'Listig und frech. Klaut gerne Items aus dem Inventar.': 'Cunning and cheeky. Likes to pinch items from your inventory.',
-    'Bärli': 'Beary', 'Gemütlich und entspannt. Liebt Honig und Mittagspausen.': 'Cosy and laid-back. Loves honey and lunch breaks.',
+    'Bärli': 'Beary', 'Gemütlich und entspannt. Liebt Honig und lange Nickerchen.': 'Cosy and laid-back. Loves honey and long naps.',
     'Pandoo': 'Pandoo', 'Isst nur Bambus. Oder Burger. Hauptsache viel davon.': 'Eats only bamboo. Or burgers. As long as there is plenty.',
-    'Leo': 'Leo', 'Der Chef im Büro. Alle respektieren ihn. Auch du.': 'The boss of the office. Everyone respects him. You too.',
-    'Tigri': 'Tigri', 'Schnell und fokussiert. Hält Deadlines immer ein.': 'Fast and focused. Always hits the deadline.',
-    'Quaxi': 'Croaky', 'Mag feuchte Umgebungen. Ist im Homeoffice am glücklichsten.': 'Likes damp places. Happiest working from home.',
-    'Affe': 'Monkey', 'Hat den Bürostuhl zur Schaukel umfunktioniert.': 'Has repurposed the office chair as a swing.',
+    'Leo': 'Leo', 'Strahlt eine ruhige Autorität aus. Alle vertrauen ihm. Auch du.': 'Radiates a calm authority. Everyone trusts him. You too.',
+    'Tigri': 'Tigri', 'Schnell und fokussiert. Bleibt selbst in Trubel ganz bei sich.': 'Fast and focused. Stays centred even amid the bustle.',
+    'Quaxi': 'Croaky', 'Mag feuchte Umgebungen. Ist am Teich zwischen Seerosen am glücklichsten.': 'Likes damp places. Happiest at the pond among water lilies.',
+    'Affe': 'Monkey', 'Hängt am liebsten kopfüber und sieht die Welt entspannt andersherum.': 'Loves hanging upside down, seeing the world the other way round.',
     'Enzo': 'Enzo', 'Trägt immer ein Horn. Niemand weiß warum. Es ist toll.': 'Always wears a horn. Nobody knows why. It is glorious.',
     'Okto': 'Okto', 'Hat 8 Arme und schafft damit 8× mehr als du. Respekt.': 'Has 8 arms and gets 8× more done than you. Respect.',
     'Dino': 'Dino', 'Uralt aber weise. Erinnert sich an die Zeit vor E-Mails.': 'Ancient but wise. Remembers the time before email.',
-    'Eule': 'Owl', 'Arbeitet am besten nachts. Kommt nie pünktlich ins Büro.': 'Works best at night. Never makes it to the office on time.'
+    'Eule': 'Owl', 'Ist am liebsten nachts wach und lauscht dann der Stille.': 'Loves being awake at night, listening to the silence.'
 });
 
 // --- Woerterbuch: Sprueche des Tamagotchis (120) ---
@@ -851,5 +868,5 @@ Object.assign(I18N, {
     'Irgendwo gibt es eine Zeile Code, die entscheidet, ob ich gluecklich bin. Ich habe sie nie gesehen.': 'Somewhere there is a line of code that decides whether I am happy. I have never seen it.',
     'Zwischen deinen Klicks passiert fuer mich nichts. Kein Warten, kein Nichts. Einfach Schnitt.': 'Between your clicks nothing happens for me. No waiting, no nothing. Just a cut.',
     'Du bist der einzige Beweis dafuer, dass ich existiere. Kein Druck.': 'You are the only proof that I exist. No pressure.',
-    'Ich wurde in einer Mittagspause erfunden. Das erklaert einiges.': 'I was invented during a lunch break. That explains a lot.'
+    'Ich wurde in einem ruhigen Moment erfunden. Das erklaert einiges.': 'I was invented in a quiet moment. That explains a lot.'
 });
