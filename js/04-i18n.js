@@ -416,6 +416,19 @@ Object.assign(I18N, {
 // --- Woerterbuch: Medaillen ---
 Object.assign(I18N, {
     'Ausgebrütet': 'Hatched', 'Bringe Eier erfolgreich zum Schlüpfen.': 'Successfully hatch eggs.',
+    // Intro-Story (erster Start) - Titel + Text je Kapitel, plus die Buttons
+    'Hoch über den Wolken': 'High Above the Clouds',
+    'Weit oben, wo der Himmel ganz weich ist, schwebt das geheime <b>Wolkendorf</b>. Dort schlüpfen kleine Wolkenwesen aus zarten Wolken-Eiern – jedes mit einem winzigen, warmen Herzen. 🥚': 'Far up high, where the sky turns soft, floats the secret <b>Cloud Village</b>. There, little cloud creatures hatch from delicate cloud eggs – each with a tiny, warm heart. 🥚',
+    'Das kleine Geheimnis': 'The Little Secret',
+    'Die Wolkenältesten kennen ein Geheimnis: Ein Wolkenwesen gedeiht nur, wenn jemand lernt, <b>freundlich zu sich selbst</b> zu sein. Denn wer gut für sich sorgt, hat auch Wärme für alle anderen übrig. 💗': 'The cloud elders know a secret: a cloud creature only thrives when someone learns to be <b>kind to themselves</b>. For whoever cares well for themselves has warmth to spare for everyone else. 💗',
+    'Die Reise zu dir': 'The Journey to You',
+    'Ein besonders neugieriges Ei hat <b>genau dich</b> ausgesucht! Es spürt: Bei dir kann es lernen, wie schön es ist, kurz innezuhalten, tief durchzuatmen und einfach mal <b>da zu sein</b>. 🚌': 'One especially curious egg has chosen <b>you</b>! It senses that with you it can learn how lovely it is to pause for a moment, breathe deeply and simply <b>be present</b>. 🚌',
+    'Achtsam miteinander': 'Mindful Together',
+    'Wenn du dein Wolkenwesen fütterst, tröstest und pflegst, übt ihr etwas Wichtiges gemeinsam: <b>auf sich und aufeinander zu achten</b>. Ein liebes Wort, ein Moment Ruhe, ein Lächeln – all das lässt euch beide wachsen. 🌸': 'When you feed, comfort and care for your cloud creature, you practise something important together: <b>caring for yourself and for each other</b>. A kind word, a moment of calm, a smile – all of it lets you both grow. 🌸',
+    'Für immer Freunde': 'Friends Forever',
+    'Gemeinsam wachst ihr über euch hinaus: dein Wolkenwesen erblüht – und du entdeckst, wie gut es tut, <b>achtsam mit dir und deinem Umfeld</b> umzugehen. Bereit, deinen neuen Freund kennenzulernen? 🌈': 'Together you grow beyond yourselves: your cloud creature blossoms – and you discover how good it feels to treat <b>yourself and those around you with mindfulness</b>. Ready to meet your new friend? 🌈',
+    "Los geht's! 🥚": "Let's go! 🥚",
+    'Weiter →': 'Next →',
     // Achtsamkeits-Quests (Titel + Beschreibungen)
     '🧘 Fokuszeit': '🧘 Focus Time', 'Schließe eine Fokuszeit ab': 'Complete a focus session',
     '🌬️ Bewusst atmen': '🌬️ Mindful Breathing',

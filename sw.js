@@ -2,13 +2,13 @@
 // Strategie: cache-first. Die App ist komplett statisch, es gibt keinen Server
 // und keine API. Alles wird bei der Installation gecacht und danach offline
 // ausgeliefert. Spielstaende liegen ausschliesslich im localStorage.
-const CACHE = 'pausentama-v2.59.0';
+const CACHE = 'pausentama-v2.61.0';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/fonts.css',
-  './css/styles.css',
+  './fonts.css',
+  './styles.css',
   './js/00-sprites.js',
   './js/01-storage-core.js',
   './js/02-data-shop.js',
@@ -27,7 +27,7 @@ const ASSETS = [
   './icon-512.png',
   './icon-maskable-512.png',
   './apple-touch-icon.png',
-  './assets/background_screen.jpg',
+  './background_screen.jpg',
   // --- Tier-Sprites (alle Spezies x Lebensphasen x Zustände) ---
   './assets/sprites/affe_engel.png',
   './assets/sprites/affe_erwachsen.png',

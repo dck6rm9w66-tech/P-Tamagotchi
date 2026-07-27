@@ -3,27 +3,27 @@ const STORY_CHAPTERS = [
     {
         scene: '☁️🥚', minis: [{e:'✨',x:'18%',y:'20%',d:'0s'},{e:'⭐',x:'78%',y:'28%',d:'0.6s'},{e:'✨',x:'70%',y:'72%',d:'1.1s'}],
         title: 'Hoch über den Wolken',
-        text: 'Weit oben, wo der Himmel ganz weich ist, schwebt das geheime <b>Wolkendorf</b>. Dort schlüpfen kleine Wolkenwesen aus zarten Wolken-Eiern. 🥚'
+        text: 'Weit oben, wo der Himmel ganz weich ist, schwebt das geheime <b>Wolkendorf</b>. Dort schlüpfen kleine Wolkenwesen aus zarten Wolken-Eiern – jedes mit einem winzigen, warmen Herzen. 🥚'
     },
     {
-        scene: '😴💭', minis: [{e:'💤',x:'20%',y:'25%',d:'0s'},{e:'☁️',x:'75%',y:'30%',d:'0.5s'},{e:'💭',x:'72%',y:'70%',d:'1s'}],
-        title: 'Die müden Träumchen',
-        text: 'Die Wolkenwesen schicken den gestressten Menschen unten auf der Erde schöne <b>Pausen-Träume</b>. Doch das macht sie schrecklich müde – sie brauchen jemanden, der sich um sie kümmert. 💭'
+        scene: '🌱💗', minis: [{e:'💧',x:'20%',y:'25%',d:'0s'},{e:'☁️',x:'75%',y:'30%',d:'0.5s'},{e:'✨',x:'72%',y:'70%',d:'1s'}],
+        title: 'Das kleine Geheimnis',
+        text: 'Die Wolkenältesten kennen ein Geheimnis: Ein Wolkenwesen gedeiht nur, wenn jemand lernt, <b>freundlich zu sich selbst</b> zu sein. Denn wer gut für sich sorgt, hat auch Wärme für alle anderen übrig. 💗'
     },
     {
         scene: '🚌☁️', minis: [{e:'✨',x:'16%',y:'22%',d:'0s'},{e:'☁️',x:'80%',y:'26%',d:'0.7s'},{e:'⭐',x:'22%',y:'74%',d:'1.2s'}],
         title: 'Die Reise zu dir',
-        text: 'Ein besonders neugieriges Ei hat <b>genau dich</b> ausgesucht! Der Wolken-Bus bringt es in deinen Pausen zu dir – damit du zwischendurch kurz innehältst, Wasser trinkst und dich bewegst. 🚌'
+        text: 'Ein besonders neugieriges Ei hat <b>genau dich</b> ausgesucht! Es spürt: Bei dir kann es lernen, wie schön es ist, kurz innezuhalten, tief durchzuatmen und einfach mal <b>da zu sein</b>. 🚌'
     },
     {
-        scene: '❤️🍔', minis: [{e:'🎮',x:'18%',y:'24%',d:'0s'},{e:'🛁',x:'78%',y:'26%',d:'0.6s'},{e:'💊',x:'74%',y:'72%',d:'1.1s'}],
-        title: 'Deine wichtige Aufgabe',
-        text: 'Die Erdenluft ist anstrengend, darum darf es nur <b>30 Minuten pro Tag</b> bleiben. In dieser Zeit brauchst du es: füttern, spielen, sauber halten und pflegen, damit es stark und glücklich heranwächst. ❤️'
+        scene: '🤗🌸', minis: [{e:'💌',x:'18%',y:'24%',d:'0s'},{e:'🫧',x:'78%',y:'26%',d:'0.6s'},{e:'💚',x:'74%',y:'72%',d:'1.1s'}],
+        title: 'Achtsam miteinander',
+        text: 'Wenn du dein Wolkenwesen fütterst, tröstest und pflegst, übt ihr etwas Wichtiges gemeinsam: <b>auf sich und aufeinander zu achten</b>. Ein liebes Wort, ein Moment Ruhe, ein Lächeln – all das lässt euch beide wachsen. 🌸'
     },
     {
         scene: '🌈🤝', minis: [{e:'✨',x:'20%',y:'22%',d:'0s'},{e:'⭐',x:'76%',y:'28%',d:'0.5s'},{e:'💚',x:'72%',y:'70%',d:'1s'}],
         title: 'Für immer Freunde',
-        text: 'Gemeinsam wachst ihr über euch hinaus: dein Wolkenwesen gedeiht – und du machst gesündere, achtsamere Pausen. Bereit, deinen neuen Freund kennenzulernen? 🌈'
+        text: 'Gemeinsam wachst ihr über euch hinaus: dein Wolkenwesen erblüht – und du entdeckst, wie gut es tut, <b>achtsam mit dir und deinem Umfeld</b> umzugehen. Bereit, deinen neuen Freund kennenzulernen? 🌈'
     }
 ];
 let storyIndex = 0;
@@ -39,10 +39,12 @@ function renderStoryChapter() {
     let sceneEl = document.getElementById('storyScene');
     let minis = (c.minis || []).map(m => `<span class="s-mini" style="left:${m.x}; top:${m.y}; animation-delay:${m.d};">${m.e}</span>`).join('');
     sceneEl.innerHTML = `${minis}<span class="s-emoji">${c.scene}</span>`;
-    document.getElementById('storyTitle').innerText = c.title;
-    document.getElementById('storyText').innerHTML = c.text;
+    // Titel und Text laufen durch t(), damit die Story auch auf Englisch
+    // erscheint. Die Uebersetzungen stehen in js/04-i18n.js (I18N).
+    document.getElementById('storyTitle').innerText = t(c.title);
+    document.getElementById('storyText').innerHTML = t(c.text);
     document.getElementById('storyDots').innerHTML = STORY_CHAPTERS.map((_, i) => `<div class="story-dot ${i === storyIndex ? 'active' : ''}"></div>`).join('');
-    document.getElementById('storyBtn').innerText = (storyIndex === STORY_CHAPTERS.length - 1) ? "Los geht's! 🥚" : 'Weiter →';
+    document.getElementById('storyBtn').innerText = (storyIndex === STORY_CHAPTERS.length - 1) ? t("Los geht's! 🥚") : t('Weiter →');
     let textEl = document.getElementById('storyText');
     sceneEl.classList.remove('story-anim-in'); textEl.classList.remove('story-anim-in');
     void sceneEl.offsetWidth;
