@@ -2,7 +2,7 @@
 // Strategie: cache-first. Die App ist komplett statisch, es gibt keinen Server
 // und keine API. Alles wird bei der Installation gecacht und danach offline
 // ausgeliefert. Spielstaende liegen ausschliesslich im localStorage.
-const CACHE = 'pausentama-v2.64.0';
+const CACHE = 'pausentama-v2.65.0';
 const ASSETS = [
   './',
   './index.html',
@@ -283,7 +283,45 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // Robustes Vorladen: Statt cache.addAll() (atomar - EINE fehlgeschlagene
+  // Datei laesst die GESAMTE Installation scheitern und nichts wird gecacht)
+  // werden die Dateien EINZELN geladen. So bleibt die App auch dann offline
+  // nutzbar, wenn mal eine Ressource kurz nicht erreichbar war. Der Fortschritt
+  // wird an alle offenen Seiten gemeldet, damit der Preloader ihn anzeigen kann.
+  e.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    const total = ASSETS.length;
+    let done = 0;
+
+    async function postProgress() {
+      const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+      for (const client of clients) {
+        client.postMessage({ type: 'cache-progress', done, total });
+      }
+    }
+
+    // In kleinen Gruppen parallel laden - schneller als seriell, aber schonend.
+    const BATCH = 12;
+    for (let i = 0; i < total; i += BATCH) {
+      const slice = ASSETS.slice(i, i + BATCH);
+      await Promise.all(slice.map(async (url) => {
+        try {
+          // cache: 'reload' erzwingt frische Kopien statt evtl. veralteter
+          // Browser-HTTP-Cache-Eintraege.
+          const res = await fetch(new Request(url, { cache: 'reload' }));
+          if (res && (res.ok || res.type === 'opaque')) {
+            await cache.put(url, res);
+          }
+        } catch (err) {
+          // Einzelne Fehlschlaege werden toleriert - die Datei wird spaeter
+          // beim ersten Zugriff nachgeladen (siehe fetch-Handler).
+        }
+        done++;
+      }));
+      await postProgress();
+    }
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (e) => {
@@ -292,6 +330,24 @@ self.addEventListener('activate', (e) => {
       .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
+});
+
+// Die Seite kann fragen, wie viele der ASSETS bereits im Cache liegen.
+// Damit weiss der Preloader auch bei einem schon halb gefuellten Cache
+// (z.B. zweiter Start waehrend der Installation) den echten Stand.
+self.addEventListener('message', (e) => {
+  if (!e.data || e.data.type !== 'query-cache') return;
+  e.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    const keys = await cache.keys();
+    const port = e.ports && e.ports[0];
+    const payload = { type: 'cache-status', done: keys.length, total: ASSETS.length };
+    if (port) port.postMessage(payload);
+    else {
+      const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+      for (const client of clients) client.postMessage(payload);
+    }
+  })());
 });
 
 self.addEventListener('fetch', (e) => {
