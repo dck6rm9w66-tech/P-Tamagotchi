@@ -577,7 +577,7 @@ function render() {
         return;
     }
 
-    let size = pet.stage === 0 ? 25 : (pet.stage === 1 ? 30 : (pet.stage === 2 ? 35 : (pet.stage === 3 ? 42 : 48)));
+    let size = pet.stage === 0 ? 25 : (pet.stage === 1 ? 30 : (pet.stage === 2 ? 35 : (pet.stage === 3 ? 42 : (pet.stage === 4 ? 48 : 48))));
     let sizeStyle = `font-size:${size}px;`;
     let walkAnim = pet.stage > 0 && !isActuallySleeping && !pet.isSick && !pet.misbehaving && !pet.isDeparted && !isDoomscrolling && !isCrash ? `transform: scaleX(${pet.facingRight ? -1 : 1}) translateY(${pet.activeSeconds % 2 === 0 ? -2 : 2}px)` : `transform: scaleX(${pet.facingRight ? -1 : 1})`;
 

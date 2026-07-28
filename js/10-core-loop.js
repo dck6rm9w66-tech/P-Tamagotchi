@@ -38,6 +38,14 @@ function init() {
         let saved = safeGetItem('tama_save_v6');
         if(saved) {
             pet = JSON.parse(saved);
+            // Entwicklungsstufe robust normalisieren: In manchen Speicherstaenden
+            // kann stage als String ("3") vorliegen (dann scheitern die strict-
+            // Vergleiche === und die Stufe wird falsch dargestellt), fehlen ganz
+            // (sehr alte Backups) oder ausserhalb 0..5 liegen. Hier einmalig zu
+            // einer sauberen Ganzzahl im gueltigen Bereich machen.
+            let st = parseInt(pet.stage, 10);
+            if (isNaN(st)) st = 0;
+            pet.stage = Math.max(0, Math.min(5, st));
             // Retrofit new vars for old saves
             if(pet.id === undefined) pet.id = generateId(); 
             if(pet.energy === undefined) pet.energy = 100;
