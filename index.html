@@ -150,12 +150,18 @@
         navigator.serviceWorker.register('./sw.js').catch(function () {});
 
         // Fortschrittsmeldungen des Service Workers waehrend des Cachens.
+        var lastChange = Date.now();
         navigator.serviceWorker.addEventListener('message', function (e) {
             if (!e.data) return;
             if (e.data.type === 'cache-progress' || e.data.type === 'cache-status') {
                 if (e.data.total > 0) {
-                    setPct(e.data.done / e.data.total * 100);
-                    if (e.data.done >= e.data.total) hide();
+                    var pct = e.data.done / e.data.total * 100;
+                    if (pct > lastPct) lastChange = Date.now();   // Fortschritt -> Uhr zuruecksetzen
+                    setPct(pct);
+                    // Fertig, sobald der SW die Installation abgeschlossen meldet
+                    // ODER praktisch alles im Cache ist. Der Rest (wenige Dateien)
+                    // wird bei Bedarf nachgeladen - darauf muss niemand warten.
+                    if (e.data.installDone || e.data.done >= e.data.total || pct >= 98) hide();
                 }
             }
         });
@@ -176,6 +182,12 @@
             var poll = setInterval(function () {
                 if (hidden) { clearInterval(poll); return; }
                 queryStatus();
+                // Stagnations-Erkennung: Steht der Fortschritt >3,5s still und
+                // sind wir schon ueber 80%, laeuft im Hintergrund vermutlich nur
+                // noch das Nachladen einzelner Dateien (oder ein bereits
+                // installierter SW meldet einen leicht unvollstaendigen Cache).
+                // Dann nicht bis zum 12s-Timeout warten, sondern freigeben.
+                if (lastPct >= 80 && (Date.now() - lastChange) > 3500) hide();
             }, 800);
         });
 
