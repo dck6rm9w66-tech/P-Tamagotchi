@@ -155,23 +155,32 @@ function cleanupExpiredBuffs() {
 
 function isBuffCurrentlyActive(id) {
     if (!pet || !pet.buffs) return false;
+    // Zentrale Regel: Ein zeitbasierter Buff gilt nur als aktiv, solange seine
+    // ECHTZEIT-Frist (buffExpiries) noch laeuft. Frueher pruefte das hier
+    // pet.activeSeconds - diese Uhr pausiert aber, wenn die App im Hintergrund
+    // ist, waehrend die Buff-Leiste in Echtzeit ablief. Ergebnis: Countdown
+    // vorbei, Effekt visuell aber noch da (Feuer, Inventar-Badge, Filter).
+    // Wir pruefen jetzt beide Bedingungen gemeinsam, damit Anzeige, Wirkung und
+    // visueller Effekt exakt gleichzeitig enden.
+    let e = buffExpiries[id];
+    let realOver = !!(e && e.expiry && e.expiry <= Date.now());
     switch (id) {
         case 'mystery_meat':     return !!(buffExpiries[id] && buffExpiries[id].expiry > Date.now());
-        case 'jitter_drink':     return !!(pet.buffs.jitteryUntil && pet.activeSeconds < pet.buffs.jitteryUntil);
+        case 'jitter_drink':     return !realOver && !!(pet.buffs.jitteryUntil && pet.activeSeconds < pet.buffs.jitteryUntil);
         case 'candy_overload':   return !!(pet.buffs.candyPlays && pet.buffs.candyPlays > 0);
-        case 'cookie':           return !!(pet.buffs.happy && pet.activeSeconds < pet.buffs.happy);
+        case 'cookie':           return !realOver && !!(pet.buffs.happy && pet.activeSeconds < pet.buffs.happy);
         case 'shot':             return !!(buffExpiries[id] && buffExpiries[id].expiry > Date.now());
-        case 'doomscroll':       return !!(pet.buffs.doomscrollUntil && pet.activeSeconds < pet.buffs.doomscrollUntil);
+        case 'doomscroll':       return !realOver && !!(pet.buffs.doomscrollUntil && pet.activeSeconds < pet.buffs.doomscrollUntil);
         case 'party':            return !!(pet.buffs.noSleepToday);
         case 'shiny':            return !!(pet.buffs.noDirtToday);
-        case 'energy':           return !!(pet.buffs.energyUntil && pet.activeSeconds < pet.buffs.energyUntil);
-        case 'social':           return !!(pet.buffs.socialUntil && pet.activeSeconds < pet.buffs.socialUntil);
+        case 'energy':           return !realOver && !!(pet.buffs.energyUntil && pet.activeSeconds < pet.buffs.energyUntil);
+        case 'social':           return !realOver && !!(pet.buffs.socialUntil && pet.activeSeconds < pet.buffs.socialUntil);
         case 'superfood':        return !!(pet.buffs.superfoodToday);
-        case 'maryjane':         return !!(pet.buffs.mjUntil && pet.activeSeconds < pet.buffs.mjUntil);
-        case 'double_happy':     return !!(pet.buffs.doubleHappyUntil && pet.activeSeconds < pet.buffs.doubleHappyUntil);
-        case 'love_arrow':       return !!(pet.buffs.loveArrowUntil && pet.activeSeconds < pet.buffs.loveArrowUntil);
+        case 'maryjane':         return !realOver && !!(pet.buffs.mjUntil && pet.activeSeconds < pet.buffs.mjUntil);
+        case 'double_happy':     return !realOver && !!(pet.buffs.doubleHappyUntil && pet.activeSeconds < pet.buffs.doubleHappyUntil);
+        case 'love_arrow':       return !realOver && !!(pet.buffs.loveArrowUntil && pet.activeSeconds < pet.buffs.loveArrowUntil);
         case 'bad_influence':    return !!(pet.buffs.badInfluence);
-        case 'boredom_curse':    return !!(pet.buffs.boredUntil && pet.activeSeconds < pet.buffs.boredUntil);
+        case 'boredom_curse':    return !realOver && !!(pet.buffs.boredUntil && pet.activeSeconds < pet.buffs.boredUntil);
         case 'sm_addiction':     return !!(pet.buffs.smAddiction);
         case 'existential_void': return !!(pet.buffs.existentialVoid);
         case 'gaslighting':      return !!(pet.buffs.gaslighting);
@@ -179,9 +188,9 @@ function isBuffCurrentlyActive(id) {
         case 'pixel_acne':       return !!(pet.buffs.pixelAcne);
         case 'sleepwalker':      return !!(pet.buffs.sleepwalker);
         case 'stomach_upset_2':  return !!(pet.buffs.stomachUpset2);
-        case 'spicy_ramen':      return !!(pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil);
-        case 'dance_mat':        return !!(pet.buffs.danceUntil && pet.activeSeconds < pet.buffs.danceUntil);
-        case 'personal_dj':      return !!(pet.buffs.djUntil && pet.activeSeconds < pet.buffs.djUntil);
+        case 'spicy_ramen':      return !realOver && !!(pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil);
+        case 'dance_mat':        return !realOver && !!(pet.buffs.danceUntil && pet.activeSeconds < pet.buffs.danceUntil);
+        case 'personal_dj':      return !realOver && !!(pet.buffs.djUntil && pet.activeSeconds < pet.buffs.djUntil);
         default:
             // Multiplikator-Booster: aktiv, wenn der Kategorie-Slot läuft UND exakt dieser Faktor gesetzt ist
             if (MULT_META[id]) {
@@ -238,6 +247,10 @@ function getBuffTimerHtml(id) {
 }
 
 function updateAllCountdowns() {
+    // Bei jedem Tick abgelaufene Buffs entfernen. So enden Countdown, Badge und
+    // der visuelle Effekt ueber der Huelle (z.B. Feuer) gemeinsam, sobald die
+    // Echtzeit-Frist vorbei ist - auch wenn gerade kein Spiel-Tick lief.
+    cleanupExpiredBuffs();
     document.querySelectorAll('.buff-timer-block').forEach(block => {
         let id  = block.dataset.itemId;
         let dur = ITEM_DURATIONS[id];
@@ -615,6 +628,9 @@ function spinWheel() {
 
 function openShopModal() {
     playSound('select');
+    // Abgelaufene Buffs zuerst aufraeumen, damit Inventar-Badges und Timer
+    // nicht faelschlich noch als aktiv erscheinen.
+    cleanupExpiredBuffs();
     updateCoinDisplay();
     switchShopTab('shop');
     document.getElementById('shopModal').style.display = 'flex';

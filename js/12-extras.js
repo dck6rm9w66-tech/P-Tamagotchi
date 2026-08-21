@@ -589,7 +589,9 @@ function render() {
 
     let bubbleHtml = (bubble && !pet.isDeparted && !isActuallySleeping && !isCrash) ? `<div class="thought-bubble">${bubble}</div>` : "";
     let doomscrollHtml = (isDoomscrolling && !isActuallySleeping) ? `<div style="position:absolute; bottom:0px; right:-10px; font-size:0.5em; z-index:25;">📱</div>` : "";
-    let isFireBreathing = (pet.buffs && pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil);
+    let isFireBreathing = (typeof isBuffCurrentlyActive === 'function')
+        ? isBuffCurrentlyActive('spicy_ramen')
+        : (pet.buffs && pet.buffs.fireUntil && pet.activeSeconds < pet.buffs.fireUntil);
     let fireHtml = (isFireBreathing && !isActuallySleeping && !pet.isDeparted) ? `<div style="position:absolute; top:35%; right:-14px; font-size:0.6em; z-index:25; animation: firePuff 0.5s ease-in-out infinite;">🔥</div>` : "";
 
     if(state.view === 'animating') {
