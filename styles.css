@@ -94,16 +94,21 @@ body {
     content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     border-radius: inherit; pointer-events: none; z-index: 1;
     background-image: url("./assets/shell_normal.jpg");
-    background-size: 140% 140%;
+    /* Die Map hat jetzt das Ei-Seitenverhaeltnis (1040x1520 = 4x von 260x380)
+       und deckt die Huelle formfuellend ab - keine Kachelung/Streckung mehr. */
+    background-size: cover;
     background-position: center;
-    opacity: 0.55;
-    /* Die Struktur wird dort sichtbarer, wo das Licht schraeg einfaellt. */
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    /* Struktur ueberall sichtbar, im Lichtbereich zusaetzlich verstaerkt. Die
+       Maske laesst auch abseits des Lichts noch genug Textur stehen (Minimum
+       0.5), damit die Gebrauchsspuren deutlich erkennbar bleiben. */
     -webkit-mask-image: radial-gradient(circle at var(--light-x, 25%) var(--light-y, 20%),
-        rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 38%, rgba(0,0,0,0.28) 72%);
+        rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 45%, rgba(0,0,0,0.5) 85%);
     mask-image: radial-gradient(circle at var(--light-x, 25%) var(--light-y, 20%),
-        rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 38%, rgba(0,0,0,0.28) 72%);
+        rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 45%, rgba(0,0,0,0.5) 85%);
     transition: -webkit-mask-image 0.12s ease-out, mask-image 0.12s ease-out;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: overlay;
 }
 
 /* Zufaelliges Hintergrundmuster mit dezentem Parallax. Fuellt den GESAMTEN
