@@ -52,11 +52,19 @@ body {
         inset 10px 10px 20px rgba(255,255,255,0.6);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     background-color: #f1f2f6;
+    /* Eigener Verrechnungs-Kontext: Der overlay-Modus von Glanzlicht und
+       Normalmap darf NUR die Huellen-Ebenen mischen, nicht mit dem
+       Parallax-Hintergrund oder dem Body dahinter durchschlagen. */
+    isolation: isolate;
     transition: background 0.3s, box-shadow 0.12s ease-out;
 }
 
-/* Haupt-Glanzlicht: eine kleine, helle Reflexion, die der Lichtquelle folgt.
-   Position kommt aus --light-x / --light-y (in %). Fallback: oben links. */
+/* Haupt-Glanzlicht: eine kleine, helle Reflexion (plus Gegenschatten), die der
+   Lichtquelle folgt. Position aus --light-x / --light-y (in %). Fallback: oben
+   links. Ebenenmodus "overlay" (dt. "Ineinanderkopieren"): So werden Licht und
+   Schatten MIT der darunterliegenden Normalmap-Textur verrechnet, statt sie
+   flach zu uebermalen - die Kratzer/Gebrauchsspuren blitzen im Licht auf und
+   vertiefen sich im Schatten. Liegt UEBER der Normalmap (z-index 2 > 1). */
 .device-face::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit;
     background:
@@ -65,6 +73,7 @@ body {
         radial-gradient(circle at calc(100% - var(--light-x, 25%)) calc(100% - var(--light-y, 20%)),
             rgba(0,0,0,0.22) 0%, rgba(0,0,0,0) 48%);
     pointer-events: none; z-index: 2;
+    mix-blend-mode: overlay;
     transition: background 0.1s ease-out;
 }
 
