@@ -94,8 +94,10 @@
     // gamma: Links/Rechts-Neigung (-90..90), beta: Vor/Zurück (-180..180).
     // Neigt man das Gerät nach rechts, "läuft" das Licht nach links usw.
     function onOrientation(e) {
-        if (e.gamma === null && e.beta === null) return;
-        motionActive = true;
+        // Nur reagieren, wenn wenigstens ein Wert echte Daten liefert.
+        if ((e.gamma === null || e.gamma === undefined) &&
+            (e.beta === null || e.beta === undefined)) return;
+        motionActive = true;   // ab jetzt hat der Sensor Vorrang vor der Uhrzeit
         const g = Math.max(-45, Math.min(45, e.gamma || 0));   // links/rechts
         const b = Math.max(-45, Math.min(45, (e.beta || 0) - 35)); // vor/zurück, 35° Halte-Ruhelage
         // In %-Position umrechnen: Ruhelage = Mitte-oben.
@@ -106,52 +108,84 @@
 
     // iOS 13+ verlangt eine ausdrückliche Freigabe des Bewegungssensors, die
     // nur aus einer echten Nutzergeste heraus erfragt werden darf. Wir hängen
-    // die Anfrage daher an den ersten Tap auf die Hülle. Schlägt sie fehl oder
-    // gibt es keinen Sensor, bleibt es beim Maus-/Standardverhalten.
+    // die Anfrage an den ersten Tap IRGENDWO auf die Seite (nicht nur auf die
+    // Hülle - die kann von Onboarding/Modals verdeckt sein). Schlägt sie fehl
+    // oder gibt es keinen Sensor, bleibt es beim Uhrzeit-/Standardverhalten.
     let motionRequested = false;
+    let orientationBound = false;
+
+    function bindOrientation() {
+        if (orientationBound) return;
+        orientationBound = true;
+        window.addEventListener('deviceorientation', onOrientation, true);
+    }
+
     function requestMotionPermission() {
         if (motionRequested) return;
         motionRequested = true;
         try {
             if (typeof DeviceOrientationEvent !== 'undefined' &&
                 typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS 13+
                 DeviceOrientationEvent.requestPermission().then(function (state) {
                     if (state === 'granted') {
-                        window.addEventListener('deviceorientation', onOrientation, true);
+                        bindOrientation();
+                    } else {
+                        motionRequested = false;   // Ablehnung -> spaeterer Tap darf erneut fragen
                     }
-                }).catch(function () { /* abgelehnt -> Maus/Standard */ });
-            } else if ('DeviceOrientationEvent' in window) {
-                // Android / ältere iOS: kein Permission-Prompt nötig.
-                window.addEventListener('deviceorientation', onOrientation, true);
+                }).catch(function () {
+                    motionRequested = false;
+                });
+            } else {
+                // Android / ältere iOS: kein Prompt nötig, direkt lauschen.
+                bindOrientation();
             }
-        } catch (err) { /* ignorieren */ }
+        } catch (err) {
+            motionRequested = false;
+        }
     }
 
     function init() {
         const d = el();
         if (!d) return;
 
-        // Feiner Zeiger (echte Maus / Desktop) -> uhrzeitgesteuerter Sonnenbogen.
-        // Grobe Zeiger (Touch) bekommen den Neigungssensor, sobald sie die Hülle
-        // antippen.
-        const fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
-        if (fine) {
+        // Geräteklasse bestimmen. Touch-Fähigkeit + grober Zeiger deutet auf
+        // Smartphone/Tablet -> Neigungssensor. Sonst Desktop -> Uhrzeit.
+        // (Reines pointer:fine war unzuverlässig: Tablets mit Trackpad melden
+        // fine, echte Touch-Geräte manchmal beides.)
+        const hasTouch = ('ontouchstart' in window) ||
+                         (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+        const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        const hasOrientation = ('DeviceOrientationEvent' in window);
+        const isMobile = hasOrientation && (hasTouch || coarse);
+
+        if (isMobile) {
+            // --- Mobil: Geräteneigung ---
+            const needsPermission = typeof DeviceOrientationEvent !== 'undefined' &&
+                typeof DeviceOrientationEvent.requestPermission === 'function';
+
+            if (needsPermission) {
+                // iOS 13+: Freigabe nur aus einer Nutzergeste heraus. An den
+                // ersten Tap/Klick IRGENDWO auf der Seite hängen, damit es auch
+                // klappt, wenn die Hülle gerade verdeckt ist.
+                const askOnce = function () {
+                    requestMotionPermission();
+                };
+                window.addEventListener('touchend', askOnce, { passive: true });
+                window.addEventListener('click', askOnce);
+                // Zusätzlich direkt auf der Hülle (falls sie frei liegt).
+                d.addEventListener('touchstart', askOnce, { passive: true });
+            } else {
+                // Android / ältere iOS: sofort lauschen, kein Prompt nötig.
+                bindOrientation();
+            }
+        } else {
+            // --- Desktop: uhrzeitgesteuerter Sonnenbogen ---
             updateFromTime();                       // sofort passend zur aktuellen Zeit
-            // Alle 30 Sekunden nachfuehren - fein genug fuer eine fliessende
-            // Wanderung, ohne Ressourcen zu verbrauchen. Die weiche Annaeherung
-            // in animate() macht die Uebergaenge sanft.
-            setInterval(updateFromTime, 30000);
-            // Nach Rueckkehr in den Tab (z.B. aus dem Standby) sofort neu setzen.
+            setInterval(updateFromTime, 30000);     // alle 30 s sanft nachführen
             document.addEventListener('visibilitychange', function () {
                 if (!document.hidden) updateFromTime();
             });
-        }
-
-        // Auf Touch-Geräten die Sensor-Freigabe beim ersten Tap anfordern.
-        d.addEventListener('touchstart', requestMotionPermission, { passive: true, once: false });
-        // Android liefert Orientierung auch ohne Prompt – direkt versuchen.
-        if (!('requestPermission' in (window.DeviceOrientationEvent || {}))) {
-            requestMotionPermission();
         }
 
         // Startwerte setzen.
