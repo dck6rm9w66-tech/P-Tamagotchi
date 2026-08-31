@@ -83,6 +83,47 @@ body {
 
 .device-front { pointer-events: auto; transform: translateZ(1px); }
 
+/* Normalmap: eine lila Normal-Textur (im Stil von NormalMap-Online) traegt die
+   Richtungsinformation feiner Kratzer & Gebrauchsspuren. Ohne echtes WebGL-
+   Shading simulieren wir den Relief-Eindruck, indem die Map per soft-light/
+   overlay eingeblendet und an der Lichtposition aufgehellt wird - so blitzen
+   die Kanten dort auf, wo das Licht einfaellt, und verstaerken die Plastizitaet
+   des Glanzlichts. Liegt zwischen Grundflaeche/Rauschen (z-index 1) und
+   Glanz (::before, 2). */
+.device-front .shell-bump {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: inherit; pointer-events: none; z-index: 1;
+    background-image: url("./assets/shell_normal.jpg");
+    background-size: 140% 140%;
+    background-position: center;
+    opacity: 0.55;
+    /* Die Struktur wird dort sichtbarer, wo das Licht schraeg einfaellt. */
+    -webkit-mask-image: radial-gradient(circle at var(--light-x, 25%) var(--light-y, 20%),
+        rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 38%, rgba(0,0,0,0.28) 72%);
+    mask-image: radial-gradient(circle at var(--light-x, 25%) var(--light-y, 20%),
+        rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 38%, rgba(0,0,0,0.28) 72%);
+    transition: -webkit-mask-image 0.12s ease-out, mask-image 0.12s ease-out;
+    mix-blend-mode: soft-light;
+}
+
+/* Zufaelliges Hintergrundmuster mit dezentem Parallax. Fuellt den GESAMTEN
+   Bildschirm (position:fixed) und liegt ganz hinten (z-index 0, hinter allem).
+   Auf dem Smartphone verschiebt es sich per --parallax-x/-y (vom Sensor) leicht
+   gegen die Huellenbewegung -> Tiefeneindruck. Der grosszuegige Ueberstand
+   (-8%) sorgt dafuer, dass die Verschiebung nie einen leeren Rand freilegt.
+   Auf dem Desktop steht es ruhig, ist aber ueber die ganze Flaeche verteilt. */
+.parallax-bg {
+    position: fixed; top: -8%; left: -8%; right: -8%; bottom: -8%;
+    z-index: 0; pointer-events: none;
+    background-image: url("./assets/parallax_pattern.svg");
+    background-size: 180px 180px;
+    background-repeat: repeat;
+    opacity: 0.9;
+    transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px));
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+}
+
 /* Scharfes Glanzlicht ("Speculars"): ein kleiner, heller Fleck, der sich
    mit der Lichtquelle bewegt und der Huelle einen nassen, glaenzenden Look
    gibt. Liegt ueber allem anderen der Vorderseite. */

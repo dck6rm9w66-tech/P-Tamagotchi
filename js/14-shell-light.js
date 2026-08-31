@@ -15,10 +15,14 @@
     // Start oben links – das entspricht dem bisherigen statischen Glanz.
     let targetX = 28, targetY = 20;
     let curX = 28, curY = 20;
+    // Parallax-Verschiebung des Hintergrundmusters (px), ebenfalls geglättet.
+    let parallaxTargetX = 0, parallaxTargetY = 0;
+    let parallaxCurX = 0, parallaxCurY = 0;
     let rafPending = false;
     let motionActive = false;   // sobald Neigungsdaten kommen, hat Sensor Vorrang
 
     function el() { return document.getElementById('device'); }
+    function parallaxEl() { return document.getElementById('parallaxBg'); }
 
     // Weiche Annäherung der Ist- an die Zielwerte (Trägheit -> realistischer).
     function animate() {
@@ -40,8 +44,19 @@
         d.style.setProperty('--shadow-x', sx.toFixed(1) + 'px');
         d.style.setProperty('--shadow-y', sy.toFixed(1) + 'px');
 
+        // Parallax-Muster ebenfalls sanft nachfuehren.
+        parallaxCurX += (parallaxTargetX - parallaxCurX) * 0.18;
+        parallaxCurY += (parallaxTargetY - parallaxCurY) * 0.18;
+        const pb = parallaxEl();
+        if (pb) {
+            pb.style.setProperty('--parallax-x', parallaxCurX.toFixed(1) + 'px');
+            pb.style.setProperty('--parallax-y', parallaxCurY.toFixed(1) + 'px');
+        }
+
         // Weiterlaufen, solange Ist spürbar vom Ziel abweicht.
-        if (Math.abs(targetX - curX) > 0.2 || Math.abs(targetY - curY) > 0.2) {
+        if (Math.abs(targetX - curX) > 0.2 || Math.abs(targetY - curY) > 0.2 ||
+            Math.abs(parallaxTargetX - parallaxCurX) > 0.2 ||
+            Math.abs(parallaxTargetY - parallaxCurY) > 0.2) {
             requestAnimationFrame(animate);
             rafPending = true;
         }
@@ -104,6 +119,13 @@
         const x = 50 - (g / 45) * 42;   // 8..92
         const y = 24 - (b / 45) * 22;   // 2..46 (Licht bleibt eher oben)
         setTarget(x, y);
+
+        // Parallax: Das Hintergrundmuster verschiebt sich GEGENLAEUFIG zur
+        // Neigung (max. ~14px), sodass es tiefer zu liegen scheint als die
+        // Huelle. Dezent gehalten, damit es nur unterschwellig Tiefe erzeugt.
+        parallaxTargetX = (g / 45) * 14;
+        parallaxTargetY = (b / 45) * 10;
+        schedule();
     }
 
     // iOS 13+ verlangt eine ausdrückliche Freigabe des Bewegungssensors, die
