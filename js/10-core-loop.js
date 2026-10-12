@@ -482,7 +482,7 @@ function btnC() {
 }
 
 // --- AKTIONEN & SPIELE ---
-// Wird ein Item aus dem Inventar benutzt (z.B. aus "Events & Dating"), liegt das
+// Wird ein Item aus dem Inventar benutzt (z.B. aus "Begegnungen & Feste"), liegt das
 // Modal ueber dem Geraet - die Einblendung auf dem Display waere unsichtbar.
 // Deshalb: Ist irgendein Overlay offen, wird die Animation gepuffert und erst
 // abgespielt, sobald der Blick wieder frei ist.

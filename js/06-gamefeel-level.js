@@ -171,7 +171,7 @@ const SHOP_CATEGORY_MIN_LEVEL = {
     '🎩 Hüte & Accessoires':  4,   // Erste Kosmetik
     '🎨 Lacke & Skins':       4,   // Tiefergehende Individualisierung
     '🧪 Buffs & Substanzen': 19,   // Starke Buffs & riskante Substanzen - spaetes Spiel
-    '🎟️ Events & Dating':   14,
+    '🎟️ Begegnungen & Feste': 14,
     '🕹️ Arcade-Automaten':    5,
     '🏕️ Hobbys & Abenteuer':  8,
     '✖️ Multiplikatoren':    17,
@@ -191,7 +191,7 @@ const LEVEL_UNLOCKS = [
     { level: 10, name: '🥚 Seltene Ei-Farbe: Galaxie' },
     { level: 11, name: '🧪 Shop-Kategorie: Buffs & Substanzen' },
     { level: 12, name: '🔭 Endgame: Wolkendorf-Fernrohr & Vermächtnis' },
-    { level: 14, name: '🎟️ Shop-Kategorie: Events & Dating' },
+    { level: 14, name: '🎟️ Shop-Kategorie: Begegnungen & Feste' },
     { level: 16, name: '🥚 Seltene Ei-Farbe: Tiefsee' },
     { level: 17, name: '✖️ Shop-Kategorie: Multiplikatoren' },
     { level: 21, name: '👿 Shop-Kategorie: Debuffs & Trolle' },

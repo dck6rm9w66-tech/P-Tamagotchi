@@ -446,19 +446,23 @@ const SHOP_ITEMS = [
     { id: 'arcade_defender', cat: '🕹️ Arcade-Automaten', name: 'Defender 🚀', desc: 'Rasanter 80er-Shooter! Dein Ei fliegt durchs Weltall und ballert sich durch UFO-Schwärme. Einmalkauf, beliebig oft spielbar.', price: 1100, ticketPrice: 10, type: 'arcade', arcade: 'defender' },
 
     // === 🏕️ Hobbys & Abenteuer ===
-    { id: 'toy_ball', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Kreisel 🪀', desc: 'Lieblings-Spielzeug: +15 Laune bei jedem Spielen. Mehrfach nutzbar.', price: 200, type: 'consumable' },
-    { id: 'robot_friend', cat: '🏕️ Hobbys & Abenteuer', name: 'Roboter-Kumpel 🤖', desc: 'Ein treuer Blechfreund: +12 Laune, +3 Intelligenz. Nie mehr allein.', price: 450, type: 'consumable' },
-    { id: 'book', cat: '🏕️ Hobbys & Abenteuer', name: 'Bilderbuch 📖', desc: 'Eine gute Geschichte: +5 Intelligenz und +5 Laune.', price: 175, type: 'consumable' },
-    { id: 'instrument', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Ukulele 🎸', desc: 'Musizieren macht glücklich: +18 Laune, +2 Intelligenz und eine kleine Melodie.', price: 325, type: 'consumable' },
-    { id: 'tent', cat: '🏕️ Hobbys & Abenteuer', name: 'Abenteuer-Zelt ⛺', desc: 'Camping unterm Sternenhimmel: +20 Laune und +15 Energie durch Erholung.', price: 375, type: 'consumable' },
-    { id: 'diving_gear', cat: '🏕️ Hobbys & Abenteuer', name: 'Taucher-Set 🤿', desc: 'Abtauchen ins Wolkenmeer: +18 Laune und wäscht das Tamagotchi blitzsauber.', price: 350, type: 'consumable' },
-    { id: 'diary', cat: '🏕️ Hobbys & Abenteuer', name: 'Geheimes Tagebuch 📔', desc: 'Gedanken sortieren: +10 Laune und beruhigt (heilt leichten Stress).', price: 225, type: 'consumable' },
-    { id: 'camera', cat: '🏕️ Hobbys & Abenteuer', name: 'Sofortbild-Kamera 📸', desc: 'Schnappschuss fürs Album: +12 Laune und mit etwas Glück ein Trinkgeld-Fund (Münzen).', price: 275, type: 'consumable' },
-    // === 🎟️ Events & Dating ===
-    { id: 'dating_app', cat: '🎟️ Events & Dating', name: 'Dating-App 💖', desc: 'Swipe für 5 Münzen. 10% Match (+20 Happy), 90% Ghosting (-10 Happy).', price: 5, type: 'consumable' },
-    { id: 'casino', cat: '🎟️ Events & Dating', name: 'Casino: All-in 🎰', desc: 'Setze 50 Münzen auf Kopf/Zahl. Gewinne 100 oder verliere alles.', price: 50, type: 'consumable' },
-    { id: 'therapy', cat: '🎟️ Events & Dating', name: 'Therapie-Session 🛋️', desc: 'Kostet 20 Münzen für +25 Happy. Urteilender Therapeut inklusive.', price: 20, type: 'consumable' },
-    { id: 'tiktok', cat: '🎟️ Events & Dating', name: 'TikTok-Challenge 🕺', desc: 'Ausrüstung für 15 Münzen. 40% viral (+30 Happy), 60% Flop (-15 Happy).', price: 15, type: 'consumable' },
+    // Dauerhafte Hobbys: einmal kaufen, immer wieder ausueben (15 Min Ruhezeit).
+    // 5 Meisterstufen + Sammelalbum mit 6 Fundstuecken (siehe js/15-hobbies-events.js).
+    { id: 'toy_ball', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Kreisel 🪀', desc: 'Lerne Kreisel-Tricks – vom Looping bis zum legendären Galaxie-Wirbel. Bringt Laune.', price: 450, type: 'hobby' },
+    { id: 'robot_friend', cat: '🏕️ Hobbys & Abenteuer', name: 'Roboter-Kumpel 🤖', desc: 'Bastle mit Robo und sammle Ersatzteile – bis zum seltenen Herz-Chip. Laune & Intelligenz.', price: 750, type: 'hobby' },
+    { id: 'book', cat: '🏕️ Hobbys & Abenteuer', name: 'Bilderbuch 📖', desc: 'Lies Seite für Seite die Geschichte „Die kleine Wolke“. Intelligenz & Laune.', price: 400, type: 'hobby' },
+    { id: 'instrument', cat: '🏕️ Hobbys & Abenteuer', name: 'Wolken-Ukulele 🎸', desc: 'Entdecke 6 Melodien, die wirklich erklingen. Viel Laune.', price: 650, type: 'hobby' },
+    { id: 'tent', cat: '🏕️ Hobbys & Abenteuer', name: 'Abenteuer-Zelt ⛺', desc: 'Zelten unterm Sternenhimmel: Finde alle Sternbilder. Laune & Energie.', price: 700, type: 'hobby' },
+    { id: 'diving_gear', cat: '🏕️ Hobbys & Abenteuer', name: 'Taucher-Set 🤿', desc: 'Tauche im Wolkenmeer nach Schätzen – das Tamagotchi kommt blitzsauber zurück.', price: 600, type: 'hobby' },
+    { id: 'diary', cat: '🏕️ Hobbys & Abenteuer', name: 'Geheimes Tagebuch 📔', desc: 'Achtsam schreiben: Jede Seite stellt dir eine Frage zum Nachdenken. Laune & Energie.', price: 450, type: 'hobby' },
+    { id: 'camera', cat: '🏕️ Hobbys & Abenteuer', name: 'Sofortbild-Kamera 📸', desc: 'Foto-Spaziergänge: Das Motiv hängt von der Tageszeit ab. Mit Glück ein Trinkgeld-Fund.', price: 550, type: 'hobby' },
+    // === 🎟️ Begegnungen & Feste ===
+    // Eintrittskarten fuer kleine interaktive Erlebnisse. IDs bleiben aus
+    // Kompatibilitaetsgruenden (Inventare/Spielstaende) unveraendert.
+    { id: 'dating_app', cat: '🎟️ Begegnungen & Feste', name: 'Wolken-Picknick 🧺', desc: 'Lerne ein Wolkenwesen kennen. Lies seine Stimmung und wähle die passende Geste – 3 Herzen machen euch zu Freunden.', price: 90, type: 'consumable' },
+    { id: 'casino', cat: '🎟️ Begegnungen & Feste', name: 'Jahrmarkt-Glücksrad 🎡', desc: 'Dreh das bunte Rad: Jedes Feld gewinnt etwas – Münzen, Tickets, Laune oder mit Glück den Jackpot.', price: 70, type: 'consumable' },
+    { id: 'therapy', cat: '🎟️ Begegnungen & Feste', name: 'Lagerfeuer-Abend 🔥', desc: 'Sitz mit den Dorfbewohnern am Feuer und erzähl eine Geschichte deiner Wahl. +1 Ticket.', price: 80, type: 'consumable' },
+    { id: 'tiktok', cat: '🎟️ Begegnungen & Feste', name: 'Talentshow 🎤', desc: 'Dein Auftritt! Triff im Timing-Spiel dreimal die goldene Mitte für Standing Ovations.', price: 120, type: 'consumable' },
 
     // === ✖️ Multiplikatoren ===
     { id: 'mult_coins',    cat: '✖️ Multiplikatoren', name: 'Coin-Booster 💰 ×2',    desc: 'Verdoppelt alle T-Coin-Gewinne für 30 Min.',        price: 80, ticketPrice: 2,  type: 'consumable' },
@@ -718,7 +722,7 @@ function switchShopTab(tab) {
             if (catLocked) return;
 
             let isUnlocked = false;
-            if (item.type === 'hat' || item.type === 'arcade' || item.type === 'toy' || item.type.startsWith('unlock')) {
+            if (item.type === 'hat' || item.type === 'arcade' || item.type === 'toy' || item.type === 'hobby' || item.type.startsWith('unlock')) {
                 isUnlocked = (inventory.items[item.id] > 0);
             }
 
@@ -738,6 +742,9 @@ function switchShopTab(tab) {
                 : `<button class="shop-btn ${canAfford ? 'btn-gold' : 'btn-gray'}" onclick="${canAfford ? `buyItem('${item.id}')` : ''}" style="${ticketPrice > 0 ? 'font-size:10px;' : ''}">${priceLabel}</button>`;
 
             let timerHtml = getBuffTimerHtml(item.id);
+            // Hobbys & Feste bekommen eigene, reichere Karten
+            let rich = (typeof richShopCardHtml === 'function') ? richShopCardHtml(item, 'shop', btnHtml, timerHtml) : null;
+            if (rich) { grid.innerHTML += rich; return; }
             grid.innerHTML += `
                 <div class="shop-item" style="${timerHtml ? 'flex-direction:column;' : ''}">
                     <div class="shop-item-inner">
@@ -799,6 +806,8 @@ function switchShopTab(tab) {
                 }
 
                 let timerHtml = getBuffTimerHtml(item.id);
+                let rich = (typeof richShopCardHtml === 'function') ? richShopCardHtml(item, 'inventory', customActionsHtml, timerHtml) : null;
+                if (rich) { grid.innerHTML += rich; return; }
                 grid.innerHTML += `
                     <div class="shop-item" style="${timerHtml ? 'flex-direction:column;' : ''}">
                         <div class="shop-item-inner">
@@ -826,6 +835,7 @@ function scrollToShopCat(i) {
 
 function buyItem(id) {
     let item = SHOP_ITEMS.find(i => i.id === id);
+    if (item.type === 'hobby' && inventory.items[id] > 0) return;   // Hobbys gibt es nur einmal
     let price = item.price;
     if(pet.buffs && pet.buffs.gaslighting) price = Math.round(price * 1.1); // Gaslighting 10% mehr
     let ticketPrice = item.ticketPrice || 0;

@@ -10,7 +10,7 @@ const BACKUP_KEYS = [
     'tama_graveyard_v6', 'tama_leaderboard_v6', 'tama_graves_care',
     'tama_arcade_hi', 'tama_pomodoro',
     'tama_story_seen', 'tama_notif_seen',
-    'tama_muted', 'tama_last_backup', 'tama_lang',
+    'tama_muted', 'tama_last_backup', 'tama_lang', 'tama_hobbies',
     'tama_steps', 'tama_steps_on'
 ];
 // ================================================================

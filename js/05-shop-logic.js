@@ -179,6 +179,10 @@ function useItem(id) {
         startEightBall();
         return;
     }
+    if (item.type === 'hobby') {      // dauerhafte Hobbys: eigene Logik, kein Verbrauch
+        if (typeof useHobby === 'function') useHobby(id);
+        return;
+    }
     if (item.type === 'hat') {
         inventory.equippedHat = (inventory.equippedHat === item.id) ? null : item.id;
         playSound('select');
@@ -321,37 +325,8 @@ function useItem(id) {
             else { alert("Nur nutzloser Müll in der Lootbox."); }
         }
 
-        // Events & Dating
-        else if (id === 'dating_app') {
-            if(tCoins < 5) { alert("Kostet 5 Münzen!"); inventory.items[id] = (inventory.items[id]||0)+1; }
-            else {
-                tCoins -= 5;
-                if(Math.random() < 0.1) { pet.happiness = Math.min(100, pet.happiness + 5); playAnimation('💖 MATCH!<br>+5 Laune', 2500); }
-                else { pet.happiness = Math.max(0, pet.happiness - 2); playAnimation('👻 GHOSTED...<br>-2 Laune', 2500); }
-            }
-        }
-        else if (id === 'casino') {
-            if(tCoins < 50) { alert("Mindesteinsatz ist 50 T-Coins!"); inventory.items[id] = (inventory.items[id]||0)+1; }
-            else {
-                if(Math.random() < 0.45) { addCoins(50); playAnimation('🎰 GEWONNEN!<br>Einsatz verdoppelt!', 2500); }
-                else { tCoins -= 50; playAnimation('🎰 Alles weg!<br>-50 Münzen', 2500); }
-            }
-        }
-        else if (id === 'therapy') {
-            if(tCoins < 20) { alert("Therapie kostet 20 T-Coins!"); inventory.items[id] = (inventory.items[id]||0)+1; }
-            else {
-                tCoins -= 20; pet.happiness = Math.min(100, pet.happiness + 10);
-                playAnimation('🛋️ Therapist:<br>"Bist du mit deiner Kindheit im Reinen?"', 4000);
-            }
-        }
-        else if (id === 'tiktok') {
-            if(tCoins < 15) { alert("TikTok-Equipment kostet 15 T-Coins!"); inventory.items[id] = (inventory.items[id]||0)+1; }
-            else {
-                tCoins -= 15;
-                if(Math.random() < 0.4) { pet.happiness = Math.min(100, pet.happiness + 5); playAnimation('🕺 VIRAL!<br>+5 Laune', 2500); }
-                else { pet.happiness = Math.max(0, pet.happiness - 10); playAnimation('🤦 FLOP...<br>-10 Laune', 2500); }
-            }
-        }
+        // Begegnungen & Feste: interaktives Erlebnis im eigenen Overlay
+        else if (typeof EVENT_DEFS !== 'undefined' && EVENT_DEFS[id]) { startEvent(id); }
 
         // Altbestände
         else if (id === 'party') { pet.buffs.noSleepToday = true; pet.intelligence = Math.max(0, pet.intelligence-5); setBuffExpiry('party'); playAnimation(petG+' 🪩', 2000); }
@@ -430,21 +405,6 @@ function useItem(id) {
             pet.intelligence = Math.max(0, pet.intelligence - 3);
             pet.buffs.djUntil = pet.activeSeconds + 1800; setBuffExpiry('personal_dj');
             playSound('sparkle'); playAnimation(petG+' 🎧 Endlos-Beat!', 2500);
-        }
-
-        // === Neue Items: Hobbys & Abenteuer ===
-        else if (id === 'toy_ball') { pet.happiness = Math.min(100, pet.happiness + 15); markCareInteraction(); playSound('select'); playAnimation(petG+' 🪀 Juhu!', 2000); }
-        else if (id === 'robot_friend') { pet.happiness = Math.min(100, pet.happiness + 12); pet.intelligence += 3; markCareInteraction(); playSound('select'); playAnimation(petG+' 🤖 Beep boop!', 2000); }
-        else if (id === 'book') { pet.intelligence += 5; pet.happiness = Math.min(100, pet.happiness + 5); markCareInteraction(); playSound('select'); playAnimation(petG+' 📖 Spannend!', 2000); }
-        else if (id === 'instrument') { pet.happiness = Math.min(100, pet.happiness + 18); pet.intelligence += 2; markCareInteraction(); playSound('sparkle'); playAnimation(petG+' 🎸 Strum~', 2000); }
-        else if (id === 'tent') { pet.happiness = Math.min(100, pet.happiness + 20); pet.energy = Math.min(100, pet.energy + 15); markCareInteraction(); playSound('win'); playAnimation(petG+' ⛺ Erholung!', 2000); }
-        else if (id === 'diving_gear') { pet.happiness = Math.min(100, pet.happiness + 18); pet.isDirty = false; markCareInteraction(); playSound('win'); playAnimation(petG+' 🤿 Platsch!', 2000); }
-        else if (id === 'diary') { pet.happiness = Math.min(100, pet.happiness + 10); if (pet.buffs) pet.buffs.chronicCold = pet.buffs.chronicCold; markCareInteraction(); playSound('select'); playAnimation(petG+' 📔 Liebes Tagebuch...', 2000); }
-        else if (id === 'camera') {
-            pet.happiness = Math.min(100, pet.happiness + 12);
-            let tip = Math.random() < 0.4;
-            if (tip) { let g = addCoins(25); playSound('coin'); playAnimation(petG+' 📸 *klick*<br>+'+g+' 🪙 gefunden!', 2500); }
-            else { markCareInteraction(); playSound('select'); playAnimation(petG+' 📸 *klick*', 2000); }
         }
 
         else if (id === 'immortal') { pet.hasImmortalPotion = true; playAnimation(petG+' 🛡️', 2000); }
@@ -545,6 +505,10 @@ function clearInventoryOnDeath() {
     let keptItems = {};
     Object.values(ARCADE_META).forEach(m => {
         if (inventory.items && inventory.items[m.owned]) keptItems[m.owned] = inventory.items[m.owned];
+    });
+    // Hobbys gehoeren dem Pfleger (Fortschritt & Sammelalben) und bleiben ebenfalls.
+    SHOP_ITEMS.forEach(it => {
+        if (it.type === 'hobby' && inventory.items && inventory.items[it.id]) keptItems[it.id] = 1;
     });
     // Eigenes Bild/Skin und Hintergrundbild bleiben ebenfalls erhalten (Uploads
     // des Pflegers, keine Anschaffung des Tamagotchis). Nur der Hut wird abgelegt.
