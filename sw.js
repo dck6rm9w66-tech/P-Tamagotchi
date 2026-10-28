@@ -2,7 +2,7 @@
 // Strategie: cache-first. Die App ist komplett statisch, es gibt keinen Server
 // und keine API. Alles wird bei der Installation gecacht und danach offline
 // ausgeliefert. Spielstaende liegen ausschliesslich im localStorage.
-const CACHE = 'pausentama-v2.75.0';
+const CACHE = 'pausentama-v2.77.0';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   './js/12-extras.js',
   './js/13-boot.js',
   './js/14-shell-light.js',
+  './js/15-hobbies-events.js',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
@@ -289,19 +290,10 @@ self.addEventListener('install', (e) => {
   // Robustes Vorladen: Statt cache.addAll() (atomar - EINE fehlgeschlagene
   // Datei laesst die GESAMTE Installation scheitern und nichts wird gecacht)
   // werden die Dateien EINZELN geladen. So bleibt die App auch dann offline
-  // nutzbar, wenn mal eine Ressource kurz nicht erreichbar war. Der Fortschritt
-  // wird an alle offenen Seiten gemeldet, damit der Preloader ihn anzeigen kann.
+  // nutzbar, wenn mal eine Ressource kurz nicht erreichbar war.
   e.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     const total = ASSETS.length;
-    let done = 0;
-
-    async function postProgress() {
-      const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
-      for (const client of clients) {
-        client.postMessage({ type: 'cache-progress', done, total });
-      }
-    }
 
     // In kleinen Gruppen parallel laden - schneller als seriell, aber schonend.
     const BATCH = 12;
@@ -325,22 +317,16 @@ self.addEventListener('install', (e) => {
         } catch (err) {
           failed.push(url);   // fuer den zweiten Versuch vormerken
         }
-        done++;
       }));
-      await postProgress();
     }
 
     // Zweiter Versuch fuer alles, was beim ersten Durchgang scheiterte.
-    // Das verhindert einen dauerhaft unvollstaendigen Cache (der Grund, warum
-    // der Preloader frueher z.B. bei 86% haengen blieb).
+    // Das verhindert einen dauerhaft unvollstaendigen Cache.
     if (failed.length) {
       for (const url of failed) {
         try { await fetchToCache(url); } catch (err) {}
       }
     }
-    INSTALL_DONE = true;
-    // Abschluss zusaetzlich explizit melden, damit der Preloader sofort schliesst.
-    await postProgress();
     await self.skipWaiting();
   })());
 });
@@ -351,36 +337,6 @@ self.addEventListener('activate', (e) => {
       .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
-});
-
-// Merker, ob das Vorladen komplett durchgelaufen ist. Wird beim install-Ende
-// gesetzt. So kann die Statusabfrage "fertig" melden, auch wenn ein paar
-// einzelne Dateien fehlschlugen (die werden spaeter bei Bedarf nachgeladen) -
-// der Preloader bleibt dann nicht bei z.B. 86% haengen.
-let INSTALL_DONE = false;
-
-// Die Seite kann fragen, wie viele der ASSETS bereits im Cache liegen bzw.
-// ob die Installation abgeschlossen ist.
-self.addEventListener('message', (e) => {
-  if (!e.data || e.data.type !== 'query-cache') return;
-  e.waitUntil((async () => {
-    const cache = await caches.open(CACHE);
-    const keys = await cache.keys();
-    const port = e.ports && e.ports[0];
-    // done nie ueber total hinaus; wenn die Installation fertig ist, gilt 100%.
-    const cachedCount = Math.min(keys.length, ASSETS.length);
-    const payload = {
-      type: 'cache-status',
-      done: INSTALL_DONE ? ASSETS.length : cachedCount,
-      total: ASSETS.length,
-      installDone: INSTALL_DONE
-    };
-    if (port) port.postMessage(payload);
-    else {
-      const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
-      for (const client of clients) client.postMessage(payload);
-    }
-  })());
 });
 
 self.addEventListener('fetch', (e) => {

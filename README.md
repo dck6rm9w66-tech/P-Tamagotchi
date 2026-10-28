@@ -1,8 +1,8 @@
 # Achtsamkeits-Tamagotchi
 
-Ein Tamagotchi für die Arbeitspause. Dein Wolkenwesen besucht dich jeden Tag
+Ein Tamagotchi für mehr Achtsamkeit. Dein Wolkenwesen besucht dich jeden Tag
 für 30 Minuten aktiver Bildschirmzeit — und erinnert dich nebenbei daran,
-selbst mal aufzustehen.
+achtsam mit dir und deinem Umfeld umzugehen.
 
 Läuft vollständig im Browser, ohne Server und ohne Konto. Alle Spielstände
 liegen im `localStorage` deines Geräts.
@@ -21,9 +21,9 @@ und localStorage.
 
 ```
 index.html          Struktur der Oberfläche
-css/
-  styles.css        Gerät, Fenster, Animationen
-  fonts.css         FontAwesome-Teilmenge (eingebettet, offlinefähig)
+styles.css          Gerät, Fenster, Animationen, Licht- und Hülleneffekte
+fonts.css           FontAwesome-Teilmenge (eingebettet, offlinefähig)
+background_screen.jpg  Hintergrund des Displays
 js/
   00-sprites        Sprite-System: Zustand des Tieres -> PNG-Datei
   01-storage-core   Speicher-Helfer, IDs, Grundkonstanten, Tastatursteuerung
@@ -34,13 +34,17 @@ js/
   06-gamefeel-level Belohnungs-Animationen, Töne, Pfleger-Level, Freischaltungen
   07-arena-endgame  Arena, PvP, Mini-Bosse, Fernrohr & Vermächtnis
   08-graves-ambient Ahnengalerie, Grabpflege, Hintergrund-Ambiente, Raid, Bewertung
-  09-quests-village Geschichte, Tages-Quests, Ergonomie, Tagebuch, Wolkendorf, Pomodoro
+  09-quests-village Geschichte, Tages-Quests, Achtsamkeit, Tagebuch, Wolkendorf, Fokuszeit
   10-core-loop      Spiel-Logik, Zustand, Rendern, Individualität
   11-arcade         Arcade-Automaten: Space Invaders, Pong, Defender
-  12-extras         Dock-Hinweise, Schrittzähler, 8-Ball, Sprüche
+  12-extras         Dock-Hinweise, Schritte in der Natur, 8-Ball, Sprüche, Rendern
   13-boot           Start der App, Speicher-Anforderung, Service Worker
+  14-shell-light    3D-Lichteffekt der Hülle (Uhrzeit / Neigung), Parallax
+  15-hobbies-events Hobbys mit Meisterstufen & Alben, Begegnungen & Feste
 assets/
-  sprites/          212 Tier-Sprites (256x256 PNG, transparent)
+  sprites/          251 Tier-Sprites (64x64 PNG, transparent)
+  shell_normal.jpg  Normalmap der Hülle (Kratzer, Gebrauchsspuren)
+  parallax_pattern.svg  Hintergrundmuster
 sw.js               Service Worker (Offline-Betrieb)
 manifest.webmanifest
 *.png               App-Symbole
@@ -55,6 +59,10 @@ Code sie benutzt, und `13-boot.js` startet zuletzt die App.
 
 Wer eine Datei hinzufügt, trägt sie an der passenden Stelle in `index.html`
 **und** in der Liste `ASSETS` in `sw.js` ein — sonst fehlt sie offline.
+
+Weil alle Skripte einen Namensraum teilen, darf jeder globale Funktions- und
+Variablenname nur **einmal** vorkommen. Eine zweite `function foo()` in einer
+späteren Datei überschreibt die erste still — ohne Fehlermeldung.
 
 ### Nach Änderungen
 
@@ -125,9 +133,9 @@ Cache haengen.
 |---:|---|---|
 | 0 | Ei | Start |
 | 1 | Kueken | nach 15 aktiven Sekunden |
-| 2 | Kind | nach 1 Stunde aktiver Spielzeit |
+| 2 | Kind | nach 1 Stunde aktiver Spielzeit, schaltet den Tagebuch-Eintrag frei |
 | 3 | Teenager | nach 4 Stunden |
-| 4 | Erwachsen | nach 8 Stunden, schaltet den Pokedex-Eintrag frei |
+| 4 | Erwachsen | nach 8 Stunden |
 | 5 | Senior | ab 85 % der individuellen Lebenszeit |
 
 Die Seniorenphase haengt bewusst an `maxLifetime` statt an einer festen
