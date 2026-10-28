@@ -1,4 +1,7 @@
 /* Achtsamkeits-Tamagotchi - Kaufen, Benutzen, Inventar, Gluecksrad */
+// ACHTUNG: Kennung und Pruefsummen-Salz (backupChecksum) tragen noch den alten
+// App-Namen. NICHT umbenennen - sonst werden alle bestehenden Sicherungsdateien
+// als ungueltig bzw. manipuliert erkannt.
 const BACKUP_FORMAT = 'pausentamagotchi-backup';
 
 // --- Medaillen-Rang: welcher Stufe gehoert die Mehrheit der Medaillen an? ---
@@ -434,7 +437,7 @@ function useItem(id) {
                 pet.overrideColor = null; pet.overridePatColor = null; pet.overridePatIdx = null;
                 pet.colorIndex = Math.floor(Math.random() * shellColors.length);
                 pet.patternIndex = Math.floor(Math.random() * patternGenerators.length);
-                pet.patternColorIndex = Math.floor(Math.patternColorIndex || Math.floor(Math.random() * patternColors.length));
+                pet.patternColorIndex = Math.floor(Math.random() * patternColors.length);
             } else {
                 pet.overrideColor = item.valC || null;
                 pet.overridePatColor = item.valPC || null;

@@ -295,7 +295,7 @@ async function fullAccountReset() {
 }
 
 // ================================================================
-// --- BÜRO-HACK LEADERBOARD ---
+// --- COMMUNITY-LEADERBOARD ---
 // Baut einen Highscore-Eintrag mit ALLEN Disziplinen:
 // Überleben, PvP-Siege, Mini-Boss-Siege und Arcade-Punkte.
 function buildScoreEntry(p, kind) {

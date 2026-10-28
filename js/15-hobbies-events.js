@@ -577,10 +577,10 @@ function startWheel() {
       <div class="xp-title">${L('Jahrmarkt-Glücksrad', 'Funfair wheel')}</div>
       <div class="xp-progress">${L('Jedes Feld gewinnt – der Jackpot ist selten!', 'Every slot wins – the jackpot is rare!')}</div>
       <div id="whResult" class="xp-stats"></div>
-      <button class="onboard-btn btn-gold" id="whBtn" onclick="spinWheel()">${L('Drehen! 🎡', 'Spin! 🎡')}</button>
+      <button class="onboard-btn btn-gold" id="whBtn" onclick="spinFairWheel()">${L('Drehen! 🎡', 'Spin! 🎡')}</button>
     `, false);
 }
-function spinWheel() {
+function spinFairWheel() {
     if (wheelBusy) return; wheelBusy = true;
     let sum = WHEEL.reduce((a, s) => a + s.w, 0), r = Math.random() * sum, idx = 0;
     for (let i = 0; i < WHEEL.length; i++) { r -= WHEEL[i].w; if (r <= 0) { idx = i; break; } }
@@ -596,8 +596,12 @@ function spinWheel() {
         let s = WHEEL[idx], got = s.act();
         saveGame(); safeSetItem('tama_inventory', JSON.stringify(inventory));
         playSound(s.icon === '🌟' ? 'achievement' : 'win');
-        document.getElementById('whResult').innerHTML = `<div class="xp-reward">${L('Gewonnen', 'You won')}: ${got}${s.icon === '🍪' ? ' ' + L('Glückskeks', 'fortune cookie') : ''}</div>`;
-        let b = document.getElementById('whBtn');
+        let label = `${L('Gewonnen', 'You won')}: ${got}${s.icon === '🍪' ? ' ' + L('Glückskeks', 'fortune cookie') : ''}`;
+        let res = document.getElementById('whResult'), b = document.getElementById('whBtn');
+        // Wurde das Fenster waehrend des Drehens geschlossen, gibt es das Rad
+        // nicht mehr - den (bereits gutgeschriebenen) Gewinn dann als Banner zeigen.
+        if (!res || !b) { showAchievementBanner(s.icon, label, 'generic'); return; }
+        res.innerHTML = `<div class="xp-reward">${label}</div>`;
         b.disabled = false; b.textContent = L('Schön! 🌸', 'Lovely! 🌸'); b.onclick = closeExperience;
         if (s.icon === '🌟') showAchievementBanner('🌟', 'JACKPOT!', 'generic');
     }, 3300);

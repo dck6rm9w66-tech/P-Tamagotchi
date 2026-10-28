@@ -692,8 +692,11 @@ function switchShopTab(tab) {
             return `<button class="shop-cat-chip ${locked ? 'locked' : ''}" title="${c}${locked ? ' (gesperrt)' : ''}" onclick="scrollToShopCat(${i})">${locked ? '🔒' : emoji}</button>`;
         }).join('') + '</div>';
     }
-    container.innerHTML = navHtml + '<div class="shop-grid"></div>';
-    let grid = container.querySelector('.shop-grid');
+    // Alle Karten zuerst als Strings sammeln und am Ende EINMAL ins DOM
+    // schreiben. Frueher wurde pro Artikel innerHTML erweitert - dabei parst
+    // der Browser bei jedem der ~120 Artikel das komplette bisherige HTML
+    // erneut (quadratischer Aufwand, spuerbar auf aelteren Handys).
+    let parts = [];
 
     if (tab === 'shop') {
         let lastCat = '';
@@ -703,12 +706,12 @@ function switchShopTab(tab) {
             if (item.cat === '🏆 Boss-Trophäen') return; // Nur als Arena-Loot erhältlich, nicht käuflich
             if(item.cat !== lastCat) {
                 catIndex++;
-                grid.innerHTML += `<div class="shop-cat-header" id="shopcat-${catIndex}">${t(item.cat)}</div>`;
+                parts.push(`<div class="shop-cat-header" id="shopcat-${catIndex}">${t(item.cat)}</div>`);
                 lastCat = item.cat;
                 let minLvl = SHOP_CATEGORY_MIN_LEVEL[item.cat] || 1;
                 catLocked = accountLevel < minLvl;
                 if (catLocked) {
-                    grid.innerHTML += `
+                    parts.push(`
                         <div class="shop-item">
                             <div class="shop-item-inner">
                                 <div class="shop-item-info">
@@ -716,7 +719,7 @@ function switchShopTab(tab) {
                                     <div class="shop-item-desc">Diese Kategorie schaltest du mit Pfleger-Level ${minLvl} frei. (Aktuell: Level ${accountLevel})</div>
                                 </div>
                             </div>
-                        </div>`;
+                        </div>`);
                 }
             }
             if (catLocked) return;
@@ -744,8 +747,8 @@ function switchShopTab(tab) {
             let timerHtml = getBuffTimerHtml(item.id);
             // Hobbys & Feste bekommen eigene, reichere Karten
             let rich = (typeof richShopCardHtml === 'function') ? richShopCardHtml(item, 'shop', btnHtml, timerHtml) : null;
-            if (rich) { grid.innerHTML += rich; return; }
-            grid.innerHTML += `
+            if (rich) { parts.push(rich); return; }
+            parts.push(`
                 <div class="shop-item" style="${timerHtml ? 'flex-direction:column;' : ''}">
                     <div class="shop-item-inner">
                         <div class="shop-item-info">
@@ -755,7 +758,7 @@ function switchShopTab(tab) {
                         <div class="shop-item-action">${btnHtml}</div>
                     </div>
                     ${timerHtml}
-                </div>`;
+                </div>`);
         });
     } else if (tab === 'inventory') {
         let hasItems = false;
@@ -807,8 +810,8 @@ function switchShopTab(tab) {
 
                 let timerHtml = getBuffTimerHtml(item.id);
                 let rich = (typeof richShopCardHtml === 'function') ? richShopCardHtml(item, 'inventory', customActionsHtml, timerHtml) : null;
-                if (rich) { grid.innerHTML += rich; return; }
-                grid.innerHTML += `
+                if (rich) { parts.push(rich); return; }
+                parts.push(`
                     <div class="shop-item" style="${timerHtml ? 'flex-direction:column;' : ''}">
                         <div class="shop-item-inner">
                             <div class="shop-item-info">
@@ -818,13 +821,14 @@ function switchShopTab(tab) {
                             <div class="shop-item-action">${customActionsHtml}</div>
                         </div>
                         ${timerHtml}
-                    </div>`;
+                    </div>`);
             }
         });
         if(!hasItems) {
-            grid.innerHTML = `<div style="text-align:center; padding: 20px; font-size:12px; color:#576574;">${t('Dein Inventar ist leer. Kauf etwas im Laden!')}</div>`;
+            parts = [`<div style="text-align:center; padding: 20px; font-size:12px; color:#576574;">${t('Dein Inventar ist leer. Kauf etwas im Laden!')}</div>`];
         }
     }
+    container.innerHTML = navHtml + '<div class="shop-grid">' + parts.join('') + '</div>';
 }
 
 function scrollToShopCat(i) {

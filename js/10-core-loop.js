@@ -131,7 +131,7 @@ function resetPetState() {
         isDirty: false, isSick: false, sickCount: 0, misbehaving: false, isDead: false,
         colorIndex: pickEggColorIndex(),
         patternIndex: Math.floor(Math.random() * patternGenerators.length),
-        patternColorIndex: Math.floor(Math.patternColorIndex || Math.floor(Math.random() * patternColors.length)),
+        patternColorIndex: Math.floor(Math.random() * patternColors.length),
         patternScale: scale, x: 60, y: 11, targetX: 60, targetY: 11, facingRight: true,
         overrideColor: null, overridePatColor: null, overridePatIdx: null,
         hueShift: Math.round(Math.random() * 180),                                   // 0%..50% Farbton-Verschiebung (0-180°)
@@ -761,10 +761,6 @@ const DISTORT_REMOVED = ['fisheye'];
 function normalizeDistort(t) {
     return (!t || DISTORT_REMOVED.includes(t)) ? 'none' : t;
 }
-const DISTORT_LABELS = {
-    none: 'Keine', arc: 'Bogen', arc_lower: 'Bogen unten', arc_upper: 'Bogen oben',
-    bulge: 'Wulst', inflate: 'Aufblasen', pinch: 'Stauchen', swirl: 'Aufrauen'
-};
 // Radiale Displacement-Map (R = horizontale, G = vertikale Position) für Wulst/Aufblasen/Stauchen
 const RADIAL_DISPLACE_MAP = "data:image/svg+xml;utf8," + encodeURIComponent(
     "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>" +

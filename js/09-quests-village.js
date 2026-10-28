@@ -856,7 +856,7 @@ function buyVillageUpgrade(id) {
 }
 
 // ================================================================
-// === FEATURE: POMODORO-FOKUS-MODUS ==============================
+// === FEATURE: FOKUSZEIT (intern noch 'pomodoro' benannt) ==========
 // ================================================================
 let pomodoroActive = false;
 let pomodoroStartTime = null;

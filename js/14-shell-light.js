@@ -2,11 +2,13 @@
  *
  * Eine bewegliche Reflexion/Lichtquelle wandert über die Ei-Hülle, dazu ein
  * gegenläufiger Schlagschatten. Die Position kommt:
- *   - am Desktop  : von der Mausposition (relativ zur Hülle)
- *   - auf Mobil   : von der Geräteneigung (DeviceOrientation)
+ *   - am Desktop  : von der Uhrzeit (Sonnenbogen ueber den Tag)
+ *   - auf Mobil   : von der Geräteneigung (DeviceOrientation), dazu ein
+ *                   Parallax-Versatz des Hintergrundmusters (#parallaxBg)
  *
- * Gesetzt werden CSS-Variablen auf .device (--light-x/-y in %, --shadow-x/-y in px).
- * Alles rein visuell; ohne Sensor/ohne Maus bleibt das Standard-Glanzlicht.
+ * Gesetzt werden CSS-Variablen auf .device (--light-x/-y in %, --shadow-x/-y in px)
+ * und auf #parallaxBg (--parallax-x/-y in px). Alles rein visuell; ohne Sensor
+ * bleibt am Handy das Standard-Glanzlicht.
  */
 (function () {
     'use strict';

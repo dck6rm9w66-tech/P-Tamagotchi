@@ -1,4 +1,7 @@
-/* Achtsamkeits-Tamagotchi - Sprachumschaltung und Woerterbuecher (DE/EN) */
+/* Achtsamkeits-Tamagotchi - Sprachumschaltung und Woerterbuecher (DE/EN)
+ * Die deutschen Texte bleiben die Quelle. t() schlaegt bei Englisch die
+ * Uebersetzung nach - so mussten die Datentabellen nicht umgebaut werden,
+ * nur die Stellen, an denen sie angezeigt werden. */
 const LANG_KEY = 'tama_lang';
 // Beim allerersten Start die Systemsprache uebernehmen: Deutsch (inkl.
 // Schweizer und oesterreichischem Deutsch) bleibt Deutsch, alles andere
@@ -478,7 +481,7 @@ Object.assign(I18N, {
 
     'Kindergarten': 'Kindergarten', 'Bringe Tamagotchis in die Kindheitsphase.': 'Raise Tamagotchis to the child stage.',
     'Pubertät': 'Puberty', 'Bringe Tamagotchis ins Teenager-Alter.': 'Raise Tamagotchis to the teenage stage.',
-    'Erwachsen': 'Grown Up', 'Bringe Tamagotchis ins Erwachsenenalter.': 'Raise Tamagotchis to adulthood.',
+    'Bringe Tamagotchis ins Erwachsenenalter.': 'Raise Tamagotchis to adulthood.',
     'Überlebenskünstler': 'Survivor',
     'Überlebte aktive Zeit eines Tamagotchis. Platin liegt jenseits der natürlichen Lebensspanne – ohne lebensverlängernde Shop-Items unerreichbar.': 'Active time survived by a Tamagotchi. Platinum lies beyond the natural lifespan – unreachable without life-extending shop items.',
     'Marathon-Pfleger': 'Marathon Caretaker', 'Überlebte aktive Zeit eines Tamagotchis.': 'Active time survived by a Tamagotchi.',
@@ -518,24 +521,20 @@ Object.assign(I18N, {
     'Schlafe': 'sleeps',
     'Nächste Stufe': 'Next level', 'Maximalstufe erreicht!': 'Maximum level reached!',
     'Stufe': 'Level', 'Aktuell': 'Current', 'Fortschritt': 'Progress',
-    'Wirkt gerade:': 'Active now:', 'Freigeschaltet': 'Unlocked', 'Noch gesperrt': 'Still locked',
+    'Wirkt gerade:': 'Active now:', 'Noch gesperrt': 'Still locked',
     "Deine Medaillen 🏅": "Your Medals 🏅",
     "Ahnengalerie 🪦": "Hall of Ancestors 🪦",
     "Highscores 🏆": "High Scores 🏆",
     "Ein friedlicher Abschied 🌈": "A Peaceful Farewell 🌈",
     "📋 Tages-Quests": "📋 Daily Quests",
     "📖 Wolkendorf-Tagebuch": "📖 Cloud Village Diary",
-    "🏘️ Wolkendorf-Ausbau": "🏘️ Cloud Village",
     "🎓 Pfleger-Level": "🎓 Caretaker Level",
-    "⚔️ Wolkendorf-Arena": "⚔️ Cloud Village Arena",
     "🔭 Wolkendorf-Fernrohr": "🔭 Cloud Village Telescope",
     "📖 Handbuch": "📖 Manual",
     "Willkommen! ☁️🥚": "Welcome! ☁️🥚",
     "Scores laden": "Load scores",
-    "Meinen Steckbrief teilen": "Share my profile",
     "Spielstand sichern": "Back up save",
     "Spielstand laden": "Load save",
-    "Gegner-JSON laden & kämpfen": "Load opponent JSON & fight",
     "Tagesaktuelle Spielstände laden": "Load today's save files",
     "Verbündete zurücksetzen": "Reset allies",
     "Zählen pausieren": "Pause counting",
@@ -548,7 +547,7 @@ Object.assign(I18N, {
     "Alles zurücksetzen": "Reset everything",
     // Tooltips der Bedienelemente
     "Ahnengalerie / Friedhof": "Hall of Ancestors / Graveyard",
-    "Arzt": "Doctor", "Baden": "Bathe", "Belehren": "Discipline", "Füttern": "Feed",
+    "Arzt": "Doctor", "Baden": "Bathe", "Belehren": "Discipline", 
     "Gerät drehen": "Rotate device", "Licht an/aus": "Light on/off",
     "Pausen-Tickets": "Break tickets", "Fokuszeit": "Focus Time",
     "Shop & Inventar": "Shop & inventory", "Spielen": "Play",
@@ -658,7 +657,6 @@ Object.assign(I18N, {
     "Du hast das Dorf <b>ausgewogen</b> entwickelt – Wirtschaft, Gesundheit und Wohlfühlen im Gleichgewicht.": "You developed the village in a <b>balanced</b> way – economy, health and comfort in equilibrium.",
     // Fernrohr / Vermaechtnis
     "Richte das Fernrohr auf das Wolkendorf und sieh, was dein Tamagotchi dort treibt. Der Blick gilt für den heutigen Tag.": "Point the telescope at the Cloud Village and see what your Tamagotchi is up to. The view is valid for today.",
-    "Glückspfote": "Lucky Paw", "Wolkenglück": "Cloud Fortune", "Frohes Gemüt": "Cheerful Spirit",
     "Aller Pfleger-XP-Gewinn.": "All caretaker XP gained.",
     "(Du)": "(You)",
     // Fehlende Shop-Artikel (Multiplikatoren)

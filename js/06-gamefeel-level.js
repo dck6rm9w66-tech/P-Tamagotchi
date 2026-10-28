@@ -91,19 +91,20 @@ function openMedalModal() {
     document.getElementById('medalProgressText').innerHTML =
         `${getUnlockedMedalCount()} / ${ACHIEVEMENTS.length} ${t('freigeschaltet')} &nbsp;·&nbsp; 🥉${counts[0]} 🥈${counts[1]} 🥇${counts[2]} 💎${counts[3]}`;
 
-    let grid = document.getElementById('medalGrid'); grid.innerHTML = '';
-    ACHIEVEMENTS.forEach(ach => {
+    // Karten sammeln und einmal schreiben (statt innerHTML += pro Medaille)
+    let grid = document.getElementById('medalGrid');
+    grid.innerHTML = ACHIEVEMENTS.map(ach => {
         let tier = getMedalTier(ach.id);
         let isUnlocked = tier > 0;
         let meta = isUnlocked ? MEDAL_TIERS[tier - 1] : null;
         let ring = isUnlocked ? `box-shadow: 0 0 0 2px ${meta.color}; ` : '';
-        grid.innerHTML += `
+        return `
             <div class="medal-item ${isUnlocked ? 'unlocked' : ''}" style="${ring}" onclick="showMedalDetail(${ach.id})">
                 <div class="medal-icon">${isUnlocked ? ach.icon : '🔒'}</div>
                 <div class="medal-title-min">${isUnlocked ? t(ach.title) : '???'}</div>
                 <div style="font-size:10px; line-height:1; margin-top:2px;">${isUnlocked ? meta.badge : '<span style="opacity:0.25;">🥉</span>'}</div>
             </div>`;
-    });
+    }).join('');
     document.getElementById('medalDetail').style.display = 'none';
     document.getElementById('medalModal').style.display = 'flex';
 }
@@ -216,7 +217,7 @@ function xpNeededForLevel(lvl) { return 60 + (lvl - 1) * 22; }
 const FEATURE_LOCK_CONFIG = [
     { btnId: 'btn-pomodoro',    minLevel: 1, icon: '🍅', name: 'Fokuszeit',
       desc: 'Arbeite 25 Minuten fokussiert, während dein Tamagotchi schläft. Der Timer läuft sogar weiter, wenn du das Fenster schliesst. Nach erfolgreicher Session gibt\'s Coins, Tickets & Pfleger-XP.',
-      onclick: "openPomodoroModal()", title: "Pomodoro-Fokus" },
+      onclick: "openPomodoroModal()", title: "Fokuszeit" },
     { btnId: 'btn-quests',      minLevel: 1, icon: '📋', name: 'Tages-Quests',
       desc: 'Erfülle täglich 3 Aufgaben: das achtsame Trinken, eine Achtsamkeits-Quest und eine sonstige Tagesquest. Dein Lohn: 🎫 Tickets für den Wolkendorf-Ausbau.',
       onclick: "openQuestModal()", title: "Tages-Quests" },
@@ -254,7 +255,7 @@ function updateFeatureLocks() {
             el.style.cursor = '';
             el.onclick = null;
             el.setAttribute('onclick', f.onclick);
-            el.title = f.title;
+            el.title = t(f.title);
             let badge = el.querySelector('.feat-lock-badge');
             if (badge) badge.remove();
         } else {
